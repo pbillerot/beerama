@@ -1,0 +1,32 @@
+<!-- ENTETE -->
+<div class="ui attached message">
+    <div class="ui large breadcrumb">
+        <div class="section ">
+            <i class="ui large picture blue icon "></i>
+        </div>
+        {{ $breadcrumbs := BeeSplitBreadcrumb .File}}
+        {{ range $breadcrumb := $breadcrumbs}}
+        <i class="right chevron icon divider"></i>
+        {{ if $breadcrumb.IsLast }}
+        <div class="section"><span class="ui large text">{{$breadcrumb.Base}}</span></div>
+        {{else}}
+        <div class="section">{{$breadcrumb.Base}}</div>
+        {{end}}
+        {{end}}
+    </div>
+</div>
+<!-- Formulaire d'Edition -->
+<form class="ui form attached segment" method="POST" action="/beerama/image{{BeeReplace .File `.drawio` `.png`}}">
+    {{ .xsrfdata }}
+    <div class="ui form">
+        <section class="ui cards">
+            <div class="ui centered card" style="width:unset;">
+                <div class="image">
+                    <img id="bee-drawio" class="bee-drawio" title="{{.Record.Base}}"
+                        src="{{.DataURL}}">
+                </div>
+            </div>
+        </section>
+    </div>
+    <input type="hidden" name="image" value="">
+</form>

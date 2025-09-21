@@ -1,0 +1,168 @@
+<!-- document.html -->
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+{{ $parent := .parent}}
+{{ $beedir := .beedir}}
+{{ $beefile := .beefile}}
+
+<body>
+	<!-- MENU HORIZONTAL FIXED -->
+	<div class="ui container">
+		<div class="ui grey inverted top fixed borderless large menu navbar">
+			<div class="header item">
+				<button class="ui labeled icon blue small button bee-confirm-close" data-url="{{.folder}}">
+					<i class="left arrow icon"></i>
+					Retour
+				</button>
+			</div>
+			<!-- RIGHT MENU -->
+			<div class="right menu">
+				<div class="item">
+					<div class="ui buttons">
+						<div id="button_validate" class="ui icon red small button bee-submit-meta disabled">
+							<i class="save icon"></i> Enregistrer
+						</div>
+					</div>
+				</div>
+				<div class="ui dropdown item bee-press-hidden-mobile">
+					<i class="ellipsis vertical icon"></i>
+					<div class="menu">
+						<div class="ui icon item bee-modal-restore">
+							<i class="icon image"></i>Restaurer l'image originale...
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- MAIN -->
+	<main>
+		{{template "_flash.html" .}}
+		<form id="form_meta_id" class="ui form" method="POST" action="/meta/{{$beedir.ID}}/{{$beefile.ID}}">
+			{{ .xsrfdata }}
+			<div class="ui stackable grid" style="margin: 1em;">
+				<div class="ten wide column">
+					<div class="ui attached small message">
+						<div class="header">
+							{{$beedir.Name}} / {{$beefile.Base}}
+						</div>
+					</div>
+					<div class="ui attached message" style="padding: 0.5em">
+						<div class="ui centered bordered fluid image bee-popup-image-editor"
+							data-src="{{$beefile.UrlImage}}">
+							<img src="{{$beefile.UrlImage}}?{{.composter}}">
+						</div>
+						<input class="bee-onchange" type="hidden" name="image" value="">
+					</div>
+					<div class="ui attached message">
+						<div class="sub header">
+							{{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px
+							/ {{$beefile.FileSize}}
+						</div>
+						<div class="sub header">
+							{{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec.
+						</div>
+					</div>
+				</div>
+				<div class="six wide column">
+					<div class="ui message">
+						<div class="field">
+							<label>Légende</label>
+							<div class="header">
+								<input class="bee-onchange" type="text" name="description" placeholder="Légende"
+									value="{{$beefile.Description}}">
+							</div>
+						</div>
+						<div class="fields">
+							<div class="field" style="width: 80%">
+								<label>Etiquettes</label>
+								<select class="ui fluid search three column dropdown bee-onchange" name="keywords"
+									multiple="">
+									<!-- recup des keywords de l'album si sous-dossier-->
+									{{ $keywords := $beedir.Keywords}}
+									{{ if ne $beedir.ParentID "" }}
+									{{ $keywords = $parent.Keywords}}
+									{{end}}
+									<option value="">Sélectionner une ou plusieurs étiquettes</option>
+									{{ range $ikey, $key := $keywords }}
+									<option {{if BeeIN $beefile.Keywords $key}}selected{{end}} value="{{$key}}">
+										{{$key}}
+									</option>
+									{{end}}
+								</select>
+							</div>
+							<div class="field" style="width: 80px">
+								<label>&nbsp;</label>
+								<button class="ui icon button bee-modal-new"
+									data-action="/tag/{{$beedir.ID}}/{{$beefile.ID}}"
+									title="Créer une nouvelle étiquette...">
+									<i class="icon file plus"></i>
+								</button>
+							</div>
+						</div>
+						<div class="fields">
+							<div class="field" styles="width: 200px">
+								<label>Date de la photo</label>
+								<div class="header">
+									<input class="bee-onchange" type="date" placeholder="Date" name="dateoriginal"
+										value="{{$beefile.DateOriginal}}">
+								</div>
+							</div>
+							<div class="field" styles="width: 200px">
+								<label>Heure de la photo</label>
+								<div class="header">
+									<input class="bee-onchange" type="time" placeholder="Heure" name="timeoriginal"
+										value="{{$beefile.TimeOriginal}}">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+		</form>
+	</main>
+	<!-- Formulaire d'Edition de l'image-->
+	<!-- Modal Nouveau Mots clé-->
+	<div id="bee-modal-new" class="ui tiny modal">
+		<div class="header bee-modal-title">à venir</div>
+		<div class="content">
+			<form class="ui form" method="POST" action="a venir">
+				{{ .xsrfdata }}
+				<div class="required field">
+					<label>Nouvelle étiquette (en un seul mot)</label>
+					<input type="text" id="keyword" name="keyword" placeholder="étiquette" value="">
+				</div>
+			</form>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">Annuler</div>
+			<div class="ui approve button">Valider</div>
+		</div>
+	</div>
+	<!-- MODAL RESTAURATION -->
+	<div id="bee-modal-restore" class="ui tiny modal">
+		<div class="header">Confirmer la restauration de l'image ?</div>
+		<div class="content">
+			<form class="ui form" method="POST" action="/restore/{{$beedir.ID}}/{{$beefile.ID}}">
+				{{ .xsrfdata }}
+				<div class="ui message">
+					<div class="header">
+						<p>Veuillez le confirmer</p>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">Annuler</div>
+			<div class="ui approve button">Je confirme</div>
+		</div>
+	</div>
+
+	<!-- CONTEXTE PAGE -->
+
+	{{template "_foot.html" .}}
+</body>
+
+</html>

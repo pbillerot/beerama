@@ -1,0 +1,309 @@
+<!-- home.html -->
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+{{ $config := .config}}
+{{ $beedir := .beedir}}
+
+<body>
+    <!-- MENU HORIZONTAL FIXED -->
+    <div class="ui grey inverted top fixed borderless large menu navbar">
+        <div class="ui item">
+            <a href="/" class="ui mini image">
+                <img src="{{.config.Icon}}" />
+            </a>
+        </div>
+        {{ if eq $beedir.Name ""}}
+        <a href="/" class="ui header item" title="">
+            <span class="ui large text orange bee-press-hidden-mobile" style="text-transform: uppercase;">{{$config.Title}}<span>
+        </a>
+        <!-- <a href="/" class="ui sub header item" title="">
+            <span class="ui large text orange bee-press-hidden-mobile" style="text-transform: uppercase;">{{$config.Description}}<span>
+        </a> -->
+        {{else}}
+        <a href="/folder/{{$beedir.ID}}" class="header item" title="" style="text-transform: uppercase;">
+            <span class="ui large text orange bee-press-hidden-mobile">{{$beedir.Name}}<span>
+        </a>
+        {{end}}
+        <!-- RIGHT MENU -->
+        <div class="right menu">
+            <div class="item">
+                <div class="ui basic yellow large buttons bee-press-visible">
+                    <div class="ui icon button" id="bee-selector" title="Nombre de sélection">
+                        <i class="check icon"></i>
+                    </div>
+                    <div class="ui icon button bee-modal-duplicate" data-action="/duplicate/{{$beedir.ID}}"
+                        title="Dupliquer la diapo dans cet album...">
+                        <i class="clone outline icon"></i>
+                    </div>
+                    <div class="ui icon button bee-modal-move" data-action="/cp/{{$beedir.ID}}"
+                        title="Copier dans un autre album...">
+                        <i class="copy outline icon"></i>
+                    </div>
+                    <div class="ui icon button bee-modal-move" data-action="/mv/{{$beedir.ID}}"
+                        title="Déplacer dans un autre album...">
+                        <i class="arrow right icon"></i>
+                    </div>
+                    <div class="ui icon button bee-modal-delete" data-action="/rm/{{$beedir.ID}}"
+                        title="Supprimer la diapo de l'album...">
+                        <i class="trash alternate outline icon"></i>
+                    </div>
+                </div>
+            </div>
+            {{ if ne $beedir.Name ""}}
+            <div class="item">
+                <div class="ui basic yellow icon button bee-modal-upload" title="Déposer une photo dans l'album..."
+                    data-action="/upload/{{$beedir.ID}}">
+                    <i class="plus icon"></i>
+                </div>
+            </div>
+            {{end}}
+            <div class="ui dropdown item bee-press-hidden-mobile">
+                <i class="ellipsis vertical icon"></i>
+                <div class="menu">
+                    {{ if eq $beedir.Name ""}}
+                    <div class="ui icon item bee-modal-new" title="Créer un nouvel album" data-action="/mkdir">
+                        <i class="icon folder plus"></i>Créer un nouvel album...
+                    </div>
+                    <a class="ui icon item bee-nag" href="/reload">
+                        <i class="refresh icon"></i>Recharger tous les albums
+                    </a>
+                    {{else}}
+                    {{ if eq $beedir.ParentID ""}}
+                    <div class="ui icon item bee-modal-new" title="Créer un sous-dossier"
+                        data-action="/mkdir/{{$beedir.ID}}">
+                        <i class="icon folder plus"></i>Créer un sous-dossier...
+                    </div>
+                    {{end}}
+                    {{ if eq (len $beedir.BeeFiles) 0}}
+                    {{ if $beedir.ParentID}}
+                    <a class="ui icon item bee-modal-confirm" title="Supprimer le sous-dossier..."
+                        data-action="/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
+                        <i class="dash icon"></i>Supprimer le sous-dossier...
+                    </a>
+                    {{else}}
+                    <a class="ui icon item bee-modal-confirm" title="Supprimer l'album..."
+                        data-action="/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
+                        <i class="dash icon"></i>Supprimer l'album...
+                    </a>
+                    {{end}}
+                    {{end}}
+                    {{ if $beedir.ParentID}}
+                    <div class="ui icon item bee-modal-rename" title="Renommer le sous-dossier..." data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                        <i class="icon folder"></i>Renommer le sous-dossier...
+                    </div>
+                    {{else}}
+                    <div class="ui icon item bee-modal-rename" title="Renommer l'album" data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                        <i class="icon folder"></i>Renommer l'album...
+                    </div>
+                    {{end}}
+                    <a class="ui icon item bee-nag" href="/reload/{{$beedir.ID}}">
+                        <i class="refresh icon"></i>Recharger les images de l'album
+                    </a>
+                    {{end}}
+                </div>
+            </div>
+        </div>
+        <!-- end right menu -->
+    </div>
+    <!-- MAIN -->
+    <main>
+        <div class="ui orange fixed nag" id="bee-nag">
+            <div class="title">Rechargement des images en cours...</div>
+            <div>Veuillez patienter</div>
+            <i class="close icon"></i>
+        </div>
+        {{if eq $beedir.Name ""}}
+        {{template "_home.html" .}}
+        <h2>&nbsp;</h2>
+        <div class="ui container">
+            <a class="ui right floated image label" href="{{.config.Github}}" target="_blank"
+                title="Voir les sources de l'application">
+                <i class="github icon"></i>
+                {{.config.AppName}}
+                <div class="detail">{{.config.Version}}</div>
+            </a>
+            <!-- <a class="ui right floated image label" href="{{.config.Help}}" target="_blank">
+                <i class="info circle icon"></i>
+                Guide d'utilisation de Beerama
+            </a> -->
+        </div>
+        {{else}}
+        {{template "_folder.html" .}}
+        {{end}}
+    </main>
+    <!-- Modal Confirmation Action -->
+    <div id="bee-modal-confirm" class="ui tiny modal">
+        <div class="header bee-modal-title">à venir</div>
+        <div class="content">
+            <form class="ui form" method="POST" action="bee-modal-confirm">
+                {{ .xsrfdata }}
+                <input type="hidden" name="paths" value="">
+                <div class="ui message">
+                    <div class="header">
+                        à venir
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Annuler</div>
+            <div class="ui approve button">Je confirme</div>
+        </div>
+    </div>
+    <!-- Form d'envoi suite à un glisser/déposer -->
+    <div id="bee-drag-drop" class="bee-hidden">
+        <form method="POST" action="set by script">
+            {{ .xsrfdata }}
+            <input type="hidden" name="dsrc" value="set by script">
+            <input type="hidden" name="fsrc" value="set by script">
+        </form>
+    </div>
+    <!-- Modal Renommer un album et sous-dossier-->
+    <div id="bee-modal-rename" class="ui tiny modal">
+        <div class="header bee-modal-title"></div>
+        <div class="content">
+            <form class="ui form" method="POST" action="from script">
+                {{ .xsrfdata }}
+                <div class="required field">
+                    <input type="text" name="new_name" placeholder="" value="">
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button bee-nag">Valider</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Nouveau Mots clé-->
+    <div id="bee-modal-new" class="ui tiny modal">
+        <div class="header bee-modal-title"></div>
+        <div class="content">
+            <form class="ui form" method="POST" action="/mkdir">
+                {{ .xsrfdata }}
+                <div class="required field">
+                    <input type="text" name="new_name" placeholder="" value="">
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Valider</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Copier Déplacer -->
+    <div id="bee-modal-duplicate" class="ui tiny modal">
+        <div class="header bee-modal-title">à venir</div>
+        <div class="scrolling content">
+            <form class="ui form" method="POST" action="a venir">
+                {{ .xsrfdata }}
+                <input type="hidden" name="paths" value="">
+                <div class="field">
+                    <label>Liste des fichiers sélectionnés</label>
+                    <div class="ui message">
+                        <div class="header bee-input-paths">
+                            à venir
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Vers</label>
+                    <div class="ui message">
+                        <div class="header">
+                            {{$beedir.Name}}
+                        </div>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Je confirme</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="bee-modal-move" class="ui tiny modal">
+        <div class="header bee-modal-title">à venir</div>
+        <div class="scrolling content">
+            <form class="ui form" method="POST" action="a venir">
+                {{ .xsrfdata }}
+                <input type="hidden" name="paths" value="">
+                <div class="field">
+                    <label>Liste des fichiers sélectionnés</label>
+                    <div class="ui message">
+                        <div class="header bee-input-paths">
+                            à venir
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Vers</label>
+                    <select class="ui dropdown bee-onchange" name="destid">
+                        <option value="">Sélectionner un album...</option>
+                        {{ range $i, $bdir := $config.BeeDirs }}
+                        {{ if ne $bdir.ID $beedir.ID }}
+                        <option value="{{$bdir.ID}}">
+                            {{$bdir.Name}}
+                        </option>
+                        {{end}}
+                        {{end}}
+                    </select>
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Je confirme</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Upload -->
+    <div id="bee-modal-upload" class="ui tiny modal">
+        <div class="header">Déposer des fichiers...</div>
+        <div class="content">
+            <form class="ui form" method="POST" action="/upload/{{$beedir.ID}}" enctype="multipart/form-data">
+                {{ .xsrfdata }}
+                <div class="field">
+                    <label>Dans</label>
+                    <div class="ui message">
+                        <div class="header">
+                            {{$beedir.Path}}
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="bee-upload-file" class="ui labeled icon button">
+                        <i class="upload icon"></i>
+                        Sélection de fichiers...
+                    </label>
+                    <input styles="display: none" type="file" id="bee-upload-file" name="files" multiple />
+                </div>
+                <!-- fichiers sur le départ -->
+                <div class="ui message" id="bee-files-selected">
+                </div>
+            </form>
+        </div>
+        <div class="actions">
+            <div class="ui cancel button">Annuler</div>
+            <div class="ui approve button">Envoyer sur le serveur</div>
+        </div>
+    </div>
+    <!-- Modal Play -->
+    <div id="bee-modal-player" class="ui tiny modal">
+        <div class="actions">
+            <div class="ui cancel button">Fermer</div>
+        </div>
+        <div class="content">
+            <div class="ui compact icon message bee-player" data-path="à venir">
+                <i class="play icon"></i>
+                <div class="content">
+                    <p>à venir</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CONTEXTE PAGE -->
+    <div id="bee-ctx" data-folder="{{.Folder}}">
+    </div>
+    {{template "_foot.html" .}}
+</body>
+
+</html>

@@ -1,0 +1,25 @@
+<!-- FLASH MESSAGE -->
+{{if .flash.error}}
+<div class="ui error message"><i class="close icon"></i>
+    <div class="header">
+        {{.flash.error}}
+    </div>
+</div>
+{{end}}
+{{if .flash.warning}}
+<div class="ui warning message"><i class="close icon"></i>
+    <div class="header">
+        {{.flash.warning}}
+    </div>
+</div>
+{{end}}
+{{if .flash.success}}
+<div class="ui success message"><i class="close icon"></i>
+    <div class="header">
+        {{.flash.success}}
+    </div>
+</div>
+{{end}}
+{{if .flash.notice}}
+<input type="hidden" id="toaster" data-color="brown" data-position="top center" value="{{.flash.notice}}">
+{{end}}

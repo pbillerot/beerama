@@ -1,0 +1,33 @@
+<!-- ENTETE -->
+<div class="ui top attached menu borderless navbar">
+  <div class="item">
+    <div class="ui large breadcrumb">
+      <div class="section ">
+        <i class="ui large file alternate outline red icon"></i>
+      </div>
+      {{ $breadcrumbs := BeeSplitBreadcrumb .File}}
+      {{ range $breadcrumb := $breadcrumbs}}
+      <i class="right chevron icon divider"></i>
+      {{ if $breadcrumb.IsLast }}
+      <div class="section"><span class="ui large text">{{$breadcrumb.Base}}</span></div>
+      {{else}}
+      <div class="section">{{$breadcrumb.Base}}</div>
+      {{end}}
+      {{end}}
+    </div>
+  </div>
+  <div class="right bordeless menu">
+    <div class="item">
+      <div class="ui icon blue right aligned button bee-window-open bee-hidden" data-url="{{.config.HelpEditor}}"
+        data-posx="left" data-width="900" data-posy="50" target="Bee-help" title="Résumé des commandes">
+        <i class="help icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+<form class="ui form attached segment" style="padding: 0;" method="POST" action="/beerama/document{{.File}}">
+  {{ .xsrfdata }}
+  <textarea id="bee-editor" data-mode={{.Record.Mode}} name="document" id="document">{{.Record.Content}}</textarea>
+  <input type="hidden" id="cursor_ch" name="cursor_ch" value="{{.CursorCh}}">
+  <input type="hidden" id="cursor_line" name="cursor_line" value="{{.CursorLine}}">
+</form>

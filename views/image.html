@@ -1,0 +1,59 @@
+<!-- document.html -->
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+{{ $beedir := .beedir}}
+{{ $beefile := .beefile}}
+
+<body>
+	<!-- MENU HORIZONTAL FIXED -->
+	<div class="ui container">
+		<div class="ui grey inverted top fixed borderless large menu navbar">
+			<div class="header item">
+				<button class="ui labeled icon blue small button bee-confirm-close">
+					<i class="left arrow icon"></i>
+					Reculer
+				</button>
+				<button class="ui labeled icon blue small button bee-confirm-close">
+					<i class="right arrow icon"></i>
+					Avancer
+				</button>
+			</div>
+			<!-- RIGHT MENU -->
+			{{/*  <div class="right menu">
+				<div class="item">
+					<div class="ui buttons">
+						<div id="button_validate" class="ui icon red small button bee-submit disabled">
+							<i class="save icon"></i> Enregistrer
+						</div>
+					</div>
+				</div>
+				<!-- end right menu -->
+			</div>  */}}
+		</div>
+	</div>
+	<!-- MAIN -->
+	<main>
+		<div class="ui segment" style="margin: 1em">
+			<div class="ui segment">
+				<img class="ui centered massive image" src="{{$beefile.UrlImage}}">
+			</div>
+	</main>
+	<!-- Demande de confirmation de l'action' -->
+	<div id="bee-modal-confirm" class="ui tiny modal">
+		<div class="header" id="crud-action">Abandonner les modifications ?</div>
+		<div class="content">
+			<p>Veuillez le confirmer</p>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">Annuler</div>
+			<div class="ui approve button">Je confirme</div>
+		</div>
+	</div> <!-- end modal confirm -->
+
+	<!-- CONTEXTE PAGE -->
+
+	{{template "_foot.html" .}}
+</body>
+
+</html>

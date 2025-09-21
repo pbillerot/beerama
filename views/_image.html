@@ -1,0 +1,31 @@
+{{ $beedir := .beedir}}
+{{ $beefile := .beefile}}
+<div class="ui segment" style="margin: 1em">
+    <div class="ui segment">
+        <img class="ui centered big image" src="{{$beefile.Url}}">
+    </div>
+
+    {{/*  <div class="ui card">
+        <div class="ui link image bee-press bee-tap">
+            <img src="{{$beefile.Url}}" title="">
+        </div>
+        <div class="content">
+            <div class="description">
+                <span class="ui orange text right floated">
+                    {{$beefile.DateOriginal}} {{$beefile.TimeOriginal}}
+                </span>
+                <span>{{$beefile.Description}}</span>
+            </div>
+        </div>
+        <div class="extra content">
+            {{if $beefile.Keywords}}
+            {{range $i, $keyword := $beefile.Keywords}}
+            <button class="ui tertiary button bee-keyword" data-url="/folder/{{$beedir.ID}}/{{$keyword}}">
+                {{$keyword}}
+            </button>
+            {{end}}
+            {{end}}
+        </div>
+
+    </div>  */}}
+</div>

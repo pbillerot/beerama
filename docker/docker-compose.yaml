@@ -1,0 +1,24 @@
+
+services:
+  beerama:
+    build:
+      context: .
+    image: beerama
+    container_name: beerama
+    restart: unless-stopped
+    user: 1000:1000
+    # ports:
+    #   - "8080:8080"
+    volumes:
+    - /volshare:/volshare
+    # personnalisation de la configuration
+    - ./custom.conf:/github/pbillerot/beerama/conf/custom.conf
+    networks:
+    - docker_web
+
+volumes:
+  certs:
+
+networks:
+  docker_web:
+    external: true

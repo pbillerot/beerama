@@ -1,0 +1,35 @@
+<!-- _head.html -->
+
+<head>
+    <meta charset="utf-8">
+    <title>{{.config.Title}}</title>
+    <meta name="description" content="{{.config.Description}}">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="_xsrf" content="{{.xsrf_token}}" />
+
+    <link rel="apple-touch-icon" sizes="72x72" href="{{.config.Favicon}}">
+    <link rel="apple-touch-icon" sizes="114x114" href="{{.config.Favicon}}">
+    <link rel="apple-touch-icon" href="{{.config.Favicon}}">
+    <link rel="apple-touch-startup-image" href="{{.config.Favicon}}">
+
+    <link rel="icon" type="image/png" href="{{.config.Favicon}}" />
+    <link rel="shortcut icon" sizes="196x196" href="{{.config.Favicon}}">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Semantic CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.4/semantic.min.css">
+    <!-- Lightbox V2 -->
+    <link href="/static/lightbox/css/lightbox.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="/static/css/bee_styles.css?v=0.1.0" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('{{ .config.Background}}');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>

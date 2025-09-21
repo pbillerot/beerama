@@ -1,0 +1,131 @@
+{{ $config := .config}}
+{{ $parent := .parent}}
+{{ $beedir := .beedir}}
+{{ $htagid := .htagid}}
+{{ $composter := .composter}}
+<input type="hidden" id="bee_view" value="folder">
+<!-- <div class="ui label">parent.ID {{$parent.ID}}, beedir.ID {{$beedir.ID}}, htagid {{$htagid}}</div> -->
+<div classi="ui segment" style="margin: 1em">
+    {{template "_flash.html" .}}
+    <!-- si présence de sous-dossiers -->
+    {{if or $beedir.WithChildren $beedir.ParentID}}
+    <div class="ui labels">
+        <!-- album parent  -->
+        {{if $beedir.WithChildren}}
+        <a href="/folder/{{$beedir.ID}}" class="ui orange label" style="text-transform: uppercase;" data-bdir="{{$parent.ID}}"><i
+                class="photo video symbol icon"></i>{{$beedir.Name}}</a>
+        {{end}}
+        {{if $beedir.ParentID}}
+        <a href="/folder/{{$parent.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$parent.ID}}"><i
+                class="photo video symbol icon"></i>{{$parent.Name}}</a>
+        {{end}}
+        <!-- sous-dossiers enfants -->
+        {{ range $i, $bdir := $config.BeeDirs}}
+        {{ if ne $bdir.ParentID "" }}
+        {{ if eq $bdir.ParentID $beedir.ID}}
+        <a href="/folder/{{$bdir.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{end}}
+        {{ if eq $bdir.ParentID $parent.ID}}
+        {{if eq $bdir.ID $beedir.ID}}
+        <a href="/folder/{{$bdir.ID}}" class="ui orange label" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{else}}
+        <a href="/folder/{{$bdir.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{end}}
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
+    {{end}}
+    <!-- liste des étiquettes hashtags -->
+    <div class="ui labels">
+        {{ range $i, $keyword := $beedir.Keywords }}
+        {{if eq $htagid $keyword }}
+        <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">
+            #{{$keyword}}
+        </a>
+        {{else}}
+        <a href="/folder/{{$beedir.ID}}/{{$keyword}}" class="ui tag small label">
+            #{{$keyword}}
+        </a>
+        {{end}}
+        {{end}}
+    </div>
+    <!-- liste des diapos -->
+    <div class="grid" data-masonry='{ "itemSelector": ".grid-item" }'>
+        {{$beedir := .beedir}}
+        {{ range $ibeefile, $beefile := $beedir.BeeFiles }}
+        {{ $beedirid := $beefile.DirID}}
+        {{ if BeeIN $beefile.Keywords $htagid}}
+        {{ if $beefile.IsImage }}
+        <div class="grey grid-item" style="margin: 0.5em">
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card bee-press draggable" data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}"
+                data-path="{{$beefile.Path}}" data-base="{{$beefile.Base}}" style="padding: 0.5em;">
+                <!-- nom du dossier si htag -->
+                {{ if $htagid }}
+                {{ range $i, $bdir := $config.BeeDirs}}
+                {{ if eq $bdir.ID $beefile.DirID}}
+                <div class="grey content" style="padding: 0.3em 0 0.3em 0;">
+                    <div class="ui center aligned sub header">
+                        <i class="{{if $bdir.ParentID}}folder outline{{else}}photo video symbol{{end}} icon"></i>
+                        {{$bdir.Name}}</div>
+                </div>
+                {{end}}
+                {{end}}
+                {{end}}
+                <!-- la thumbnail de l'image -->
+                <div class="ui link centered image" title="{{$beefile.Base}}">
+                    <div class="" href="{{$beefile.UrlImage}}?{{$composter}}"
+                        data-title="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
+                        data-lightbox="roadtrip"><img src="{{$beefile.UrlThumb}}?{{$composter}}"></div>
+                </div>
+                <!-- attributs de la diapo -->
+                <div class="content bee-meta" style="padding: 0.3em 0 0 0;min-height: 2em;"
+                    title="Clic pour modifier légende et étiquettes" data-url="/meta/{{$beedirid}}/{{$beefile.ID}}">
+                    <div class="description">
+                        <!-- description -->
+                        <div class="ui center aligned sub header" style="font-size: 1em;text-transform: none;">
+                            {{$beefile.Description}}</div>
+                        <!-- date originale de l'image -->
+                        <span class="ui text right floated">
+                            {{$beefile.DateOriginal}} {{$beefile.TimeOriginal}}
+                        </span>
+                        <!-- étiquettes hashtags -->
+                        <div>
+                            {{if $beefile.Keywords}}
+                            {{range $i, $keyword := $beefile.Keywords}}
+                            <span>
+                                #{{$keyword}}
+                            </span>
+                            {{end}}
+                            {{end}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{end}} <!-- /if image-->
+        {{end}} <!-- /if htag-->
+        {{end}} <!-- /range -->
+        <!-- end range records -->
+    </div>
+</div>
+<!-- Modal filerobot image editor -->
+<div id="bee-modal-filerobot" class="ui overlay fullscreen modal">
+    <div class="header bee-modal-title">à venir</div>
+    <div class="content">
+        <form class="ui form" method="POST" action="bee-modal-new">
+            {{ .xsrfdata }}
+            <div class="required field">
+                <label>Nouvelle étiquette (en un seul mot)</label>
+                <input type="text" id="keyword" name="keyword" placeholder="étiquette" value="a venir">
+            </div>
+        </form>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Annuler</div>
+        <div class="ui approve button">Valider</div>
+    </div>
+</div>

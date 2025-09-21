@@ -1,0 +1,91 @@
+<!-- document.html -->
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+
+<body>
+	<!-- NAVBAR -->
+	<div class="ui container">
+		<div class="ui fixed menu borderless navbar">
+			<div class="item">
+				<button class="ui labeled icon blue button bee-confirm-close">
+					<i class="left arrow icon"></i>
+					Fermer
+				</button>
+			</div>
+			<!-- RIGHT MENU -->
+			<div class="right menu">
+				<div class="item">
+					<div class="ui buttons">
+						<div class="ui icon blue button bee-window-open bee-hidden" data-url="/Bee{{.BeeFile.BeePath }}"
+							data-posx="left" data-width="1200" data-posy="150" target="Bee-test"
+							title="Voir la page sur le site de test">
+							<i class="eye icon"></i>
+						</div>
+					</div>
+				</div>
+				<div class="item">
+					<div class="ui buttons">
+						{{ if .BeeFile.IsDrawio }}
+						<div class="ui icon green button bee-drawio" data-src="/content{{.File}}"
+							title="Modifier le dessin">
+							<i class="edit icon"></i>
+						</div>
+						{{ else if .BeeFile.IsImage }}
+						<div class="ui icon green button bee-popup-image-editor" data-src="/content{{.File}}"
+							title="Modifier l'image">
+							<i class="edit icon"></i>
+						</div>
+						{{end}}
+						<div id="button_validate" class="ui icon red button bee-submit disabled bee-hidden" title="Enregistrer">
+							<i class="save icon"></i>
+						</div>
+					</div>
+				</div>
+				<!-- end right menu -->
+			</div>
+		</div>
+	</div>
+	<!-- MAIN -->
+	<main>
+		<div class="ui container" style="height:90%">
+			{{template "_flash.html" .}}
+			<!-- DOCUMENT -->
+			{{ if .BeeFile.IsDrawio }}
+			{{template "_drawio.html" .}}
+			{{ else if .BeeFile.IsImage }}
+			{{template "_image.html" .}}
+			{{ else if .BeeFile.IsPdf }}
+			{{template "_pdf.html" .}}
+			{{ else if .BeeFile.IsMarkdown }}
+			{{template "_document.html" .}}
+			{{ else }}
+			{{template "_document.html" .}}
+			{{ end }}
+		</div>
+	</main>
+	<!-- Demande de confirmation de l'action' -->
+	<div id="bee-modal-confirm" class="ui tiny modal">
+		<div class="header" id="crud-action">Abandonner les modifications ?</div>
+		<div class="content">
+			<p>Veuillez le confirmer</p>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">Annuler</div>
+			<div class="ui approve button">Je confirme</div>
+		</div>
+	</div> <!-- end modal confirm -->
+
+	<!-- CONTEXTE PAGE -->
+	<div id="bee-ctx" data-folder="{{.Folder}}">
+	</div>
+
+	{{template "_foot.html" .}}
+	{{if .refresh}}
+	<script>
+		window.opener.location.reload();
+	</script>
+	{{end}}
+</body>
+
+</html>
