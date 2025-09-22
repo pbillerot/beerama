@@ -12,10 +12,9 @@
 vendor/
 data/
 bin/
-__debug_bin
+__debug_bin*
 vendor
 cpu*
 mem*
-# bee
 *.tmp
 beerama

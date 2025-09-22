@@ -494,12 +494,6 @@ $(document).ready(function () {
     'wrapAround': true
   })
 
-  // $('.grid').masonry({
-  //   columnHeight: 200,
-  //   itemSelector: '.grid-item',
-  //   horizontalOrder: true
-  // });
-
   // chargement de toutes les images avant de lancer Masonry
   Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
     var $grid = $('.grid').masonry({

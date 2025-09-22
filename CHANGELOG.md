@@ -2,12 +2,12 @@
 # CHANGELOG
 
 ### À venir :
-> lightbox avec swap sur tablette (alwaysShowNavOnTouchDevices)
-> masonry avec recouvrement d'image sur tablette (spécifier width et height)
 - intégration draw.io
-> jquery droppable draggable non fonctionnel sur tablette
-> https://github.com/furf/jquery-ui-touch-punch
 - passez en mode administrateur via mot de passe dans la session
+
+1.0.4 du 22 sept. 2025
+- `fixed` bug affichage diapo sur tablette (attente que toutes les images soient chargées)
+- `added` manifest.pwa Une PWA se consulte comme un site web classique, depuis une URL sécurisée mais permet une expérience utilisateur similaire à celle d'une application mobile
 
 1.0.3 du 22 sept. 2025
 - `fixed` bug affichage diapo sur tablette (une seule colonne)
