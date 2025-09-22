@@ -487,6 +487,18 @@ $(document).ready(function () {
       source.drawIoWindow.focus();
     }
   });
+  // paramètres de Lighbox
+  lightbox.option({
+    'fitImagesInViewport': true,
+    'alwaysShowNavOnTouchDevices': true,
+    'wrapAround': true
+  })
+
+  $('.grid').masonry({
+    columnHeight: 200,
+    itemSelector: '.grid-item',
+    horizontalOrder: true
+  });
 });
 
 /**
@@ -535,16 +547,3 @@ function blockCR(event) {
     event.preventDefault();
   }
 }
-
-// paramètres de Lighbox
-lightbox.option({
-  'fitImagesInViewport': true,
-  'alwaysShowNavOnTouchDevices': true,
-  'wrapAround': true
-})
-
-$('.grid').masonry({
-  columnHeight: 200,
-  itemSelector: '.grid-item',
-  horizontalOrder: true
-});
