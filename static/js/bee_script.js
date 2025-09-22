@@ -544,6 +544,7 @@ lightbox.option({
 })
 
 $('.grid').masonry({
-  columnWidth: 152,
+  // columnHeight: 200,
   itemSelector: '.grid-item'
+  // horizontalOrder: true
 });

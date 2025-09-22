@@ -9,6 +9,9 @@
 > https://github.com/furf/jquery-ui-touch-punch
 - passez en mode administrateur via mot de passe dans la session
 
+1.0.3 du 22 sept. 2025
+- `fixed` bug affichage diapo sur tablette (une seule colonne)
+
 1.0.2 du 22 sept. 2025
 - `fixed` affichage diapo corrigé sur tablette 
 - `added` lightbox retour au début si à la fin, gestion touch device (tablette)
