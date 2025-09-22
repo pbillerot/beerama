@@ -7,7 +7,7 @@
     "screenshots": ["/static/img/bee.svg"],
     "icons": [
       {
-        "src": "/bee/static/img/bee.svg",
+        "src": "/static/img/bee.svg",
         "sizes": "252x252",
         "type": "image/svg+xml"
       }

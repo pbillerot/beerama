@@ -4,21 +4,6 @@
 // jQuery(function () {
 $(document).ready(function () {
   var $bee_view = $('#bee_view').val(); // = nom du cookie
-  // positionnement sur la dernière carte sélectionnée
-  // sélection sur le clic sur des metadata
-  if ($bee_view && $bee_view.length > 0) {
-    if (Cookies.get($bee_view)) {
-      var $anchor = $('#' + Cookies.get($bee_view));
-      if ($anchor.length) {
-        $('html, body').animate({
-          scrollTop: $anchor.offset().top - 50
-        }, 1000);
-        // encadremant de la diapo
-        $anchor.addClass("bee-card-anchor");
-        // $anchor.css("border", "3px");
-      }
-    }
-  };
 
   $(".draggable").draggable({
     revert: true,
@@ -501,6 +486,21 @@ $(document).ready(function () {
       horizontalOrder: true
     });
     $grid.masonry();
+    // positionnement sur la dernière carte sélectionnée
+    // sélection clic sur metadata
+    if ($bee_view && $bee_view.length > 0) {
+      if (Cookies.get($bee_view)) {
+        var $anchor = $('#' + Cookies.get($bee_view));
+        if ($anchor.length) {
+          $('html, body').animate({
+            scrollTop: $anchor.offset().top - 50
+          }, 1000);
+          // encadremant de la diapo
+          $anchor.addClass("bee-card-anchor");
+          // $anchor.css("border", "3px");
+        }
+      }
+    };
   });
 
 });

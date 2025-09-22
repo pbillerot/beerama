@@ -152,7 +152,14 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 			case "FileSize":
 				beeFile.FileSize = v.(string)
 			case "ExposureTime":
-				beeFile.ExposureTime = v.(string)
+				switch v := v.(type) {
+				case string:
+					beeFile.ExposureTime = v
+				case float64:
+					beeFile.ExposureTime = fmt.Sprintf("%v", v)
+				default:
+					beeFile.ExposureTime = fmt.Sprintf("%v", v)
+				}
 			case "Description":
 				beeFile.Description = v.(string)
 			case "DateTimeOriginal":

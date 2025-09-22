@@ -5,6 +5,11 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.0.5 du 22 sept. 2025
+- `fixed` manifest.pwa erreur chemin
+- `fixed` metadata ExposureTime en float64
+- `added` simplificationchargement des dossiers des albums
+
 1.0.4 du 22 sept. 2025
 - `fixed` bug affichage diapo sur tablette (attente que toutes les images soient chargées)
 - `added` manifest.pwa Une PWA se consulte comme un site web classique, depuis une URL sécurisée mais permet une expérience utilisateur similaire à celle d'une application mobile

@@ -2,12 +2,14 @@ package models
 
 import (
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
 
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/pbillerot/beerama/shutil"
 )
 
 // Config de config.yaml lu dans main.init()
@@ -119,40 +121,26 @@ func (config *BeeConfig) RemoveFolder(beeDir *BeeDir) {
 
 // readFolder retourne la liste des fichiers dans BeePathInfo
 func getOnlyFolders(directory string, info *[]BeePathInfo) (err error) {
-	// ouverture du dossier
-	f, err := os.Open(directory)
+	var pis []BeePathInfo
+	err = readFolder(directory, &pis)
 	if err != nil {
-		return
+		return err
 	}
-	// lecture des fichiers et dossiers du dossier courant
-	list, err := f.Readdir(-1)
-	f.Close()
-	if err != nil {
-		return
-	}
-	// tri des dossiers sur le nom inversé si numérique
-	sort.Slice(list, func(i, j int) bool {
-		if _, err := strconv.Atoi(list[i].Name()); err == nil {
-			if _, err := strconv.Atoi(list[j].Name()); err == nil {
-				return list[i].Name() > list[j].Name()
-			}
-			return list[i].Name() < list[j].Name()
+	for _, pi := range pis {
+		if strings.HasPrefix(filepath.Base(pi.Path), ".") {
+			continue
 		}
-		return list[i].Name() < list[j].Name()
-	})
-	// tri des fichiers sur le nom
-	sort.Slice(list, func(i, j int) bool {
-		return list[i].Name() < list[j].Name()
-	})
-	// Rangement des dossiers visibles (non préfixés par un .)
-	for _, file := range list {
-		if file.IsDir() && !strings.HasPrefix(file.Name(), ".") {
-			var pi BeePathInfo
-			pi.Path = directory + "/" + file.Name()
-			pi.Info = file
+		if pi.Info.IsDir() {
+			*info = append(*info, pi)
+		}
+		if shutil.IsSymlink(pi.Info) {
 			*info = append(*info, pi)
 		}
 	}
+	// tri des fichiers sur le nom
+	sort.Slice(pis, func(i, j int) bool {
+		return pis[i].Info.Name() < pis[j].Info.Name()
+	})
 	return
 }
 
