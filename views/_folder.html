@@ -54,7 +54,7 @@
         {{end}}
     </div>
     <!-- liste des diapos -->
-    <div class="grid" data-masonry='{ "itemSelector": ".grid-item" }'>
+    <div class="grid">
         {{$beedir := .beedir}}
         {{ range $ibeefile, $beefile := $beedir.BeeFiles }}
         {{ $beedirid := $beefile.DirID}}

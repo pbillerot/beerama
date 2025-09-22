@@ -2,9 +2,19 @@
 # CHANGELOG
 
 ### À venir :
+> lightbox avec swap sur tablette (alwaysShowNavOnTouchDevices)
+> masonry avec recouvrement d'image sur tablette (spécifier width et height)
 - intégration draw.io
-- jquery droppable draggable non fonctionnel sur tablette
+> jquery droppable draggable non fonctionnel sur tablette
+> https://github.com/furf/jquery-ui-touch-punch
 - passez en mode administrateur via mot de passe dans la session
+
+1.0.2 du 22 sept. 2025
+- `fixed` affichage diapo corrigé sur tablette 
+- `added` lightbox retour au début si à la fin, gestion touch device (tablette)
+- `added` drag and drop sur tablette
+- `fixed` dockerfile avec exiftool
+- `fixed` dockerfile avec exiftool
 
 1.0.1 du 21 sept. 2025
 - `fixed` dockerfile avec exiftool

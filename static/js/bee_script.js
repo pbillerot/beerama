@@ -538,5 +538,12 @@ function blockCR(event) {
 
 // paramètres de Lighbox
 lightbox.option({
-  'fitImagesInViewport': true
+  'fitImagesInViewport': true,
+  'alwaysShowNavOnTouchDevices': true,
+  'wrapAround': true
 })
+
+$('.grid').masonry({
+  columnWidth: 152,
+  itemSelector: '.grid-item'
+});
