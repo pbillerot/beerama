@@ -1,15 +1,15 @@
 {
-    "description": "Gérer vos images",
+    "description": "Organiser vos photos en album et diaporama",
     "display": "standalone",
     "name": "Beerama",
     "short_name": "beerama",
     "start_url": "/",
-    "screenshots": ["/static/img/bee.svg"],
+    "screenshots": ["/static/img/bee.png"],
     "icons": [
       {
-        "src": "/static/img/bee.svg",
+        "src": "/static/img/bee.png",
         "sizes": "252x252",
-        "type": "image/svg+xml"
+        "type": "image/png"
       }
     ],
     "lang": "fr"
