@@ -11,7 +11,7 @@ $(document).ready(function () {
       var $anchor = $('#' + Cookies.get($bee_view));
       if ($anchor.length) {
         $('html, body').animate({
-          scrollTop: $anchor.offset().top - 200
+          scrollTop: $anchor.offset().top - 50
         }, 1000);
         // encadremant de la diapo
         $anchor.addClass("bee-card-anchor");
@@ -494,11 +494,21 @@ $(document).ready(function () {
     'wrapAround': true
   })
 
-  $('.grid').masonry({
-    columnHeight: 200,
-    itemSelector: '.grid-item',
-    horizontalOrder: true
+  // $('.grid').masonry({
+  //   columnHeight: 200,
+  //   itemSelector: '.grid-item',
+  //   horizontalOrder: true
+  // });
+
+  // chargement de toutes les images avant de lancer Masonry
+  Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
+    var $grid = $('.grid').masonry({
+      itemSelector: '.grid-item',
+      horizontalOrder: true
+    });
+    $grid.masonry();
   });
+
 });
 
 /**
