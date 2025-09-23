@@ -4,13 +4,16 @@
     "name": "Beerama",
     "short_name": "beerama",
     "start_url": "/",
-    "screenshots": ["/static/img/bee.png"],
+    "screenshots": ["/static/img/bee.svg"],
     "icons": [
       {
-        "src": "/static/img/bee.png",
-        "sizes": "252x252",
-        "type": "image/png"
+        "src": "/static/img/bee.svg",
+        "sizes": "512x512",
+        "type": "image/svg+xml",
+        "purpose": "any maskable"
       }
     ],
     "lang": "fr"
   }
+
+  

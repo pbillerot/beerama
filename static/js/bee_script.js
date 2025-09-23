@@ -19,7 +19,7 @@ $(document).ready(function () {
       var $dest = $(this).data('bdir');
       var $dsrc = ui.draggable.data('dsrc');
       var $fsrc = ui.draggable.data('fsrc');
-      console.log('drag', $dsrc, $fsrc, 'drop', $dest);
+      // console.log('drag', $dsrc, $fsrc, 'drop', $dest);
       var $form = $('#bee-drag-drop').find('form');
       $form.attr('action', '/dragdrop/' + $dest);
       $form.find("input[name='dsrc']").val($dsrc);
