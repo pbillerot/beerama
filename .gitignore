@@ -18,3 +18,4 @@ cpu*
 mem*
 *.tmp
 beerama
+sandbox/

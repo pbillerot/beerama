@@ -5,42 +5,10 @@
 {{ $composter := .composter}}
 <input type="hidden" id="bee_view" value="folder">
 <!-- <div class="ui label">parent.ID {{$parent.ID}}, beedir.ID {{$beedir.ID}}, htagid {{$htagid}}</div> -->
-<div classi="ui segment" style="margin: 1em">
+<div style="margin: 1em">
     {{template "_flash.html" .}}
-    <!-- si présence de sous-dossiers -->
-    {{if or $beedir.WithChildren $beedir.ParentID}}
-    <div class="ui labels">
-        <!-- album parent  -->
-        {{if $beedir.WithChildren}}
-        <a href="/folder/{{$beedir.ID}}" class="ui orange label" style="text-transform: uppercase;" data-bdir="{{$parent.ID}}"><i
-                class="photo video symbol icon"></i>{{$beedir.Name}}</a>
-        {{end}}
-        {{if $beedir.ParentID}}
-        <a href="/folder/{{$parent.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$parent.ID}}"><i
-                class="photo video symbol icon"></i>{{$parent.Name}}</a>
-        {{end}}
-        <!-- sous-dossiers enfants -->
-        {{ range $i, $bdir := $config.BeeDirs}}
-        {{ if ne $bdir.ParentID "" }}
-        {{ if eq $bdir.ParentID $beedir.ID}}
-        <a href="/folder/{{$bdir.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{end}}
-        {{ if eq $bdir.ParentID $parent.ID}}
-        {{if eq $bdir.ID $beedir.ID}}
-        <a href="/folder/{{$bdir.ID}}" class="ui orange label" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{else}}
-        <a href="/folder/{{$bdir.ID}}" class="ui label droppable" style="text-transform: uppercase;" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{end}}
-        {{end}}
-        {{end}}
-        {{end}}
-    </div>
-    {{end}}
     <!-- liste des étiquettes hashtags -->
-    <div class="ui labels">
+    <div class="ui labels" style="margin-left: 0.5em;">
         {{ range $i, $keyword := $beedir.Keywords }}
         {{if eq $htagid $keyword }}
         <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">

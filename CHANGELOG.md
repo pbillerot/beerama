@@ -6,6 +6,8 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.1.0 du 23 sept. 2025
+- `added` menu à gauche de l'album et de ses sous dossiers
 
 1.0.6 du 22 sept. 2025
 - `fixed` favicon en png

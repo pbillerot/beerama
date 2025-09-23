@@ -3,6 +3,7 @@
 <html>
 {{template "_head.html" .}}
 {{ $config := .config}}
+{{ $parent := .parent}}
 {{ $beedir := .beedir}}
 
 <body>
@@ -13,16 +14,13 @@
                 <img src="{{.config.Icon}}" />
             </a>
         </div>
-        
+
         {{ if eq $beedir.Name ""}}
         <a href="/" class="ui header item" title="">
-            <span class="ui large text orange bee-press-hidden-mobile" style="text-transform: uppercase;">{{$config.Title}}<span>
+            <span class="ui large text orange bee-press-hidden-mobile">{{$config.Title}}<span>
         </a>
-        <!-- <a href="/" class="ui sub header item" title="">
-            <span class="ui large text orange bee-press-hidden-mobile" style="text-transform: uppercase;">{{$config.Description}}<span>
-        </a> -->
         {{else}}
-        <a href="/folder/{{$beedir.ID}}" class="header item" title="" style="text-transform: uppercase;">
+        <a href="/folder/{{$beedir.ID}}" class="header item" title="">
             <span class="ui large text orange bee-press-hidden-mobile">{{$beedir.Name}}<span>
         </a>
         {{end}}
@@ -90,11 +88,13 @@
                     {{end}}
                     {{end}}
                     {{ if $beedir.ParentID}}
-                    <div class="ui icon item bee-modal-rename" title="Renommer le sous-dossier..." data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                    <div class="ui icon item bee-modal-rename" title="Renommer le sous-dossier..."
+                        data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer le sous-dossier...
                     </div>
                     {{else}}
-                    <div class="ui icon item bee-modal-rename" title="Renommer l'album" data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                    <div class="ui icon item bee-modal-rename" title="Renommer l'album"
+                        data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer l'album...
                     </div>
                     {{end}}
@@ -107,6 +107,64 @@
         </div>
         <!-- end right menu -->
     </div>
+    {{if $beedir.Name}}
+    <!-- menu de l'album et de ses sous-dossiers -->
+    <div id="menu" class="ui left fixed vertical menu">
+        <div class="item">
+            <div class="content">
+                <div class="header">
+                    l'album et ses sous-dossiers
+                </div>
+            </div>
+        </div>
+        {{if not $beedir.ParentID}}
+        <a href="/folder/{{$beedir.ID}}" class="active orange item" data-bdir="{{$parent.ID}}"><i
+                class="photo video symbol icon"></i>{{$beedir.Name}}</a>
+        {{end}}
+        {{if or $beedir.WithChildren $beedir.ParentID}}
+        {{if $beedir.ParentID}}
+        <a href="/folder/{{$parent.ID}}" class="item droppable" data-bdir="{{$parent.ID}}"><i
+                class="photo video symbol icon"></i>{{$parent.Name}}</a>
+        {{end}}
+        <!-- sous-dossiers enfants -->
+        {{ range $i, $bdir := $config.BeeDirs}}
+        {{ if ne $bdir.ParentID "" }}
+        {{ if eq $bdir.ParentID $beedir.ID}}
+        <a href="/folder/{{$bdir.ID}}" class="item droppable" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{end}}
+        {{ if eq $bdir.ParentID $parent.ID}}
+        {{if eq $bdir.ID $beedir.ID}}
+        <a href="/folder/{{$bdir.ID}}" class="active orange item" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{else}}
+        <a href="/folder/{{$bdir.ID}}" class="item droppable" data-bdir="{{$bdir.ID}}">
+            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
+        {{end}}
+        {{end}}
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
+    {{else}}
+    <!-- menu des albums -->
+    <div id="menu" class="ui left fixed vertical menu">
+        <div class="active orange item">
+            <div class="content">
+                <div class="header">
+                    Les albums
+                </div>
+            </div>
+        </div>
+        {{ range $beedir := $config.BeeDirs }}
+        {{if eq $beedir.ParentID ""}}
+        <a class="item" href="/folder/{{$beedir.ID}}">
+            <i class="photo video symbol icon"></i> {{$beedir.Name}}
+        </a>
+        {{end}}
+        {{end}}
+    </div>
+    {{end}}
     <!-- MAIN -->
     <main>
         <div class="ui orange fixed nag" id="bee-nag">
@@ -114,24 +172,26 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
-        {{if eq $beedir.Name ""}}
-        {{template "_home.html" .}}
-        <h2>&nbsp;</h2>
-        <div class="ui container">
-            <a class="ui right floated image label" href="{{.config.Github}}" target="_blank"
-                title="Voir les sources de l'application">
-                <i class="github icon"></i>
-                {{.config.AppName}}
-                <div class="detail">{{.config.Version}}</div>
-            </a>
-            <!-- <a class="ui right floated image label" href="{{.config.Help}}" target="_blank">
+        <div id="container">
+            {{if eq $beedir.Name ""}}
+            {{template "_home.html" .}}
+            <h2>&nbsp;</h2>
+            <div class="ui container">
+                <a class="ui right floated image label" href="{{.config.Github}}" target="_blank"
+                    title="Voir les sources de l'application">
+                    <i class="github icon"></i>
+                    {{.config.AppName}}
+                    <div class="detail">{{.config.Version}}</div>
+                </a>
+                <!-- <a class="ui right floated image label" href="{{.config.Help}}" target="_blank">
                 <i class="info circle icon"></i>
                 Guide d'utilisation de Beerama
             </a> -->
+            </div>
+            {{else}}
+            {{template "_folder.html" .}}
+            {{end}}
         </div>
-        {{else}}
-        {{template "_folder.html" .}}
-        {{end}}
     </main>
     <!-- Modal Confirmation Action -->
     <div id="bee-modal-confirm" class="ui tiny modal">

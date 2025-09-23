@@ -13,7 +13,7 @@ $(document).ready(function () {
   $(".droppable").droppable({
     classes: {
       "ui-droppable-active": "inverted",
-      "ui-droppable-hover": "olive"
+      "ui-droppable-hover": "teal"
     },
     drop: function (event, ui) {
       var $dest = $(this).data('bdir');
@@ -482,8 +482,8 @@ $(document).ready(function () {
   // chargement de toutes les images avant de lancer Masonry
   Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
     var $grid = $('.grid').masonry({
-      itemSelector: '.grid-item',
-      horizontalOrder: true
+      itemSelector: '.grid-item'
+      // horizontalOrder: true
     });
     $grid.masonry();
     // positionnement sur la dernière carte sélectionnée
@@ -493,7 +493,7 @@ $(document).ready(function () {
         var $anchor = $('#' + Cookies.get($bee_view));
         if ($anchor.length) {
           $('html, body').animate({
-            scrollTop: $anchor.offset().top - 50
+            scrollTop: $anchor.offset().top - 100
           }, 1000);
           // encadremant de la diapo
           $anchor.addClass("bee-card-anchor");
@@ -501,6 +501,11 @@ $(document).ready(function () {
         }
       }
     };
+    // positionnement sur le menu sélectionné
+    $('#menu').animate({
+      scrollTop: $('.active').offset().top - 100
+    }, 1000);
+
   });
 
 });

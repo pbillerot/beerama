@@ -1,13 +1,6 @@
 {{ $config := .config}}
-<div class1="ui segment" style="margin: 1em">
+<div class1="ui segment" style="margin: 2em">
     {{template "_flash.html" .}}
-    {{ range $beedir := $config.BeeDirs }}
-    {{if eq $beedir.ParentID ""}}
-    <a class="ui button" style="margin-top:1em;text-transform: uppercase;" href="/folder/{{$beedir.ID}}">
-        <i class="photo video symbol icon"></i> {{$beedir.Name}}
-    </a>
-    {{end}}
-    {{end}}
     <div class="ui compact clearing colored orange segment">
         <img class="ui centered big image" src="/static/img/beerama2.png">
     </div>
