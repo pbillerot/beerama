@@ -2,8 +2,10 @@
 # CHANGELOG
 
 ### À venir :
+> revue du layout menu fixed à gauche
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
+
 
 1.0.6 du 22 sept. 2025
 - `fixed` favicon en png
