@@ -5,6 +5,10 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.0.6 du 22 sept. 2025
+- `fixed` favicon en png
+- `fixed` crossorigin du manifest
+
 1.0.5 du 22 sept. 2025
 - `fixed` manifest.pwa erreur chemin
 - `fixed` metadata ExposureTime en float64
