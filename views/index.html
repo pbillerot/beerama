@@ -110,13 +110,8 @@
     {{if $beedir.Name}}
     <!-- menu de l'album et de ses sous-dossiers -->
     <div id="menu" class="ui left fixed vertical menu">
-        <div class="item">
-            <div class="content">
-                <div class="header">
-                    l'album et ses sous-dossiers
-                </div>
-            </div>
-        </div>
+        <a href="/" class="item"><i class="home icon"></i>Retour aux albums
+        </a>
         {{if not $beedir.ParentID}}
         <a href="/folder/{{$beedir.ID}}" class="active orange item" data-bdir="{{$parent.ID}}"><i
                 class="photo video symbol icon"></i>{{$beedir.Name}}</a>
@@ -149,7 +144,7 @@
     {{else}}
     <!-- menu des albums -->
     <div id="menu" class="ui left fixed vertical menu">
-        <div class="active orange item">
+        <div class="active item">
             <div class="content">
                 <div class="header">
                     Les albums
