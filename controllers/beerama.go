@@ -104,6 +104,12 @@ func (c *MainController) Meta() {
 		// keywords
 		keywords := c.GetStrings("keywords")
 		beeFile.Keywords = keywords
+		// raz de la date
+		razdate := c.GetString("razdate")
+		if razdate == "on" {
+			beeFile.DateOriginal = ""
+			beeFile.TimeOriginal = ""
+		}
 
 		// report des meta dans l'image
 		err := beeFile.UpdateMeta()

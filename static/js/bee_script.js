@@ -321,8 +321,8 @@ $(document).ready(function () {
 
   // IHM SEMANTIC
   // $('.menu .item').tab();
-  // $('.ui.checkbox').checkbox();
-  // $('.ui.radio.checkbox').checkbox();
+  $('.ui.checkbox').checkbox();
+  $('.ui.radio.checkbox').checkbox();
   $('.ui.dropdown.item').dropdown();
   $('select.dropdown').dropdown();
   $('.message .close')
@@ -331,14 +331,6 @@ $(document).ready(function () {
         .closest('.message')
         .transition('fade');
     });
-  // $('.hide')
-  //     .on('click', function () {
-  //         $(this)
-  //             .closest('.message')
-  //             .transition('fade')
-  //             ;
-  //     }
-  //     );
 
   // Toaster
   $('#toaster')
@@ -380,16 +372,17 @@ $(document).ready(function () {
             return true;
           },
           onApprove: function () {
-            if ($(this).data('url')) {
-              window.open($(this).data('url'), '_self');
+            if ($url) {
+              window.open($url, '_self');
             } else {
               window.close();
             }
           }
         }).modal('show');
     } else {
-      if ($(this).data('url')) {
-        window.open($(this).data('url'), '_self');
+      var $url = $(this).data('url')
+      if ($url) {
+        window.open($url, '_self');
       } else {
         window.close();
       }

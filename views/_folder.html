@@ -36,9 +36,9 @@
                 {{ range $i, $bdir := $config.BeeDirs}}
                 {{ if eq $bdir.ID $beefile.DirID}}
                 <div class="grey content" style="padding: 0.3em 0 0.3em 0;">
-                    <div class="ui center aligned sub header">
+                    <a href="/folder/{{$beedirid}}" class="ui center aligned sub header">
                         <i class="{{if $bdir.ParentID}}folder outline{{else}}photo video symbol{{end}} icon"></i>
-                        {{$bdir.Name}}</div>
+                        {{$bdir.Name}}</a>
                 </div>
                 {{end}}
                 {{end}}
@@ -64,9 +64,7 @@
                         <div>
                             {{if $beefile.Keywords}}
                             {{range $i, $keyword := $beefile.Keywords}}
-                            <span>
-                                #{{$keyword}}
-                            </span>
+                            <span>#{{$keyword}}</span>
                             {{end}}
                             {{end}}
                         </div>

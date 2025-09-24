@@ -6,6 +6,10 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.1.2 du 24 sept. 2025
+- `added` sur diapo si sélection htag lien vers le dossier
+- `added` formulaire metadata avec coche pour raz de la date et heure
+
 1.1.1 du 24 sept. 2025
 - `added` ajout compteur de photos dans le dossier
 - `changed` le renommage d'un dossier n'entraîne plus le rechargement de tous les albums

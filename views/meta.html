@@ -11,7 +11,8 @@
 	<div class="ui container">
 		<div class="ui grey inverted top fixed borderless large menu navbar">
 			<div class="header item">
-				<button class="ui labeled icon blue small button bee-confirm-close" data-url="{{.folder}}">
+				<button class="ui labeled icon blue small button bee-confirm-close" 
+				data-url="/folder/{{$beedir.ID}}">
 					<i class="left arrow icon"></i>
 					Retour
 				</button>
@@ -117,6 +118,12 @@
 								</div>
 							</div>
 						</div>
+						<div class="field">
+							<div class="ui checkbox">
+								<input type="checkbox" class="bee-onchange" name="razdate">
+								<label>Raz date et heure</label>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -159,6 +166,17 @@
 			<div class="ui approve button">Je confirme</div>
 		</div>
 	</div>
+	<!-- Demande de confirmation de l'action' -->
+	<div id="bee-modal-confirm" class="ui tiny modal">
+		<div class="header" id="crud-action">Abandonner les modifications ?</div>
+		<div class="content">
+			<p>Veuillez le confirmer</p>
+		</div>
+		<div class="actions">
+			<div class="ui cancel button">Annuler</div>
+			<div class="ui approve button">Je confirme</div>
+		</div>
+	</div> <!-- end modal confirm -->
 
 	<!-- CONTEXTE PAGE -->
 
