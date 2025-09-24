@@ -33,6 +33,8 @@ type BeeDir struct {
 	Title        string     // Titre de la répertoire trouve dans beemage.yaml
 	ParentID     string     // ID de l'album parent
 	WithChildren bool       // l'album possède de(s) sous-dossier(s)
+	Count        int        // nbre de photos du dossier
+	CountAlbum   int        // nbre de photos de l'album (tous les dossiers)
 	BeeFiles     []*BeeFile // la liste des fichiers de content
 	Keywords     []string   // les hashtags de l'album
 }

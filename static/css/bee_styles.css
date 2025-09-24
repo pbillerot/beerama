@@ -20,10 +20,9 @@ body {
     margin-top: 80px;
     margin-left: 0.5em;
     height: 80%;
-    /* width: 200px;
-    background: #FFFFFF;
-    float: left;
-    position: absolute; */
+}
+#menu_items {
+    overflow-y: scroll;
 }
 
 /* TOP MENU */

@@ -133,7 +133,7 @@ func (c *MainController) Tag() {
 
 	if c.Ctx.Input.Method() == "POST" {
 		// AJOUT DU TAG
-		keyword := c.GetString("keyword")
+		keyword := strings.ToLower(c.GetString("keyword"))
 		// maj du beefile
 		beeFile.Keywords = append(beeFile.Keywords, keyword)
 		// report des keywords dans BeeDir sans doublons et triés
@@ -262,9 +262,9 @@ func (c *MainController) FolderRename() {
 		flash.Error("FolderRename %s", err)
 		flash.Store(&c.Controller)
 	}
-	// Rechargement complet des albums
-	models.LoadBeeDirs()
-	c.Ctx.Redirect(302, "/")
+	// Rechargement de albums
+	beeDir.LoadBeeFiles(0)
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
 // MkSubFolder Création d'un sous-dossier

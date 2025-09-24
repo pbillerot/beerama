@@ -124,7 +124,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 				beeFile.Keywords = beeFile.Keywords[:0]
 				switch v := v.(type) {
 				case string:
-					kw := strings.Split(v, ",")
+					kw := strings.Split(strings.ToLower(v), ",")
 					beeFile.Keywords = append(beeFile.Keywords, kw...)
 				case float64:
 					beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
@@ -132,10 +132,10 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 					for _, vv := range v.([]any) {
 						switch t := vv.(type) {
 						case string:
-							kw := strings.Split(vv.(string), ",")
+							kw := strings.Split(strings.ToLower(vv.(string)), ",")
 							beeFile.Keywords = append(beeFile.Keywords, kw...)
 						case float64:
-							beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", vv.(float64)))
+							beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
 						default:
 							fmt.Printf("Type inconnu : %T pour %v", t, v)
 						}

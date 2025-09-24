@@ -6,6 +6,11 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.1.1 du 24 sept. 2025
+- `added` ajout compteur de photos dans le dossier
+- `changed` le renommage d'un dossier n'entraîne plus le rechargement de tous les albums
+- `changed` étiquettes en minuscule
+
 1.1.0 du 23 sept. 2025
 - `added` menu à gauche de l'album et de ses sous dossiers
 

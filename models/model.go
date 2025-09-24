@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/pbillerot/beerama/shutil"
 )
@@ -146,20 +145,13 @@ func getOnlyFolders(directory string, info *[]BeePathInfo) (err error) {
 
 // LoadBeeFiles chargement des fichier de BeeDir
 func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
-	// Exiftool
-	et, err := exiftool.NewExiftool()
-	if err != nil {
-		return err
-	}
-	defer et.Close()
 
 	// lecture du répertoire
 	var pis []BeePathInfo
-	err = readFolder(beeDir.Path, &pis)
+	err := readFolder(beeDir.Path, &pis)
 	if err != nil {
 		return err
 	}
-
 	beeDir.BeeFiles = beeDir.BeeFiles[:0]
 	for _, pi := range pis {
 		if !pi.Info.IsDir() {
@@ -175,22 +167,28 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 	return nil
 }
 
-// UpdateBeeDir - maj keywords tri - tri des beefiles sur la date original
+// UpdateBeeDir - maj count keywords tri - tri des beefiles sur la date original
 // suite ajout suppression d'une image et modification date et keyword
 func (beeDir *BeeDir) UpdateBeeDir() {
 	// ajout des keywords doublon et tri
 	beeDir.Keywords = beeDir.Keywords[:0]
 	// les keywords de l'album
+	count := 0
 	for _, beeFile := range beeDir.BeeFiles {
 		beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
+		count++
 		// beeFile.ID = "id" + strconv.Itoa(id)
 	}
+	beeDir.Count = count
 	// ajout des keywords des sous-dossiers
 	for _, bdir := range Config.BeeDirs {
 		if bdir.ParentID == beeDir.ID {
 			beeDir.Keywords = append(beeDir.Keywords, bdir.Keywords...)
+			bdir.Count = len(bdir.BeeFiles)
+			count += bdir.Count
 		}
 	}
+	beeDir.CountAlbum = count
 	keyUniqueSorted := BeeUniqueString(beeDir.Keywords)
 	sort.Strings(keyUniqueSorted)
 	beeDir.Keywords = keyUniqueSorted

@@ -27,7 +27,7 @@
         <!-- RIGHT MENU -->
         <div class="right menu">
             <div class="item">
-                <div class="ui basic yellow large buttons bee-press-visible">
+                <div class="ui basic orange large buttons bee-press-visible">
                     <div class="ui icon button" id="bee-selector" title="Nombre de sélection">
                         <i class="check icon"></i>
                     </div>
@@ -51,7 +51,7 @@
             </div>
             {{ if ne $beedir.Name ""}}
             <div class="item">
-                <div class="ui basic yellow icon button bee-modal-upload" title="Déposer une photo dans l'album..."
+                <div class="ui basic orange icon button bee-modal-upload" title="Déposer une photo dans l'album..."
                     data-action="/upload/{{$beedir.ID}}">
                     <i class="plus icon"></i>
                 </div>
@@ -107,59 +107,7 @@
         </div>
         <!-- end right menu -->
     </div>
-    {{if $beedir.Name}}
-    <!-- menu de l'album et de ses sous-dossiers -->
-    <div id="menu" class="ui left fixed vertical menu">
-        <a href="/" class="item"><i class="home icon"></i>Retour aux albums
-        </a>
-        {{if not $beedir.ParentID}}
-        <a href="/folder/{{$beedir.ID}}" class="active orange item" data-bdir="{{$parent.ID}}"><i
-                class="photo video symbol icon"></i>{{$beedir.Name}}</a>
-        {{end}}
-        {{if or $beedir.WithChildren $beedir.ParentID}}
-        {{if $beedir.ParentID}}
-        <a href="/folder/{{$parent.ID}}" class="item droppable" data-bdir="{{$parent.ID}}"><i
-                class="photo video symbol icon"></i>{{$parent.Name}}</a>
-        {{end}}
-        <!-- sous-dossiers enfants -->
-        {{ range $i, $bdir := $config.BeeDirs}}
-        {{ if ne $bdir.ParentID "" }}
-        {{ if eq $bdir.ParentID $beedir.ID}}
-        <a href="/folder/{{$bdir.ID}}" class="item droppable" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{end}}
-        {{ if eq $bdir.ParentID $parent.ID}}
-        {{if eq $bdir.ID $beedir.ID}}
-        <a href="/folder/{{$bdir.ID}}" class="active orange item" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{else}}
-        <a href="/folder/{{$bdir.ID}}" class="item droppable" data-bdir="{{$bdir.ID}}">
-            <i class="folder outline icon"></i>{{$bdir.Name}}</a>
-        {{end}}
-        {{end}}
-        {{end}}
-        {{end}}
-        {{end}}
-    </div>
-    {{else}}
-    <!-- menu des albums -->
-    <div id="menu" class="ui left fixed vertical menu">
-        <div class="active item">
-            <div class="content">
-                <div class="header">
-                    Les albums
-                </div>
-            </div>
-        </div>
-        {{ range $beedir := $config.BeeDirs }}
-        {{if eq $beedir.ParentID ""}}
-        <a class="item" href="/folder/{{$beedir.ID}}">
-            <i class="photo video symbol icon"></i> {{$beedir.Name}}
-        </a>
-        {{end}}
-        {{end}}
-    </div>
-    {{end}}
+    {{template "_menu.html" .}}
     <!-- MAIN -->
     <main>
         <div class="ui orange fixed nag" id="bee-nag">
@@ -247,7 +195,7 @@
             </form>
         </div>
     </div>
-    <!-- Modal Copier Déplacer -->
+    <!-- Modal dupliquer -->
     <div id="bee-modal-duplicate" class="ui tiny modal">
         <div class="header bee-modal-title">à venir</div>
         <div class="scrolling content">
@@ -296,7 +244,7 @@
                     <select class="ui dropdown bee-onchange" name="destid">
                         <option value="">Sélectionner un album...</option>
                         {{ range $i, $bdir := $config.BeeDirs }}
-                        {{ if ne $bdir.ID $beedir.ID }}
+                        {{ if and (ne $bdir.ID $beedir.ID) (eq $bdir.ParentID "") }}
                         <option value="{{$bdir.ID}}">
                             {{$bdir.Name}}
                         </option>

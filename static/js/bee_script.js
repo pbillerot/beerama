@@ -12,8 +12,8 @@ $(document).ready(function () {
   }); // glisser
   $(".droppable").droppable({
     classes: {
-      "ui-droppable-active": "inverted",
-      "ui-droppable-hover": "teal"
+      "ui-droppable-active": "teal",
+      "ui-droppable-hover": "active"
     },
     drop: function (event, ui) {
       var $dest = $(this).data('bdir');

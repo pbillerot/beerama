@@ -1,0 +1,70 @@
+{{ $config := .config}}
+{{ $parent := .parent}}
+{{ $beedir := .beedir}}
+
+<!-- 
+    GESTION DU MENU DE GAUCHE 
+    - LISTE DES ALBUMS 
+    OU
+    - DE L'ALBUM ET DE SES SOUS-DOSSIERS
+-->
+
+{{if $beedir.Name}}
+<!-- menu de l'album et de ses sous-dossiers -->
+<div id="menu" class="ui left fixed vertical menu">
+    <a href="/" class="item"><i class="home icon"></i>Retour aux albums
+    </a>
+    {{if not $beedir.ParentID}}
+    <a href="/folder/{{$beedir.ID}}" class="active orange item" data-bdir="{{$parent.ID}}">
+        <i class="photo video symbol icon"></i>{{$beedir.Name}} <span class="ui small text">({{$beedir.Count}}/{{$beedir.CountAlbum}})</span>
+    </a>
+    {{end}}
+    {{if or $beedir.WithChildren $beedir.ParentID}}
+    {{if $beedir.ParentID}}
+    <a href="/folder/{{$parent.ID}}" class="droppable item" data-bdir="{{$parent.ID}}"><i
+            class="photo video symbol icon"></i>{{$parent.Name}} <span class="ui small text">({{$beedir.Count}}/{{$parent.CountAlbum}})</span>
+    </a>
+    {{end}}
+    <!-- sous-dossiers enfants -->
+    {{ range $i, $bdir := $config.BeeDirs}}
+    {{ if ne $bdir.ParentID "" }}
+    {{ if eq $bdir.ParentID $beedir.ID}}
+    <a href="/folder/{{$bdir.ID}}" class="droppable {{if not $bdir.Count}}disabled{{end}} item" data-bdir="{{$bdir.ID}}">
+        <i class="folder outline icon"></i>{{$bdir.Name}} <span class="ui small text">({{$bdir.Count}})</span>
+    </a>
+    {{end}}
+    {{ if eq $bdir.ParentID $parent.ID}}
+    {{if eq $bdir.ID $beedir.ID}}
+    <a href="/folder/{{$bdir.ID}}" class="active orange item" data-bdir="{{$bdir.ID}}">
+        <i class="folder open outline icon"></i>{{$bdir.Name}} <span class="ui small text">({{$bdir.Count}})</span>
+    </a>
+    {{else}}
+    <a href="/folder/{{$bdir.ID}}" class="droppable {{if not $bdir.Count}}disabled{{end}} item" data-bdir="{{$bdir.ID}}">
+        <i class="folder outline icon"></i>{{$bdir.Name}} <span class="ui small text">({{$bdir.Count}})</span>
+    </a>
+    {{end}}
+    {{end}}
+    {{end}}
+    {{end}}
+    {{end}}
+    {{else}}
+    <!-- menu des albums -->
+    <div id="menu" class="ui left fixed vertical menu">
+        <div class="active item">
+            <div class="content">
+                <div class="header">
+                    Les albums
+                </div>
+            </div>
+        </div>
+        {{ range $beedir := $config.BeeDirs }}
+        {{if eq $beedir.ParentID ""}}
+        <a class="item" href="/folder/{{$beedir.ID}}">
+            <i class="photo video symbol icon"></i> {{$beedir.Name}} <span
+                class="ui small text">({{$beedir.CountAlbum}})</span>
+        </a>
+        {{end}}
+        {{end}}
+    </div>
+    {{end}}
+</div>
