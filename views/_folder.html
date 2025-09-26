@@ -1,10 +1,10 @@
-{{ $config := .config}}
-{{ $parent := .parent}}
-{{ $beedir := .beedir}}
-{{ $htagid := .htagid}}
-{{ $composter := .composter}}
+{{$config := .config}}
+{{$parent := .parent}}
+{{$beedir := .beedir}}
+{{$htagid := .htagid}}
+{{$is_admin := .is_admin}}
+{{$composter := .composter}}
 <input type="hidden" id="bee_view" value="folder">
-<!-- <div class="ui label">parent.ID {{$parent.ID}}, beedir.ID {{$beedir.ID}}, htagid {{$htagid}}</div> -->
 <div style="margin: 1em">
     {{template "_flash.html" .}}
     <!-- liste des étiquettes hashtags -->
@@ -29,7 +29,7 @@
         {{ if BeeIN $beefile.Keywords $htagid}}
         {{ if $beefile.IsImage }}
         <div class="grey grid-item" style="margin: 0.5em">
-            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card bee-press draggable" data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}"
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}" data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}"
                 data-path="{{$beefile.Path}}" data-base="{{$beefile.Base}}" style="padding: 0.5em;">
                 <!-- nom du dossier si htag -->
                 {{ if $htagid }}
@@ -50,7 +50,7 @@
                         data-lightbox="roadtrip"><img src="{{$beefile.UrlThumb}}?{{$composter}}"></div>
                 </div>
                 <!-- attributs de la diapo -->
-                <div class="content bee-meta" style="padding: 0.3em 0 0 0;min-height: 2em;"
+                <div class="content {{if $is_admin}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"
                     title="Clic pour modifier légende et étiquettes" data-url="/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <div class="description">
                         <!-- description -->

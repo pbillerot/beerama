@@ -26,4 +26,6 @@ func init() {
 	web.Router("/rmdir/:beedirid", &controllers.MainController{}, "post:Rmdir")
 	web.Router("/dragdrop/:beedirid", &controllers.MainController{}, "post:DragDrop")
 
+	web.Router("/admin", &controllers.MainController{}, "get:Admin")
+
 }

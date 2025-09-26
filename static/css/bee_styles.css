@@ -10,6 +10,10 @@ body {
     background-color: whitesmoke;
 }
 
+.ui.menu.item.active {
+background-color: orange;
+}
+
 #container {
     margin-left: 210px;
     z-index: -1;

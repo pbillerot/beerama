@@ -28,10 +28,17 @@ func (c *MainController) Prepare() {
 
 	// Initialisation des données de la session
 	c.Data["sessionid"] = c.Ctx.GetCookie("beegosessionID")
-	if c.GetSession("folder") == nil {
-		c.Data["folder"] = "/"
+
+	// admin or not admin
+	if boolValue, ok := c.GetSession("is_admin").(bool); ok {
+		if boolValue {
+			c.Data["is_admin"] = true
+		} else {
+			// is admin ko
+			c.Data["is_admin"] = false
+		}
 	} else {
-		c.Data["folder"] = c.GetSession("folder").(string)
+		c.Data["is_admin"] = false
 	}
 
 	// XSRF protection des formulaires

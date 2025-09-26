@@ -12,7 +12,7 @@ $(document).ready(function () {
   }); // glisser
   $(".droppable").droppable({
     classes: {
-      "ui-droppable-active": "teal",
+      "ui-droppable-active": "",
       "ui-droppable-hover": "active"
     },
     drop: function (event, ui) {
@@ -473,34 +473,34 @@ $(document).ready(function () {
   })
 
   // chargement de toutes les images avant de lancer Masonry
-  Promise.all(Array.from(document.images).filter(img => !img.complete).map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
-    var $grid = $('.grid').masonry({
-      itemSelector: '.grid-item'
-      // horizontalOrder: true
-    });
-    $grid.masonry();
-    // positionnement sur la dernière carte sélectionnée
-    // sélection clic sur metadata
-    if ($bee_view && $bee_view.length > 0) {
-      if (Cookies.get($bee_view)) {
-        var $anchor = $('#' + Cookies.get($bee_view));
-        if ($anchor.length) {
-          $('html, body').animate({
-            scrollTop: $anchor.offset().top - 100
-          }, 1000);
-          // encadremant de la diapo
-          $anchor.addClass("bee-card-anchor");
-          // $anchor.css("border", "3px");
+  Promise.all(Array.from(document.images)
+    .filter(img => !img.complete)
+    .map(img => new Promise(resolve => { img.onload = img.onerror = resolve; }))).then(() => {
+      var $grid = $('.grid').masonry({
+        itemSelector: '.grid-item'
+        // horizontalOrder: true
+      });
+      $grid.masonry();
+      // positionnement sur la dernière carte sélectionnée
+      // sélection clic sur metadata
+      if ($bee_view && $bee_view.length > 0) {
+        if (Cookies.get($bee_view)) {
+          var $anchor = $('#' + Cookies.get($bee_view));
+          if ($anchor.length) {
+            $('html, body').animate({
+              scrollTop: $anchor.offset().top - 100
+            }, 1000);
+            // encadremant de la diapo
+            $anchor.addClass("bee-card-anchor");
+            // $anchor.css("border", "3px");
+            // positionnement sur le menu sélectionné
+            $('#menu').animate({
+              scrollTop: $('.active').offset().top - 100
+            }, 1000);
+          }
         }
-      }
-    };
-    // positionnement sur le menu sélectionné
-    $('#menu').animate({
-      scrollTop: $('.active').offset().top - 100
-    }, 1000);
-
-  });
-
+      };
+    });
 });
 
 /**

@@ -5,14 +5,84 @@
 {{ $config := .config}}
 {{ $parent := .parent}}
 {{ $beedir := .beedir}}
+{{$is_admin := .is_admin}}
 
 <body>
     <!-- MENU HORIZONTAL FIXED -->
     <div class="ui grey inverted top fixed borderless large menu navbar">
-        <div class="ui item">
-            <a href="/" class="ui mini image">
-                <img src="{{.config.Icon}}" />
-            </a>
+        <div class="ui simple active dropdown very long item">
+            <div class="ui mini image">
+                <img src="{{.config.Icon}}">
+            </div>
+            <div class="menu">
+                {{if $beedir.Name}}
+                <a href="/" class="item">                   
+                    <div class="content">
+                        <div class="header">
+                            <i class="arrow left icon"></i>
+                            Retour aux albums
+                        </div>
+                    </div>
+                </a>
+                {{if not $beedir.ParentID}}
+                <a href="/folder/{{$beedir.ID}}" class="orange item" data-bdir="{{$parent.ID}}">
+                    <i class="photo video symbol icon"></i>{{$beedir.Name}} <span
+                        class="ui small text">({{$beedir.Count}}/{{$beedir.CountAlbum}})</span>
+                </a>
+                {{end}}
+                {{if or $beedir.WithChildren $beedir.ParentID}}
+                {{if $beedir.ParentID}}
+                <a href="/folder/{{$parent.ID}}" class="droppable item" data-bdir="{{$parent.ID}}"><i
+                        class="photo video symbol icon"></i>{{$parent.Name}} <span
+                        class="ui small text">({{$beedir.Count}}/{{$parent.CountAlbum}})</span>
+                </a>
+                {{end}}
+                <!-- sous-dossiers enfants -->
+                {{ range $i, $bdir := $config.BeeDirs}}
+                {{ if ne $bdir.ParentID "" }}
+                {{ if eq $bdir.ParentID $beedir.ID}}
+                <a href="/folder/{{$bdir.ID}}" class="droppable {{if not $bdir.Count}}disabled{{end}} item"
+                    data-bdir="{{$bdir.ID}}">
+                    <i class="folder outline icon"></i>{{$bdir.Name}} <span
+                        class="ui small text">({{$bdir.Count}})</span>
+                </a>
+                {{end}}
+                {{ if eq $bdir.ParentID $parent.ID}}
+                {{if eq $bdir.ID $beedir.ID}}
+                <a href="/folder/{{$bdir.ID}}" class="orange item" data-bdir="{{$bdir.ID}}">
+                    <i class="folder open outline icon"></i>{{$bdir.Name}} <span
+                        class="ui small text">({{$bdir.Count}})</span>
+                </a>
+                {{else}}
+                <a href="/folder/{{$bdir.ID}}" class="droppable {{if not $bdir.Count}}disabled{{end}} item"
+                    data-bdir="{{$bdir.ID}}">
+                    <i class="folder outline icon"></i>{{$bdir.Name}} <span
+                        class="ui small text">({{$bdir.Count}})</span>
+                </a>
+                {{end}}
+                {{end}}
+                {{end}}
+                {{end}}
+                {{end}}
+                {{else}}
+                <!-- menu des albums -->
+                <div class="active item">
+                    <div class="content">
+                        <div class="header">
+                            Les albums
+                        </div>
+                    </div>
+                </div>
+                {{ range $beedir := $config.BeeDirs }}
+                {{if eq $beedir.ParentID ""}}
+                <a class="item" href="/folder/{{$beedir.ID}}">
+                    <i class="photo video symbol icon"></i> {{$beedir.Name}} <span
+                        class="ui small text">({{$beedir.CountAlbum}})</span>
+                </a>
+                {{end}}
+                {{end}}
+                {{end}}
+            </div>
         </div>
 
         {{ if eq $beedir.Name ""}}
@@ -49,7 +119,8 @@
                     </div>
                 </div>
             </div>
-            {{ if ne $beedir.Name ""}}
+            {{ if and (ne $beedir.Name "")}}
+            {{if $is_admin}}
             <div class="item">
                 <div class="ui basic orange icon button bee-modal-upload" title="Déposer une photo dans l'album..."
                     data-action="/upload/{{$beedir.ID}}">
@@ -57,17 +128,30 @@
                 </div>
             </div>
             {{end}}
+            {{end}}
             <div class="ui dropdown item bee-press-hidden-mobile">
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
                     {{ if eq $beedir.Name ""}}
+                    <a class="ui icon item" href="/admin">
+                        {{if $is_admin }}
+                        <i class="icon edit outline"></i>
+                        {{else}}
+                        <i class="icon eye outline"></i>
+                        {{end}}
+                        Mode Lecture/Édition
+                    </a>
+                    {{if $is_admin}}
+                    <div class="divider"></div>
                     <div class="ui icon item bee-modal-new" title="Créer un nouvel album" data-action="/mkdir">
                         <i class="icon folder plus"></i>Créer un nouvel album...
                     </div>
                     <a class="ui icon item bee-nag" href="/reload">
                         <i class="refresh icon"></i>Recharger tous les albums
                     </a>
+                    {{end}}
                     {{else}}
+                    {{if $is_admin}}
                     {{ if eq $beedir.ParentID ""}}
                     <div class="ui icon item bee-modal-new" title="Créer un sous-dossier"
                         data-action="/mkdir/{{$beedir.ID}}">
@@ -102,12 +186,13 @@
                         <i class="refresh icon"></i>Recharger les images de l'album
                     </a>
                     {{end}}
+                    {{end}}
                 </div>
             </div>
         </div>
         <!-- end right menu -->
     </div>
-    {{template "_menu.html" .}}
+    <!-- template "_menu.html" . -->
     <!-- MAIN -->
     <main>
         <div class="ui orange fixed nag" id="bee-nag">
