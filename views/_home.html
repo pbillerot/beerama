@@ -1,8 +1,20 @@
-{{ $config := .config}}
 <div class1="ui segment" style="margin: 2em">
     {{template "_flash.html" .}}
-    <div class="ui compact clearing colored orange segment">
-        <img class="ui centered big image" src="/static/img/beerama2.png">
+    <div class="ui cards">
+        <div class="ui centered card bee-width-xxl">
+            <div class="image" href="#">
+                <img src="/static/img/beerama2.png">
+            </div>
+            <div class="content">
+                <div class="meta">
+                    <div class="ui floated right image label" href="{{.config.Github}}" target="_blank"
+                        title="Voir les sources de l'application">
+                        <i class="github icon"></i>
+                        {{.config.AppName}}
+                        <div class="detail">{{.config.Version}}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </div>

@@ -29,6 +29,35 @@ background-color: orange;
     overflow-y: scroll;
 }
 
+.ui.cards>.bee-width-s {
+    width: 150px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-m {
+    width: 250px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-l {
+    width: 400px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-xl {
+    width: 550px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-xxl {
+    width: 665px;
+    max-width: 100%;
+}
+
+.ui.cards>.bee-width-max {
+    width: 99%;
+}
+
 /* TOP MENU */
 .ui.menu .item img.logo {
     margin-right: 1.5em;

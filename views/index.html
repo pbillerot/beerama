@@ -137,22 +137,9 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
-        <div {{if $is_admin}}id="container"{{end}}>
+        <div {{if $is_admin}}id="container" {{end}}>
             {{if eq $beedir.Name ""}}
             {{template "_home.html" .}}
-            <h2>&nbsp;</h2>
-            <div class="ui container">
-                <a class="ui right floated image label" href="{{.config.Github}}" target="_blank"
-                    title="Voir les sources de l'application">
-                    <i class="github icon"></i>
-                    {{.config.AppName}}
-                    <div class="detail">{{.config.Version}}</div>
-                </a>
-                <!-- <a class="ui right floated image label" href="{{.config.Help}}" target="_blank">
-                <i class="info circle icon"></i>
-                Guide d'utilisation de Beerama
-            </a> -->
-            </div>
             {{else}}
             {{template "_folder.html" .}}
             {{end}}

@@ -2,12 +2,11 @@
 # CHANGELOG
 
 ### À venir :
-> par défaut menu gauche classique
-> menu.htm commun au classique & fixed
-> menu fixé is_admin - #container margin-left 210px
-> mode lecture par défaut, mode édition dans menu de droite
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
+
+1.1.5 du 29 sept. 2025
+- `changed` page d'accueil image centrée
 
 1.1.4 du 27 sept. 2025
 - `changed` menu fixe is_admin
