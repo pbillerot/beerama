@@ -15,6 +15,7 @@ import (
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/nfnt/resize"
+	"github.com/pbillerot/beerama/shutil"
 )
 
 // RestoreOriginal
@@ -216,20 +217,30 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 }
 
 // DeleteImage
-// backup dans dossier des originals (une seule fois)
+// backup dans dossier corbeille
 // suppression du fichier image
-// mise à jour du beefiles du dossier source
 func (beeFile *BeeFile) DeleteImage(beeDir *BeeDir) (err error) {
 	// backup
-	err = beeFile.BackupImage()
+	err = beeFile.TrashImage()
 	if err != nil {
 		return err
 	}
-	// delete
+	// suppression image
 	err = os.RemoveAll(beeFile.Path)
 	if err != nil {
 		return
 	}
+	// suppression thumbnail
+	err = os.RemoveAll(beeFile.Thumb)
+	if err != nil {
+		return
+	}
+	// suppression original
+	err = os.RemoveAll(beeFile.Original)
+	if err != nil {
+		return
+	}
+
 	// suppression du beeFile de beeDir.BeeFiles
 	// recherche de l'indice dans le tableau
 	for index, file := range beeDir.BeeFiles {
@@ -239,6 +250,26 @@ func (beeFile *BeeFile) DeleteImage(beeDir *BeeDir) (err error) {
 		}
 	}
 	return nil
+}
+
+// Suppression d'une image (copie dans la corbeille)
+func (beeFile *BeeFile) TrashImage() error {
+
+	// calcul du répertoire destination
+	dir := Config.Trash + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
+	dest := dir + beeFile.Base
+	perm := os.FileMode(0755)
+
+	// création des répertoires intermédiaires
+	err := os.MkdirAll(dir, perm)
+	if err != nil {
+		return err
+	}
+
+	// copie dans la corbaille
+	err = shutil.CopyFile(beeFile.Path, dest, false)
+
+	return err
 }
 
 // BackupImage

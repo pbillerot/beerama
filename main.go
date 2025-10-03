@@ -49,6 +49,9 @@ func init() {
 	if val, ok := config.String("original"); ok == nil {
 		models.Config.Original = val
 	}
+	if val, ok := config.String("trash"); ok == nil {
+		models.Config.Trash = val
+	}
 	if val, ok := config.String("thumbnail"); ok == nil {
 		models.Config.Thumbnail = val
 	}

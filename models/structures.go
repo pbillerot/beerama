@@ -18,6 +18,7 @@ type BeeConfig struct {
 	HelpEditor  string
 	Racine      string // chemin du répertoire racine
 	Original    string // chemin du répertoire des originaux
+	Trash       string // chemin de la corbeille
 	Thumbnail   string // chemin du répertoire racine des miniatures
 	Width       uint   // largeur de la vignette
 	Height      uint   // hauteur de la vignette

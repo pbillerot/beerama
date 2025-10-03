@@ -5,6 +5,9 @@
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
 
+1.2.0 du 3 oct. 2025
+- `added` répertoire corbeille pour recevoir les images suprimmées
+
 1.1.5 du 29 sept. 2025
 - `changed` page d'accueil image centrée
 
