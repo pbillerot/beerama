@@ -55,6 +55,9 @@ func init() {
 	if val, ok := config.String("thumbnail"); ok == nil {
 		models.Config.Thumbnail = val
 	}
+	if val, ok := config.String("index"); ok == nil {
+		models.Config.IndexDirs = val
+	}
 	if val, ok := config.Int("width"); ok == nil {
 		models.Config.Width = uint(val)
 	}

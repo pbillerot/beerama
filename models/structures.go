@@ -16,14 +16,15 @@ type BeeConfig struct {
 	Github      string
 	Help        string
 	HelpEditor  string
-	Racine      string // chemin du répertoire racine
-	Original    string // chemin du répertoire des originaux
-	Trash       string // chemin de la corbeille
-	Thumbnail   string // chemin du répertoire racine des miniatures
-	Width       uint   // largeur de la vignette
-	Height      uint   // hauteur de la vignette
-	// Liste des BeeDir trouvés dans app.conf.beedir
-	BeeDirs []*BeeDir
+	Racine      string    // chemin du répertoire racine
+	Original    string    // chemin du répertoire des originaux
+	Trash       string    // chemin de la corbeille
+	Thumbnail   string    // chemin du répertoire racine des miniatures
+	Width       uint      // largeur de la vignette
+	Height      uint      // hauteur de la vignette
+	BeeDirs     []*BeeDir // Liste des BeeDir trouvés dans app.conf.beedir
+	IndexDirs   string    // répertoire des index des mots fulltext
+	Index       []byte    // index des mots full text
 }
 
 // Bee Context webapp courante dans la session

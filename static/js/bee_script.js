@@ -227,7 +227,7 @@ $(document).ready(function () {
     var $modal = $('#bee-modal-move')
     // titre
     $modal.find('.bee-modal-title').html($(this).attr('title'));
-    var $form = $modal.find('form');
+    var $form = $modal.find('form');bee-input-search
     // valorisation de paths et bases
     $selected = getSelectedPathHtml();
     // Le champ input des fichiers sources
@@ -494,13 +494,60 @@ $(document).ready(function () {
             $anchor.addClass("bee-card-anchor");
             // $anchor.css("border", "3px");
             // positionnement sur le menu sélectionné
-            $('#menu').animate({
-              scrollTop: $('.active').offset().top - 100
-            }, 1000);
+            if ($('.active').length != 0) {
+              $('#menu').animate({
+                scrollTop: $('.active').offset().top - 100
+              }, 1000);
+            }
           }
         }
       };
     });
+
+  // RECHERCHE 
+  // Ouvrir la recherche 
+  $('.bee-search-active').on('click', function (event) {
+    var $content = $(this).closest('.bee-search-div');
+    $content.find('.bee-search').show();
+    $content.find('.bee-search-active').hide();
+    $content.find('.header').hide();
+    $content.find('.meta').hide();
+    $content.find('input').focus();
+    event.preventDefault();
+  });
+  // Fermer la recherche
+  $('.bee-search-close').on('click', function (event) {
+    var $content = $(this).closest('.bee-search-div');
+    $content.find('.bee-search-input').val('');
+    $content.find('.bee-search').hide();
+    $content.find('.bee-search-active').show();
+    $content.find('.bee-search-go').trigger('click');
+    event.preventDefault();
+  });
+  // Validation par touche entrée
+  $('.bee-search-input').on('keypress', function (e) {
+    var $content = $(this).closest('.bee-search-div');
+    if (e.which == 13) {
+      $content.find('.bee-search-go').trigger('click');
+    }
+  });
+  // Envoi de la recherche au serveur
+  $('.bee-search-go').on('click', function (event) {
+    var $content = $(this).closest('.bee-search-div');
+    var $form = $content.find('form');
+    $form.submit()
+    event.preventDefault();
+  });
+  // Boucle pour faire apparaître les champs de recherche avec une valeur
+  $('.bee-search-input').each(function (index) {
+    var $content = $(this).closest('.bee-search-div');
+    if ($(this).val().length > 0) {
+      // backup search dans bee-search-input-1 afin de traiter l'abandon d'une recherche
+      $content.find('.bee-search-input-1').val($(this).val());
+      $content.find('.bee-search-active').trigger('click');
+    }
+  });
+
 });
 
 /**

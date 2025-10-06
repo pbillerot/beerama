@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/barasher/go-exiftool v1.10.0
 	github.com/beego/beego/v2 v2.3.8
+	github.com/jbarham/cdb v0.0.0-20200301055225-9d6f6caadef0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/smartystreets/goconvey v1.8.1
 )

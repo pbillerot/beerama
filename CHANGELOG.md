@@ -2,8 +2,13 @@
 # CHANGELOG
 
 ### À venir :
+> lightbox plein écran https://fslightbox.com/
+- echap sur l'éditeur fait <- Retour
 - intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
+
+1.3.0 du 6 oct. 2025
+- `added` moteur de recherche dans commentaire htag et appareil https://github.com/bradleypeabody/fulltext
 
 1.2.0 du 3 oct. 2025
 - `added` répertoire corbeille pour recevoir les images suprimmées

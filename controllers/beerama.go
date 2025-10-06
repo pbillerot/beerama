@@ -4,22 +4,26 @@ import (
 	"errors"
 	"io"
 	"os"
+	"slices"
 	"sort"
 	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
 
 	beego "github.com/beego/beego/v2/server/web"
+	"github.com/pbillerot/beerama/fulltext"
 	"github.com/pbillerot/beerama/models"
 	"github.com/pbillerot/beerama/shutil"
 )
 
-// Main as get and Post
+// Main as get and Post /
 func (c *MainController) Main() {
 
 	beego.ReadFromRequest(&c.Controller)
 
 	c.Data["beedir"] = models.BeeDir{}
+	c.Data["beefiles"] = ""
+	c.Data["htagid"] = ""
 
 	beego.ReadFromRequest(&c.Controller)
 
@@ -30,8 +34,20 @@ func (c *MainController) Main() {
 func (c *MainController) Folder() {
 
 	beeDir := models.GetBeeDir(c.Ctx.Input.Param(":beedirid"))
+
+	// Construction de la liste des beefiles
+	beeFiles := []models.BeeFile{}
+	for _, bfile := range beeDir.BeeFiles {
+		beeFiles = append(beeFiles, *bfile)
+	}
+	// tri des beefiles
+	sort.Slice(beeFiles, func(i, j int) bool {
+		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
+	})
+
 	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
 	c.Data["beedir"] = &beeDir
+	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = ""
 
 	// Mémorisation du dernier appel
@@ -47,20 +63,27 @@ func (c *MainController) FolderHtag() {
 
 	beeDir := models.GetBeeDir(c.Ctx.Input.Param(":beedirid"))
 	htagid := c.Ctx.Input.Param(":htagid")
-	fusion := *beeDir // clonage
-	// fusion des beefiles de l'album et des sous-dossiers
+
+	// Construction de la liste des beefiles
+	// album et sous-dossiers concernés par le htag
+	beeFiles := []models.BeeFile{}
 	for _, bdir := range models.Config.BeeDirs {
-		if bdir.ParentID == beeDir.ID {
-			fusion.BeeFiles = append(fusion.BeeFiles, bdir.BeeFiles...)
+		if bdir.ParentID == beeDir.ID || bdir.ID == beeDir.ID {
+			for _, bfile := range bdir.BeeFiles {
+				if slices.Contains(bfile.Keywords, htagid) {
+					beeFiles = append(beeFiles, *bfile)
+				}
+			}
 		}
 	}
 	// tri des beefiles
-	sort.Slice(fusion.BeeFiles, func(i, j int) bool {
-		return fusion.BeeFiles[i].DateOriginal < fusion.BeeFiles[j].DateOriginal
+	sort.Slice(beeFiles, func(i, j int) bool {
+		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
 
 	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
-	c.Data["beedir"] = &fusion
+	c.Data["beedir"] = &beeDir
+	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = htagid
 
 	c.SetSession("folder", c.Ctx.Request.RequestURI)
@@ -120,12 +143,15 @@ func (c *MainController) Meta() {
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
 		beeDir.UpdateBeeDir()
+		// réindexation des beefiles
+		models.Config.IndexAllBeefiles()
 	}
 
 	// Remplissage du contexte pour le template
 	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
+	c.Data["htagid"] = ""
 
 	c.TplName = "meta.html"
 }
@@ -164,6 +190,10 @@ func (c *MainController) Restore() {
 		beeFile.RestoreOriginal()
 	}
 	beeDir.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, "/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
@@ -203,6 +233,9 @@ func (c *MainController) Upload() {
 	}
 	beeDir.UpdateBeeDir()
 
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	return
 Erreur:
@@ -233,6 +266,10 @@ func (c *MainController) FileRm() {
 		}
 	}
 	beeDir.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
@@ -270,6 +307,10 @@ func (c *MainController) FolderRename() {
 	}
 	// Rechargement de albums
 	beeDir.LoadBeeFiles(0)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
@@ -307,6 +348,10 @@ func (c *MainController) Rmdir() {
 		c.Ctx.Redirect(302, "/")
 	}
 	models.Config.RemoveFolder(beedir)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, "/")
 }
 
@@ -316,6 +361,10 @@ func (c *MainController) ReloadAll() {
 	beego.ReadFromRequest(&c.Controller)
 
 	models.LoadBeeDirs()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, "/")
 
 }
@@ -327,6 +376,10 @@ func (c *MainController) Reload() {
 	beego.ReadFromRequest(&c.Controller)
 
 	beeDir.LoadBeeFiles(0)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 
 }
@@ -369,6 +422,10 @@ func (c *MainController) Duplicate() {
 		}
 	}
 	beeDir.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 
 }
@@ -409,6 +466,10 @@ func (c *MainController) FileCopy() {
 		}
 	}
 	beeDirDest.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	return
 Erreur:
@@ -455,6 +516,10 @@ func (c *MainController) FileMove() {
 	}
 	beeDir.UpdateBeeDir()
 	beeDirDest.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	return
 Erreur:
@@ -517,10 +582,72 @@ func (c *MainController) DragDrop() {
 
 	beeDirDest.UpdateBeeDir()
 	beeDirSrc.UpdateBeeDir()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
-// Mode Administration des albume
+// Search
+func (c *MainController) Search() {
+	beeDir := models.GetBeeDir(c.Ctx.Input.Param(":beedirid"))
+
+	search := c.GetString("search")
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	if len(search) == 0 {
+		c.DelSession("search")
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+
+	s, err := fulltext.NewSearcher(models.Config.IndexDirs + "/idxout")
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Recherche %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	defer s.Close()
+
+	// recherche des items dans l'index
+	// et création d'un tableau des beefiles concernés
+	sr, err := s.SimpleSearch(search, 20)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Recherche %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+
+	beeFiles := []models.BeeFile{}
+	for _, item := range sr.Items {
+		dirid, fileid, found := strings.Cut(string(item.Id), "_")
+		if found {
+			beeFile := models.GetBeeFile(dirid, fileid)
+			beeFiles = append(beeFiles, *beeFile)
+		}
+	}
+
+	// tri des beefiles
+	sort.Slice(beeFiles, func(i, j int) bool {
+		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
+	})
+
+	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
+	c.Data["beedir"] = &beeDir
+	c.Data["beefiles"] = &beeFiles
+	c.Data["search"] = search
+	c.Data["htagid"] = ""
+
+	// Mémorisation dans la session
+	c.SetSession("search", search)
+
+	c.TplName = "index.html"
+}
+
+// Mode Administration des albums
 func (c *MainController) Admin() {
 
 	beego.ReadFromRequest(&c.Controller)

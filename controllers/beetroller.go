@@ -29,6 +29,13 @@ func (c *MainController) Prepare() {
 	// Initialisation des données de la session
 	c.Data["sessionid"] = c.Ctx.GetCookie("beegosessionID")
 
+	// Recherce en cours
+	if search, ok := c.GetSession("search").(string); ok {
+		c.Data["search"] = search
+	} else {
+		c.Data["search"] = ""
+	}
+
 	// admin or not admin
 	if boolValue, ok := c.GetSession("is_admin").(bool); ok {
 		if boolValue {

@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/pbillerot/beerama/fulltext"
 	"github.com/pbillerot/beerama/shutil"
 )
 
@@ -68,7 +69,51 @@ func LoadBeeDirs() error {
 		}
 		beeDir.UpdateBeeDir()
 	}
+	err = Config.IndexAllBeefiles()
+	return err
+}
 
+// IndexAllBeefiles pour tous les albums
+func (config *BeeConfig) IndexAllBeefiles() error {
+
+	// create new index with temp dir (usually "" is fine)
+	idx, err := fulltext.NewIndexer(string(config.IndexDirs))
+	if err != nil {
+		return err
+	}
+	defer idx.Close()
+
+	// indexation par le moteur fulltext intégré dans les sources
+	// https://github.com/bradleypeabody/fulltext
+	for _, bdir := range config.BeeDirs {
+
+		for _, bfile := range bdir.BeeFiles {
+			// provide stop words if desired
+			idx.StopWordCheck = fulltext.FrenchStopWordChecker
+
+			// for each document you want to add, you do something like this:
+			text := strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Base), "  ", " ")
+			doc := fulltext.IndexDoc{
+				Id:         []byte(bdir.ID + "_" + bfile.ID), // unique identifier (the path to a webpage works...)
+				StoreValue: []byte(text),                     // bytes you want to be able to retrieve from search results
+				IndexValue: []byte(config.Index),             // bytes you want to be split into words and indexed
+			}
+			logs.Info(string(doc.Id), string(doc.IndexValue), string(doc.StoreValue))
+			idx.AddDoc(doc) // add it
+		}
+
+	}
+	// when done, write out to final index
+	f, err := os.Create(config.IndexDirs + "/idxout")
+	if err != nil {
+		return err
+	}
+
+	err = idx.FinalizeAndWrite(f)
+	if err != nil {
+		return err
+	}
+	logs.Info("Images", "indexées")
 	return err
 }
 
@@ -196,6 +241,7 @@ func (beeDir *BeeDir) UpdateBeeDir() {
 	sort.Slice(beeDir.BeeFiles, func(i, j int) bool {
 		return beeDir.BeeFiles[i].DateOriginal < beeDir.BeeFiles[j].DateOriginal
 	})
+
 }
 
 // RenameBeeDir - beeDir.Name Path Dir Original Thumb UrlImage UrlThumb
@@ -340,9 +386,13 @@ func GetFirstBeeDir() *BeeDir {
 func GetBeeFile(beedirid, beefileid string) *BeeFile {
 	for _, dir := range Config.BeeDirs {
 		if beedirid == dir.ID {
-			for _, file := range dir.BeeFiles {
-				if beefileid == file.ID {
-					return file
+			for _, bfile := range dir.BeeFiles {
+				switch beefileid {
+				case bfile.ID:
+					return bfile
+				case beedirid + "_" + bfile.ID:
+					// l'id d'un beefile est identifié par la concaténation d'index du fulltext
+					return bfile
 				}
 			}
 		}

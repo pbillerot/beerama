@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
 {{template "_head.html" .}}
-{{ $config := .config}}
-{{ $parent := .parent}}
-{{ $beedir := .beedir}}
+{{$config := .config}}
+{{$parent := .parent}}
+{{$beedir := .beedir}}
+{{$search := .search}}
 {{$is_admin := .is_admin}}
-
 <body>
     <!-- MENU HORIZONTAL FIXED -->
     <div class="ui grey inverted top fixed borderless large menu navbar">
@@ -30,33 +30,51 @@
         {{end}}
         <!-- RIGHT MENU -->
         <div class="right menu">
+            {{ if ne $beedir.Name ""}}
             <div class="item">
-                <div class="ui basic orange large buttons bee-press-visible">
-                    <div class="ui icon button" id="bee-selector" title="Nombre de sélection">
+                <div class="ui small icon bee-search-div">
+                    <i class="search link icon bee-search-active" title="Rechercher..."></i>
+                    <div style="display: none;" class="bee-search">
+                        <form class="ui tiny form" method="POST" action="/search/{{$beedir.ID}}">
+                            {{ .xsrfdata }}
+                            <div class="ui icon input">
+                                <input type="text" name="search" class="bee-search-input"
+                                    value="{{$search}}" placeholder="Recherche...">
+                                <i class="circular search link icon bee-search-go" title="Rechercher"></i>
+                            </div>
+                            <i class="close link icon bee-search-close" title="Fermer recherche"></i>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {{end}}
+            <div class="item">
+                <div class="ui compact orange large buttons bee-press-visible">
+                    <div class="ui small icon button" id="bee-selector" title="Nombre de sélection">
                         <i class="check icon"></i>
                     </div>
-                    <div class="ui icon button bee-modal-duplicate" data-action="/duplicate/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-duplicate" data-action="/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>
                     </div>
-                    <div class="ui icon button bee-modal-move" data-action="/cp/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-move" data-action="/cp/{{$beedir.ID}}"
                         title="Copier dans un autre album...">
                         <i class="copy outline icon"></i>
                     </div>
-                    <div class="ui icon button bee-modal-move" data-action="/mv/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-move" data-action="/mv/{{$beedir.ID}}"
                         title="Déplacer dans un autre album...">
                         <i class="arrow right icon"></i>
                     </div>
-                    <div class="ui icon button bee-modal-delete" data-action="/rm/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-delete" data-action="/rm/{{$beedir.ID}}"
                         title="Supprimer la diapo de l'album...">
                         <i class="trash alternate outline icon"></i>
                     </div>
                 </div>
             </div>
-            {{ if and (ne $beedir.Name "")}}
+            {{ if ne $beedir.Name ""}}
             {{if $is_admin}}
             <div class="item">
-                <div class="ui basic orange icon button bee-modal-upload" title="Déposer une photo dans l'album..."
+                <div class="ui small circular icon button bee-modal-upload bee-nag" title="Déposer une photo dans l'album..."
                     data-action="/upload/{{$beedir.ID}}">
                     <i class="plus icon"></i>
                 </div>
