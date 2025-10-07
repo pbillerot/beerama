@@ -12,7 +12,7 @@
 		<div class="ui grey inverted top fixed borderless large menu navbar">
 			<div class="header item">
 				<button class="ui labeled icon blue small button bee-confirm-close" 
-				data-url="/folder/{{$beedir.ID}}">
+				data-url="/return">
 					<i class="left arrow icon"></i>
 					Retour
 				</button>
@@ -21,7 +21,14 @@
 			<div class="right menu">
 				<div class="item">
 					<div class="ui buttons">
-						<div id="button_validate" class="ui icon red small button bee-submit-meta disabled">
+						<div id="button_validate" data-return="/return" class="ui icon red small button bee-submit-meta-retour disabled">
+							<i class="save icon"></i> Enregistrer et Retour
+						</div>
+					</div>
+				</div>
+				<div class="item">
+					<div class="ui buttons">
+						<div id="button_validate" data-return="/meta/{{$beedir.ID}}/{{$beefile.ID}}" class="ui icon red small button bee-submit-meta disabled">
 							<i class="save icon"></i> Enregistrer
 						</div>
 					</div>
@@ -42,6 +49,7 @@
 		{{template "_flash.html" .}}
 		<form id="form_meta_id" class="ui form" method="POST" action="/meta/{{$beedir.ID}}/{{$beefile.ID}}">
 			{{ .xsrfdata }}
+			<input type="hidden" name="return" value="voir bee-script">
 			<div class="ui stackable grid" style="margin: 1em;">
 				<div class="ten wide column">
 					<div class="ui attached small message">

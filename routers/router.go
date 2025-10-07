@@ -9,6 +9,7 @@ func init() {
 
 	web.Router("/", &controllers.MainController{}, "get:Main")
 	web.Router("/folder/:beedirid", &controllers.MainController{}, "get:Folder")
+	web.Router("/return", &controllers.MainController{}, "get:Return")
 	web.Router("/rename/:beedirid", &controllers.MainController{}, "post:FolderRename")
 	web.Router("/reload/", &controllers.MainController{}, "get:ReloadAll")
 	web.Router("/reload/:beedirid", &controllers.MainController{}, "get:Reload")

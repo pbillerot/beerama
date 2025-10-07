@@ -30,6 +30,16 @@ func (c *MainController) Main() {
 	c.TplName = "index.html"
 }
 
+// Return à l'url mémorisée dans la session "folder" /return
+func (c *MainController) Return() {
+	// Retour sur url
+	if url, ok := c.GetSession("folder").(string); ok {
+		c.Ctx.Redirect(302, url)
+	} else {
+		c.Ctx.Redirect(302, "/folder")
+	}
+}
+
 // Folder Sélection d'un folder à administrer /folder/:beedirid
 func (c *MainController) Folder() {
 
@@ -102,6 +112,9 @@ func (c *MainController) Meta() {
 
 	if c.Ctx.Input.Method() == "POST" {
 
+		// URL de url_return
+		url_return := c.GetString("return")
+
 		// ENREGISTREMENT DE L'IMAGE si modifiée
 		simage := c.GetString("image")
 		if len(simage) > 0 {
@@ -110,7 +123,7 @@ func (c *MainController) Meta() {
 				logs.Error(err)
 				flash.Error("Beerama.Upload %s", err)
 				flash.Store(&c.Controller)
-				c.Ctx.Redirect(302, "/meta/"+beeDir.ID+"/"+beeFile.ID)
+				c.Ctx.Redirect(302, url_return)
 			}
 		}
 
@@ -145,6 +158,7 @@ func (c *MainController) Meta() {
 		beeDir.UpdateBeeDir()
 		// réindexation des beefiles
 		models.Config.IndexAllBeefiles()
+		c.Ctx.Redirect(302, url_return)
 	}
 
 	// Remplissage du contexte pour le template
@@ -152,6 +166,11 @@ func (c *MainController) Meta() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["htagid"] = ""
+
+	// Mémorisation du dernier appel si folder
+	if strings.Contains(c.Ctx.Request.RequestURI, "/folder/") {
+		c.SetSession("folder", c.Ctx.Request.RequestURI)
+	}
 
 	c.TplName = "meta.html"
 }
@@ -641,7 +660,7 @@ func (c *MainController) Search() {
 	c.Data["search"] = search
 	c.Data["htagid"] = ""
 
-	// Mémorisation dans la session
+	// Mémorisation du texte recherché dans la session
 	c.SetSession("search", search)
 
 	c.TplName = "index.html"

@@ -3,9 +3,16 @@
 
 ### À venir :
 > lightbox plein écran https://fslightbox.com/
+> https://biati-digital.github.io/glightbox/
+> intégration draw.io
+- vider la corbeille d'un album
+- pattern de recherche
 - echap sur l'éditeur fait <- Retour
-- intégration draw.io
 - passez en mode administrateur via mot de passe dans la session
+
+1.3.1 du 7 oct. 2025
+- `added` bouton Enregistrer et Retour dans l'écran meta
+- `changed` mémorisation adresse de retour lors de l'appel de meta, pourrevir sur une page mots-clés par exemple
 
 1.3.0 du 6 oct. 2025
 - `added` moteur de recherche dans commentaire htag et appareil https://github.com/bradleypeabody/fulltext
