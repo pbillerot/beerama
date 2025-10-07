@@ -97,6 +97,9 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 
 	if contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
+		if strings.Contains(beeFile.Base, "drawio") {
+			beeFile.IsDrawio = true
+		}
 	} else if contains([]string{".conf"}, beeFile.Ext) {
 		var content []byte
 		content, err = os.ReadFile(beeFile.Path)

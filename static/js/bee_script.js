@@ -463,10 +463,10 @@ $(document).ready(function () {
       };
       // Opens the editor
       window.addEventListener('message', receive);
-      var $height = 'max';
-      var $width = 'max';
-      var $posx = '5';
-      var $posy = '5';
+      var $height = '600';
+      var $width = '1600';
+      var $posx = '200';
+      var $posy = '50';
       var $target = '_blank';
       source.drawIoWindow = window.open(url, $target, computeWindow($posx, $posy, $width, $height, false));
       // source.drawIoWindow = window.open(url);
@@ -476,6 +476,7 @@ $(document).ready(function () {
       source.drawIoWindow.focus();
     }
   });
+
   // paramètres de Lighbox
   lightbox.option({
     'fitImagesInViewport': true,

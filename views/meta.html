@@ -58,10 +58,11 @@
 						</div>
 					</div>
 					<div class="ui attached message" style="padding: 0.5em">
-						<div class="ui centered bordered fluid image bee-popup-image-editor"
+						<a class="ui centered bordered fluid image
+						{{if $beefile.IsDrawio}}bee-drawio{{else}}bee-popup-image-editor{{end}}"
 							data-src="{{$beefile.UrlImage}}">
-							<img src="{{$beefile.UrlImage}}?{{.composter}}">
-						</div>
+							<img id="bee-drawio" src="{{$beefile.UrlImage}}">
+						</a>
 						<input class="bee-onchange" type="hidden" name="image" value="">
 					</div>
 					<div class="ui attached message">

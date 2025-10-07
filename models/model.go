@@ -280,38 +280,6 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 	if err != nil {
 		return err
 	}
-	// // rename des chemins des fichiers de l'album dans beeFile
-	// for _, beeFile := range beeDir.BeeFiles {
-	// 	if beeDir.ParentID == "" {
-	// 		beeFile.Dir = Config.Racine + "/" + newName
-	// 		beeFile.Path = beeFile.Dir + "/" + beeFile.Base
-	// 		beeFile.Original = Config.Original + "/" + newName + "/" + beeFile.Base
-	// 		beeFile.Thumb = Config.Thumbnail + "/" + newName + "/th_" + beeFile.Base
-	// 		beeFile.UrlImage = "/album/" + newName + "/" + beeFile.Base
-	// 		beeFile.UrlThumb = "/thumb/" + newName + "/th_" + beeFile.Base
-	// 	} else {
-	// 		beeFile.Dir = Config.Racine + "/" + beeDir.Name + "/" + newName
-	// 		beeFile.Path = beeFile.Dir + "/" + beeDir.Name + "/" + beeFile.Base
-	// 		beeFile.Original = Config.Original + "/" + beeDir.Name + "/" + newName + "/" + beeFile.Base
-	// 		beeFile.Thumb = Config.Thumbnail + "/" + beeDir.Name + "/" + newName + "/th_" + beeFile.Base
-	// 		beeFile.UrlImage = "/album" + "/" + beeDir.Name + "/" + newName + "/" + beeFile.Base
-	// 		beeFile.UrlThumb = "/thumb" + "/" + beeDir.Name + "/" + newName + "/th_" + beeFile.Base
-	// 	}
-	// }
-	// if beeDir.WithChildren {
-	// 	for _, bdir := range Config.BeeDirs {
-	// 		if bdir.ParentID == beeDir.ID {
-	// 			for _, beeFile := range bdir.BeeFiles {
-	// 				beeFile.Dir = Config.Racine + "/" + newName + "/" + bdir.Name
-	// 				beeFile.Path = beeFile.Dir + "/" + beeFile.Base
-	// 				beeFile.Original = Config.Original + "/" + newName + "/" + bdir.Name + "/" + beeFile.Base
-	// 				beeFile.Thumb = Config.Thumbnail + "/" + newName + "/" + bdir.Name + "/th_" + beeFile.Base
-	// 				beeFile.UrlImage = "/album/" + newName + "/" + bdir.Name + "/" + beeFile.Base
-	// 				beeFile.UrlThumb = "/thumb/" + newName + "/" + bdir.Name + "/th" + beeFile.Base
-	// 			}
-	// 		}
-	// 	}
-	// }
 	// rename de beeDir
 	beeDir.Name = newName
 	beeDir.Path = pathNew
