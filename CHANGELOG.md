@@ -10,6 +10,9 @@
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
 
+1.5.1 du 9 oct. 2025
+- `fixed` changement de librairie pdf
+
 1.5.0 du 9 oct. 2025
 - `added` intégration des pdfs dans les albums
 - `changed` généralisataion de la taille du buffer de exiftool à 50M 
