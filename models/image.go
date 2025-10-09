@@ -14,9 +14,13 @@ import (
 
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/gen2brain/go-fitz"
 	"github.com/nfnt/resize"
 	"github.com/pbillerot/beerama/shutil"
 )
+
+// Exiftool
+const BUFFER_SIZE = 50 * 1024 * 1024 // 50MB
 
 // RestoreOriginal
 func (beeFile *BeeFile) RestoreOriginal() (err error) {
@@ -53,7 +57,8 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 
 	// ENREGISTREMENT DES METADATA
 	// Exiftool
-	et, err := exiftool.NewExiftool()
+	buf := make([]byte, BUFFER_SIZE)
+	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
 		return
 	}
@@ -80,8 +85,8 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 	// Exiftool
-	// https://github.com/barasher/go-exiftool/tree/master
-	et, err := exiftool.NewExiftool()
+	buf := make([]byte, BUFFER_SIZE)
+	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
 		return beeFile, err
 	}
@@ -106,6 +111,8 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
+	} else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsPdf = true
 	} else if contains([]string{".conf"}, beeFile.Ext) {
 		var content []byte
 		content, err = os.ReadFile(beeFile.Path)
@@ -182,8 +189,14 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 	dirOriginal := Config.Original + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	beeFile.Original = dirOriginal + beeFile.Base
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
-	beeFile.Thumb = dirThumb + "th_" + beeFile.Base
-	beeFile.UrlThumb = "/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
+	if beeFile.IsPdf {
+		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
+		beeFile.UrlThumb = "/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
+
+	} else {
+		beeFile.Thumb = dirThumb + "th_" + beeFile.Base
+		beeFile.UrlThumb = "/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
+	}
 
 	// ajout dans BeeFiles
 	beeFile.ID = "id" + strconv.Itoa(idstart+len(beeDir.BeeFiles)+1)
@@ -204,11 +217,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 
 // updateMeta
 func (beeFile *BeeFile) UpdateMeta() (err error) {
-	// Define a larger buffer size (e.g., 10MB)
-	const BUFFER_SIZE = 50 * 1024 * 1024 // 10MB
 	// Exiftool
-	// https://github.com/barasher/go-exiftool/tree/master
-	// 1. Create the buffer slice
 	buf := make([]byte, BUFFER_SIZE)
 	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
@@ -406,6 +415,18 @@ func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
 		img, err = png.Decode(file)
 	} else if contains([]string{".jpg", ".jpeg"}, strings.ToLower(beeFile.Ext)) {
 		img, err = jpeg.Decode(file)
+	} else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
+		// conversion de la 1ère page en image
+		doc, err := fitz.New(beeFile.Path)
+		if err != nil {
+			logs.Error("createThumbnail %s %s ", beeFile.Path, err)
+			return err
+		}
+		img, err = doc.Image(0)
+		if err != nil {
+			logs.Error("createThumbnail %s %s ", beeFile.Path, err)
+			return err
+		}
 	} else {
 		return
 	}
@@ -419,7 +440,12 @@ func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
 		return
 	}
 	// Resize the image to the specified width and height
-	thumb := resize.Thumbnail(width, height, img, resize.Lanczos3)
+	var thumb image.Image
+	if beeFile.IsPdf {
+		thumb = img
+	} else {
+		thumb = resize.Thumbnail(width, height, img, resize.Lanczos3)
+	}
 
 	out, err := os.Create(beeFile.Thumb)
 	if err != nil {

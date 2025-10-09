@@ -62,10 +62,14 @@
 					<div class="ui attached message" style="padding: 0.5em">
 						{{if $beefile.IsDrawio}}
 						<div class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
-							<img id="bee-drawio" style="cursor: pointer;" class="bee-drawio-editor"
-								src="{{.content}}">
+							<img id="bee-drawio" style="cursor: pointer;" class="bee-drawio-editor" src="{{.content}}">
 						</div>
 						<input class="bee-onchange" type="hidden" name="image" value="">
+						{{else if $beefile.IsPdf}}
+						<div class="ui centered bordered fluid image">
+							<a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank"><img
+									src="{{$beefile.UrlThumb}}?{{$composter}}"></a>
+						</div>
 						{{else}}
 						<a class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
 							<img class="bee-popup-image-editor" style="cursor: pointer;" src="{{$beefile.UrlImage}}">

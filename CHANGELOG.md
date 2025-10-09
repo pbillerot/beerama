@@ -4,12 +4,15 @@
 ### À venir :
 > lightbox plein écran https://fslightbox.com/
 > https://biati-digital.github.io/glightbox/
-> intégration draw.io
-> créer une nouvelle image
+> intégration lecteur pdf
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
+
+1.5.0 du 9 oct. 2025
+- `added` intégration des pdfs dans les albums
+- `changed` généralisataion de la taille du buffer de exiftool à 50M 
 
 1.4.0 du 9 oct. 2025
 - `added` intégration de l'éditeur de dessin drawio

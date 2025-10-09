@@ -28,7 +28,7 @@
     <div class="grid">
         {{range $ibeefile, $beefile := $beefiles }}
         {{$beedirid := $beefile.DirID}}
-        {{if $beefile.IsImage }}
+        {{if or $beefile.IsImage $beefile.IsPdf }}
         <div class="grey grid-item" style="margin: 0.5em">
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}" data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}"
                 data-path="{{$beefile.Path}}" data-base="{{$beefile.Base}}" style="padding: 0.5em;">
@@ -45,11 +45,18 @@
                 {{end}} <!--/range-->
                 {{end}} <!--/$htagid-->
                 <!-- la thumbnail de l'image -->
+                 {{if $beefile.IsPdf}}
+                <div class="ui centered image" title="{{$beefile.Base}}">
+                    <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank"                      
+                        ><img src="{{$beefile.UrlThumb}}?{{$composter}}"></a>
+                </div>
+                {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <div class="" href="{{$beefile.UrlImage}}?{{$composter}}"
                         data-title="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
                         data-lightbox="roadtrip"><img src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}"></div>
                 </div>
+                {{end}}
                 <!-- attributs de la diapo -->
                 <div class="content {{if $is_admin}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"
                     title="Clic pour modifier légende et étiquettes" data-url="/meta/{{$beedirid}}/{{$beefile.ID}}">
