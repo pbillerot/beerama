@@ -100,6 +100,12 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
+	} else if contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsImage = true
+		beeFile.IsSvg = true
+		if strings.Contains(beeFile.Base, "drawio") {
+			beeFile.IsDrawio = true
+		}
 	} else if contains([]string{".conf"}, beeFile.Ext) {
 		var content []byte
 		content, err = os.ReadFile(beeFile.Path)
@@ -198,10 +204,13 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 
 // updateMeta
 func (beeFile *BeeFile) UpdateMeta() (err error) {
-
+	// Define a larger buffer size (e.g., 10MB)
+	const BUFFER_SIZE = 50 * 1024 * 1024 // 10MB
 	// Exiftool
 	// https://github.com/barasher/go-exiftool/tree/master
-	et, err := exiftool.NewExiftool()
+	// 1. Create the buffer slice
+	buf := make([]byte, BUFFER_SIZE)
+	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
 		return err
 	}
@@ -325,18 +334,46 @@ func (beeFile *BeeFile) UpdateImage(simage string) (err error) {
 		return err
 	}
 
-	b64data := simage[strings.IndexByte(simage, ',')+1:]
-	unbased, err := base64.StdEncoding.DecodeString(b64data)
-	if err != nil {
-		return err
-	}
-	err = os.WriteFile(beeFile.Path, unbased, 0644)
-	if err != nil {
-		return err
-	}
+	if beeFile.IsSvg {
+		// decodeAndSaveSVG décode une Data URI Base64 en un fichier SVG.
+		// 1. Définir le préfixe que nous attendons pour une image SVG Base64
+		const prefix = "data:image/svg+xml;base64,"
 
-	// mise à jour de la miniature
-	err = beeFile.createThumbnail(Config.Width, Config.Height)
+		// 2. Vérifier si la chaîne commence par le préfixe attendu
+		if !strings.HasPrefix(simage, prefix) {
+			return fmt.Errorf("la chaîne Data URI n'est pas un format SVG Base64 valide : %s", simage[:20]+"...")
+		}
+
+		// 3. Extraire la partie Base64 pure (après le préfixe)
+		base64Data := simage[len(prefix):]
+
+		// 4. Décoder la chaîne Base64 en un tableau de bytes
+		svgBytes, err := base64.StdEncoding.DecodeString(base64Data)
+		if err != nil {
+			return fmt.Errorf("échec du décodage Base64 : %w", err)
+		}
+
+		// 5. Écrire les bytes (qui sont le contenu XML du SVG) dans un fichier
+		// Le mode 0644 donne au propriétaire les permissions de lecture/écriture, et lecture aux autres.
+		err = os.WriteFile(beeFile.Path, svgBytes, 0644)
+		if err != nil {
+			return fmt.Errorf("échec de l'écriture du fichier SVG : %w", err)
+		}
+	} else {
+		b64data := simage[strings.IndexByte(simage, ',')+1:]
+		unbased, err := base64.StdEncoding.DecodeString(b64data)
+		if err != nil {
+			return err
+		}
+		err = os.WriteFile(beeFile.Path, unbased, 0644)
+		if err != nil {
+			return err
+		}
+
+		// mise à jour de la miniature
+		err = beeFile.createThumbnail(Config.Width, Config.Height)
+		return err
+	}
 	return err
 }
 

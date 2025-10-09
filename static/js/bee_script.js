@@ -83,7 +83,9 @@ $(document).ready(function () {
     var $form = $('#bee-modal-new').find('form');
     $form.attr('action', $(this).data('action'));
     $('#bee-modal-new').find('.header').html($(this).attr('title'));
-    $('#bee-modal-new').find("input[name='new_name']").val('');
+    $input = $('#bee-modal-new').find("input[name='new_name']");
+    $input.attr('placeholder', $(this).data('placeholder'));
+    $input.val('');
     $('#bee-modal-new')
       .modal({
         closable: false,
@@ -222,7 +224,7 @@ $(document).ready(function () {
     var $modal = $('#bee-modal-move')
     // titre
     $modal.find('.bee-modal-title').html($(this).attr('title'));
-    var $form = $modal.find('form');bee-input-search
+    var $form = $modal.find('form'); bee - input - search
     // valorisation de paths et bases
     $selected = getSelectedPathHtml();
     // Le champ input des fichiers sources
@@ -421,7 +423,9 @@ $(document).ready(function () {
   }
 
   // APPEL DRAWIO
-  $('.bee-drawio').on('tap', function (event) {
+  $('.bee-drawio-editor').on('tap', function (event) {
+    // DiagramEditor.editElement(this);
+    // ancienne façon de faire
     var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json';
     var source = $('#bee-drawio')[0];
     // var title = source.getAttribute('title')
@@ -449,7 +453,8 @@ $(document).ready(function () {
             // Updates the data URI of the image
             source.setAttribute('src', msg.data);
             $('input[name="image"]').val(msg.data);
-            $(".bee-submit").removeClass('disabled');
+            $(".bee-submit-meta").removeClass('disabled');
+            $(".bee-submit-meta-retour").removeClass('disabled');
           }
 
           // Received if the user clicks exit or after export
@@ -463,18 +468,19 @@ $(document).ready(function () {
       };
       // Opens the editor
       window.addEventListener('message', receive);
-      var $height = '600';
-      var $width = '1600';
-      var $posx = '200';
-      var $posy = '50';
-      var $target = '_blank';
-      source.drawIoWindow = window.open(url, $target, computeWindow($posx, $posy, $width, $height, false));
-      // source.drawIoWindow = window.open(url);
+      // var $height = '900';
+      // var $width = '1400';
+      // var $posx = '100';
+      // var $posy = '50';
+      // var $target = '_blank';
+      // //source.drawIoWindow = window.open(url, $target, computeWindow($posx, $posy, $width, $height, false));
+      source.drawIoWindow = window.open(url);
     }
     else {
       // Shows existing editor window
       source.drawIoWindow.focus();
     }
+    event.preventDefault();
   });
 
   // paramètres de Lighbox

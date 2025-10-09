@@ -5,10 +5,18 @@
 > lightbox plein écran https://fslightbox.com/
 > https://biati-digital.github.io/glightbox/
 > intégration draw.io
+> créer une nouvelle image
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
+
+1.4.0 du 9 oct. 2025
+- `added` intégration de l'éditeur de dessin drawio
+- `added` menu création d'un nouveau dessin
+- `added` placeholder dans modal new
+- `fixed` retout home si pas de contexte folder
+- `fixed` augmentation du buffer des metadata
 
 1.3.1 du 7 oct. 2025
 - `added` bouton Enregistrer et Retour dans l'écran meta

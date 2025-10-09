@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"time"
 
+	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 	"github.com/pbillerot/beerama/models"
 )
@@ -29,9 +30,15 @@ func (c *MainController) Prepare() {
 	// Initialisation des données de la session
 	c.Data["sessionid"] = c.Ctx.GetCookie("beegosessionID")
 
-	// Recherce en cours
-	if search, ok := c.GetSession("search").(string); ok {
-		c.Data["search"] = search
+	// folder en cours
+	if param, ok := c.GetSession("folder").(string); ok {
+		logs.Debug("folder:", param)
+	} else {
+		c.SetSession("folder", "/")
+	}
+	// Recherche en cours
+	if param, ok := c.GetSession("search").(string); ok {
+		c.Data["search"] = param
 	} else {
 		c.Data["search"] = ""
 	}

@@ -104,6 +104,11 @@
                     {{end}}
                     {{else}}
                     {{if $is_admin}}
+                    <div class="ui icon item bee-modal-new" title="Créer un dessin..." 
+                        data-placeholder="???.drawio.png"
+                        data-action="/newdraw/{{$beedir.ID}}">
+                        <i class="draw polygon icon"></i>Créer un dessin...
+                    </div>
                     {{ if eq $beedir.ParentID ""}}
                     <div class="ui icon item bee-modal-new" title="Créer un sous-dossier"
                         data-action="/mkdir/{{$beedir.ID}}">

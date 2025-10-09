@@ -2,17 +2,17 @@
 <!DOCTYPE html>
 <html>
 {{template "_head.html" .}}
-{{ $parent := .parent}}
-{{ $beedir := .beedir}}
-{{ $beefile := .beefile}}
+{{$parent := .parent}}
+{{$beedir := .beedir}}
+{{$beefile := .beefile}}
+{{$composter := .composter}}
 
 <body>
 	<!-- MENU HORIZONTAL FIXED -->
 	<div class="ui container">
 		<div class="ui grey inverted top fixed borderless large menu navbar">
 			<div class="header item">
-				<button class="ui labeled icon blue small button bee-confirm-close" 
-				data-url="/return">
+				<button class="ui labeled icon blue small button bee-confirm-close" data-url="/return">
 					<i class="left arrow icon"></i>
 					Retour
 				</button>
@@ -21,14 +21,16 @@
 			<div class="right menu">
 				<div class="item">
 					<div class="ui buttons">
-						<div id="button_validate" data-return="/return" class="ui icon red small button bee-submit-meta-retour disabled">
+						<div id="button_validate" data-return="/return"
+							class="ui icon red small button bee-submit-meta-retour disabled">
 							<i class="save icon"></i> Enregistrer et Retour
 						</div>
 					</div>
 				</div>
 				<div class="item">
 					<div class="ui buttons">
-						<div id="button_validate" data-return="/meta/{{$beedir.ID}}/{{$beefile.ID}}" class="ui icon red small button bee-submit-meta disabled">
+						<div id="button_validate" data-return="/meta/{{$beedir.ID}}/{{$beefile.ID}}"
+							class="ui icon red small button bee-submit-meta disabled">
 							<i class="save icon"></i> Enregistrer
 						</div>
 					</div>
@@ -58,12 +60,18 @@
 						</div>
 					</div>
 					<div class="ui attached message" style="padding: 0.5em">
-						<a class="ui centered bordered fluid image
-						{{if $beefile.IsDrawio}}bee-drawio{{else}}bee-popup-image-editor{{end}}"
-							data-src="{{$beefile.UrlImage}}">
-							<img id="bee-drawio" src="{{$beefile.UrlImage}}">
+						{{if $beefile.IsDrawio}}
+						<div class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
+							<img id="bee-drawio" style="cursor: pointer;" class="bee-drawio-editor"
+								src="{{.content}}">
+						</div>
+						<input class="bee-onchange" type="hidden" name="image" value="">
+						{{else}}
+						<a class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
+							<img class="bee-popup-image-editor" style="cursor: pointer;" src="{{$beefile.UrlImage}}">
 						</a>
 						<input class="bee-onchange" type="hidden" name="image" value="">
+						{{end}}
 					</div>
 					<div class="ui attached message">
 						<div class="sub header">
@@ -135,7 +143,6 @@
 						</div>
 					</div>
 				</div>
-			</div>
 			</div>
 		</form>
 	</main>

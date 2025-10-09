@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"errors"
+	"html/template"
 	"io"
 	"os"
 	"slices"
@@ -155,6 +157,7 @@ func (c *MainController) Meta() {
 			flash.Store(&c.Controller)
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
+
 		beeDir.UpdateBeeDir()
 		// réindexation des beefiles
 		models.Config.IndexAllBeefiles()
@@ -166,6 +169,30 @@ func (c *MainController) Meta() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["htagid"] = ""
+
+	// cas des images drawio
+
+	if beeFile.IsDrawio {
+		// 1. Read the SVG file into a byte slice
+		svgBytes, err := os.ReadFile(beeFile.Path)
+		if err != nil {
+			logs.Error(err)
+			flash.Error("Beerama %s", err)
+			flash.Store(&c.Controller)
+		}
+		// 2. Base64 encode the byte slice
+		base64Encoded := base64.StdEncoding.EncodeToString(svgBytes)
+		// 3. Prepend the Data URI scheme for SVG
+		var dataURI string
+		if beeFile.IsSvg {
+			dataURI = "data:image/svg+xml;base64," + base64Encoded
+		} else {
+			dataURI = "data:image/png;base64," + base64Encoded
+		}
+		c.Data["content"] = template.URL(dataURI)
+		// png vide
+		// template.URL("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=")
+	}
 
 	// Mémorisation du dernier appel si folder
 	if strings.Contains(c.Ctx.Request.RequestURI, "/folder/") {
@@ -325,6 +352,32 @@ func (c *MainController) FolderRename() {
 		flash.Store(&c.Controller)
 	}
 	// Rechargement de albums
+	beeDir.LoadBeeFiles(0)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
+}
+
+// FolderRename
+func (c *MainController) NewDraw() {
+	beeDir := models.GetBeeDir(c.Ctx.Input.Param(":beedirid"))
+	newName := c.GetString("new_name")
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	pathSrc := "./static/img/mini.drawio.png"
+	pathDest := beeDir.Path + "/" + newName
+	// copy du fichier source dans la destination
+	err := shutil.CopyFile(pathSrc, pathDest, false)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama Mkdir %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	// Rechargement de l'album
 	beeDir.LoadBeeFiles(0)
 
 	// réindexation des beefiles

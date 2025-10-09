@@ -48,7 +48,7 @@
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <div class="" href="{{$beefile.UrlImage}}?{{$composter}}"
                         data-title="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
-                        data-lightbox="roadtrip"><img src="{{$beefile.UrlThumb}}?{{$composter}}"></div>
+                        data-lightbox="roadtrip"><img src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}"></div>
                 </div>
                 <!-- attributs de la diapo -->
                 <div class="content {{if $is_admin}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"

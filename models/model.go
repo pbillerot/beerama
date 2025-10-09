@@ -98,7 +98,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 				StoreValue: []byte(text),                     // bytes you want to be able to retrieve from search results
 				IndexValue: []byte(config.Index),             // bytes you want to be split into words and indexed
 			}
-			logs.Info(string(doc.Id), string(doc.IndexValue), string(doc.StoreValue))
+			// logs.Info(string(doc.Id), string(doc.IndexValue), string(doc.StoreValue))
 			idx.AddDoc(doc) // add it
 		}
 

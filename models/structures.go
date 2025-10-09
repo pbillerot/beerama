@@ -60,6 +60,7 @@ type BeeFile struct {
 	IsMarkdown   bool
 	IsPdf        bool
 	IsPowerpoint bool
+	IsSvg        bool
 	IsSystem     bool
 	IsText       bool
 	IsWord       bool
