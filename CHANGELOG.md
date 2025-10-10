@@ -10,6 +10,9 @@
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
 
+1.5.3 du 10 oct. 2025
+- `changed` enregistrement des keywords en string "h1, h2"
+
 1.5.2 du 10 oct. 2025
 - `changed` la librairie unipdf non libre a été changée par pdf.js (merci mozilla)
 

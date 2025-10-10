@@ -224,17 +224,36 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	}
 	defer et.Close()
 	originals := et.ExtractMetadata(beeFile.Path)
-	originals[0].SetString("Description", beeFile.Description)
+	// description
+	if originals[0].Err == nil {
+		originals[0].SetString("Description", beeFile.Description)
+	} else {
+		logs.Error(originals[0].Err)
+	}
 	// Date Time Original
-	originals[0].SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
+	if originals[0].Err == nil {
+		originals[0].SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
+	} else {
+		logs.Error(originals[0].Err)
+	}
 	// keywords
-	keywords := beeFile.Keywords
-	originals[0].SetStrings("IPTC:Keywords", keywords)
-	originals[0].SetString("IPTC:CodedCharacterSet", "UTF8")
+	if originals[0].Err == nil {
+		if beeFile.IsPdf {
+			originals[0].SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+		} else {
+			// originals[0].SetStrings("Keywords", beeFile.Keywords)
+			originals[0].SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+		}
+	} else {
+		logs.Error(originals[0].Err)
+	}
+	if originals[0].Err == nil {
+		et.WriteMetadata(originals)
+	} else {
+		logs.Error(originals[0].Err)
+	}
 
-	et.WriteMetadata(originals)
-
-	return nil
+	return originals[0].Err
 }
 
 // DeleteImage
