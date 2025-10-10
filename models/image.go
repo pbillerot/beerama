@@ -16,8 +16,6 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/nfnt/resize"
 	"github.com/pbillerot/beerama/shutil"
-	"github.com/unidoc/unipdf/v4/model"
-	"github.com/unidoc/unipdf/v4/render"
 )
 
 // Exiftool
@@ -289,7 +287,7 @@ func (beeFile *BeeFile) TrashImage() error {
 		return err
 	}
 
-	// copie dans la corbaille
+	// copie dans la corbeille
 	err = shutil.CopyFile(beeFile.Path, dest, false)
 
 	return err
@@ -417,14 +415,14 @@ func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
 		img, err = png.Decode(file)
 	} else if contains([]string{".jpg", ".jpeg"}, strings.ToLower(beeFile.Ext)) {
 		img, err = jpeg.Decode(file)
-	} else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
-		err = convertFirstPageToImage(beeFile.Path, beeFile.Thumb)
-		if err != nil {
-			logs.Error("convertFirstPageToImage %s %f", beeFile.Path, err)
-			return
-		}
-		logs.Info("Thumbnail créé %s ", beeFile.Thumb)
-		return
+		// } else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
+		// 	err = convertFirstPageToImage(beeFile.Path, beeFile.Thumb)
+		// 	if err != nil {
+		// 		logs.Error("convertFirstPageToImage %s %f", beeFile.Path, err)
+		// 		return
+		// 	}
+		// 	logs.Info("Thumbnail créé %s ", beeFile.Thumb)
+		// 	return
 	} else {
 		return
 	}
@@ -460,30 +458,39 @@ func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
 }
 
 // This function converts the first page of a PDF to a high-resolution image.
-func convertFirstPageToImage(pdfPath string, outputPath string) error {
-	f, err := os.Open(pdfPath)
-	if err != nil {
-		return fmt.Errorf("error opening PDF file: %w", err)
-	}
-	defer f.Close()
+// func convertFirstPageToImage(pdfPath string, outputPath string) error {
+// 	f, err := os.Open(pdfPath)
+// 	if err != nil {
+// 		err = fmt.Errorf("error opening PDF file: %w", err)
+// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
+// 		return err
+// 	}
+// 	defer f.Close()
 
-	reader, err := model.NewPdfReader(f)
-	if err != nil {
-		return fmt.Errorf("error creating PDF reader: %w", err)
-	}
+// 	reader, err := model.NewPdfReader(f)
+// 	if err != nil {
+// 		err = fmt.Errorf("error creating PDF reader: %w", err)
+// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
+// 		return err
+// 	}
 
-	page, err := reader.GetPage(1) // Get the first page (page numbers start at 1)
-	if err != nil {
-		return fmt.Errorf("error getting first page: %w", err)
-	}
+// 	page, err := reader.GetPage(1) // Get the first page (page numbers start at 1)
+// 	if err != nil {
+// 		err = fmt.Errorf("error getting first page: %w", err)
+// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
+// 		return err
+// 	}
 
-	device := render.NewImageDevice()
+// 	device := render.NewImageDevice()
 
-	// Render the page to the specified output file (e.g., page1.png)
-	err = device.RenderToPath(page, outputPath)
-	if err != nil {
-		return fmt.Errorf("image rendering error: %w", err)
-	}
+// 	// Render the page to the specified output file (e.g., page1.png)
+// 	err = device.RenderToPath(page, outputPath)
+// 	if err != nil {
+// 		err = fmt.Errorf("image rendering error: %w", err)
+// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
+// 		return err
+// 	}
 
-	return nil
-}
+// 	return nil
+
+// }

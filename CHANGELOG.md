@@ -4,11 +4,14 @@
 ### À venir :
 > lightbox plein écran https://fslightbox.com/
 > https://biati-digital.github.io/glightbox/
-> intégration lecteur pdf
+> si pb thumbnail pdf erreur copier une image beerama
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
+
+1.5.2 du 10 oct. 2025
+- `changed` la librairie unipdf non libre a été changée par pdf.js (merci mozilla)
 
 1.5.1 du 9 oct. 2025
 - `fixed` changement de librairie pdf

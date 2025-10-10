@@ -30,8 +30,9 @@
         {{$beedirid := $beefile.DirID}}
         {{if or $beefile.IsImage $beefile.IsPdf }}
         <div class="grey grid-item" style="margin: 0.5em">
-            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}" data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}"
-                data-path="{{$beefile.Path}}" data-base="{{$beefile.Base}}" style="padding: 0.5em;">
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}"
+                data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
+                data-base="{{$beefile.Base}}" style="padding: 0.5em;">
                 <!-- recherche du nom de dossier si htag ou search -->
                 {{if or $htagid $search}}
                 {{range $i, $bdir := $config.BeeDirs}}
@@ -45,16 +46,20 @@
                 {{end}} <!--/range-->
                 {{end}} <!--/$htagid-->
                 <!-- la thumbnail de l'image -->
-                 {{if $beefile.IsPdf}}
+                {{if $beefile.IsPdf}}
                 <div class="ui centered image" title="{{$beefile.Base}}">
-                    <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank"                      
-                        ><img src="{{$beefile.UrlThumb}}?{{$composter}}"></a>
+                    <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank">
+                        <img data-pdf-thumbnail-file="{{$beefile.UrlImage}}" src="/static/pdfThumbnails/pdf.png"
+                            data-pdf-thumbnail-height="400">
+                    </a>
                 </div>
                 {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <div class="" href="{{$beefile.UrlImage}}?{{$composter}}"
                         data-title="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
-                        data-lightbox="roadtrip"><img src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}"></div>
+                        data-lightbox="roadtrip"><img
+                            src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
+                    </div>
                 </div>
                 {{end}}
                 <!-- attributs de la diapo -->

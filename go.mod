@@ -11,31 +11,12 @@ require (
 )
 
 require (
-	github.com/adrg/strutil v0.3.1 // indirect
-	github.com/adrg/sysfont v0.1.2 // indirect
-	github.com/adrg/xdg v0.5.3 // indirect
-	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/gorilla/i18n v0.0.0-20150820051429-8b358169da46 // indirect
-	github.com/h2non/filetype v1.1.3 // indirect
-	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/stretchr/testify v1.10.0 // indirect
-	github.com/unidoc/freetype v0.2.3 // indirect
-	github.com/unidoc/garabic v0.0.0-20220702200334-8c7cb25baa11 // indirect
-	github.com/unidoc/pkcs7 v0.3.0 // indirect
-	github.com/unidoc/timestamp v0.0.0-20200412005513-91597fd3793a // indirect
-	github.com/unidoc/unichart v0.5.1 // indirect
-	github.com/unidoc/unitype v0.5.1 // indirect
-	golang.org/x/image v0.30.0 // indirect
-	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
-)
-
-require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/gopherjs/gopherjs v1.17.2 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
+	github.com/kr/text v0.2.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/prometheus/client_golang v1.19.0 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
@@ -43,7 +24,7 @@ require (
 	github.com/prometheus/procfs v0.12.0 // indirect
 	github.com/shiena/ansicolor v0.0.0-20200904210342-c7312218db18 // indirect
 	github.com/smarty/assertions v1.15.0 // indirect
-	github.com/unidoc/unipdf/v4 v4.4.0
+	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect

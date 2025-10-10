@@ -296,7 +296,7 @@ $(document).ready(function () {
   $('.bee-popup-image-editor').on('tap', function (event) {
     var $form = $('#form_meta_id');
     var $image = $form.find('img');
-    var $url = $(this).data('src');
+    var $url = $(this).attr('src');
     var $input = $form.find("input[name='image']");
     const config = {
       language: 'fr',
@@ -498,7 +498,7 @@ $(document).ready(function () {
         itemSelector: '.grid-item'
         // horizontalOrder: true
       });
-      $grid.masonry();
+      // $grid.masonry();
       // positionnement sur la dernière carte sélectionnée
       // sélection clic sur metadata
       if ($bee_view && $bee_view.length > 0) {
