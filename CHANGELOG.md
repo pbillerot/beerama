@@ -10,6 +10,9 @@
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
 
+1.5.4 du 10 oct. 2025
+- `fixed` correction retour sur validation par touche return
+
 1.5.3 du 10 oct. 2025
 - `changed` enregistrement des keywords en string "h1, h2"
 

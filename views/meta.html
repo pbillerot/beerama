@@ -51,7 +51,7 @@
 		{{template "_flash.html" .}}
 		<form id="form_meta_id" class="ui form" method="POST" action="/meta/{{$beedir.ID}}/{{$beefile.ID}}">
 			{{ .xsrfdata }}
-			<input type="hidden" name="return" value="voir bee-script">
+			<input type="hidden" name="return" value="/return">
 			<div class="ui stackable grid" style="margin: 1em;">
 				<div class="ten wide column">
 					<div class="ui attached small message">
@@ -72,7 +72,7 @@
 						</div>
 						{{else}}
 						<a class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
-							<img class="bee-popup-image-editor" style="cursor: pointer;" src="{{$beefile.UrlImage}}">
+							<img class="bee-popup-image-editor" style="cursor: pointer;" src="{{$beefile.UrlImage}}?{{$composter}}">
 						</a>
 						<input class="bee-onchange" type="hidden" name="image" value="">
 						{{end}}
