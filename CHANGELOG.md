@@ -2,13 +2,13 @@
 # CHANGELOG
 
 ### À venir :
-> lightbox plein écran https://fslightbox.com/
-> https://biati-digital.github.io/glightbox/
-> si pb thumbnail pdf erreur copier une image beerama
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
+
+1.5.5 du 11 oct. 2025
+- `changed` remplacemet de lightbox par glightbox
 
 1.5.4 du 10 oct. 2025
 - `fixed` correction retour sur validation par touche return

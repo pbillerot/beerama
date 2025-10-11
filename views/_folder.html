@@ -55,11 +55,11 @@
                 </div>
                 {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
-                    <div class="" href="{{$beefile.UrlImage}}?{{$composter}}"
-                        data-title="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
-                        data-lightbox="roadtrip"><img
+                    <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}"
+                        data-glightbox="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
+                        ><img
                             src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
-                    </div>
+                    </a>
                 </div>
                 {{end}}
                 <!-- attributs de la diapo -->

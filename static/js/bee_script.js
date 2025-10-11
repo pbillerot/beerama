@@ -483,13 +483,6 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
-  // paramètres de Lighbox
-  lightbox.option({
-    'fitImagesInViewport': true,
-    'alwaysShowNavOnTouchDevices': true,
-    'wrapAround': true
-  })
-
   // chargement de toutes les images avant de lancer Masonry
   Promise.all(Array.from(document.images)
     .filter(img => !img.complete)
@@ -614,3 +607,10 @@ function blockCR(event) {
     event.preventDefault();
   }
 }
+const lightbox = GLightbox({
+  touchNavigation: true,
+  keyboardNavigation: true,
+  zoomable: true,
+  loop: true,
+  autoplayVideos: true
+});
