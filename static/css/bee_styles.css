@@ -137,3 +137,31 @@ bee-press,
         display: none !important;
     }
 }
+
+/*Skin glightbox */
+
+.glightbox-clean .gslide-description {
+  background: #000;
+}
+
+.glightbox-clean .gdesc-inner {
+  padding: 16px 16px;
+}
+
+.glightbox-clean .gslide-title {
+  font-size: 1em;
+  font-weight: normal;
+  font-family: arial;
+  color: #fff;
+  margin-bottom: 19px;
+  line-height: 1.4em;
+}
+
+.glightbox-clean .gslide-desc {
+  font-size: 1em;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 0;
+  font-family: arial;
+  line-height: 1.4em;
+}

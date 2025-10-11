@@ -56,7 +56,8 @@
                 {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}"
-                        data-glightbox="{{$beefile.DateOriginal}} {{$beefile.Description}} {{$beefile.Keywords}} {{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}} {{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec."
+                        data-gallery="gallery"
+                        data-description="{{$beefile.DateOriginal}} <b>{{$beefile.Description}}</b>"
                         ><img
                             src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
                     </a>

@@ -7,6 +7,9 @@
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
 
+1.5.6 du 11 oct. 2025
+- `changed` description lightbox sur fond noir
+
 1.5.5 du 11 oct. 2025
 - `changed` remplacemet de lightbox par glightbox
 
