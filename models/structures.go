@@ -20,8 +20,8 @@ type BeeConfig struct {
 	Original    string    // chemin du répertoire des originaux
 	Trash       string    // chemin de la corbeille
 	Thumbnail   string    // chemin du répertoire racine des miniatures
-	Width       uint      // largeur de la vignette
-	Height      uint      // hauteur de la vignette
+	Width       int       // largeur de la vignette
+	Height      int       // hauteur de la vignette
 	BeeDirs     []*BeeDir // Liste des BeeDir trouvés dans app.conf.beedir
 	IndexDirs   string    // répertoire des index des mots fulltext
 	Index       []byte    // index des mots full text

@@ -66,7 +66,7 @@ var createPDFThumbnails = function () {
 
                     // canvas.height = viewport.height;
                     // canvas.width = viewport.width;
-                    canvas.height = 300;
+                    canvas.height = 400;
                     canvas.width = 400;
 
                     page.render({

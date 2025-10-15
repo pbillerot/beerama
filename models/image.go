@@ -3,9 +3,6 @@ package models
 import (
 	"encoding/base64"
 	"fmt"
-	"image"
-	"image/jpeg"
-	"image/png"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,7 +11,7 @@ import (
 
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/nfnt/resize"
+	"github.com/disintegration/imaging"
 	"github.com/pbillerot/beerama/shutil"
 )
 
@@ -412,8 +409,9 @@ func (beeFile *BeeFile) existeThumbnail() bool {
 }
 
 // createThumbnail création de la vignette sous config.vignette
-func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
-	// calcul et création des répertoires parents de la vignette
+func (beeFile *BeeFile) createThumbnail(width, height int) (err error) {
+
+	// 0. calcul et création des répertoires parents de la vignette
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	perm := os.FileMode(0755)
 	err = os.MkdirAll(dirThumb, perm)
@@ -421,95 +419,25 @@ func (beeFile *BeeFile) createThumbnail(width, height uint) (err error) {
 		return
 	}
 
-	// Lecture de l'image source
-	file, err := os.Open(beeFile.Path)
+	// 1. Open the original image
+	img, err := imaging.Open(beeFile.Path, imaging.AutoOrientation(true))
 	if err != nil {
-		return
-	}
-	defer file.Close()
-
-	var img image.Image
-
-	if contains([]string{".png"}, strings.ToLower(beeFile.Ext)) {
-		img, err = png.Decode(file)
-	} else if contains([]string{".jpg", ".jpeg"}, strings.ToLower(beeFile.Ext)) {
-		img, err = jpeg.Decode(file)
-		// } else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
-		// 	err = convertFirstPageToImage(beeFile.Path, beeFile.Thumb)
-		// 	if err != nil {
-		// 		logs.Error("convertFirstPageToImage %s %f", beeFile.Path, err)
-		// 		return
-		// 	}
-		// 	logs.Info("Thumbnail créé %s ", beeFile.Thumb)
-		// 	return
-	} else {
+		err = fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
 		return
 	}
 
+	// 2. Create the thumbnail
+	// imaging.Thumbnail resizes the image to fit the specified dimensions
+	// and crops the image to the exact size without distorting the aspect ratio.
+	thumbnail := imaging.Thumbnail(img, width, height, imaging.CatmullRom)
+
+	// 3. Save the thumbnail image to a file
+	err = imaging.Save(thumbnail, beeFile.Thumb)
 	if err != nil {
-		logs.Error("decode %s ", beeFile.Path)
+		err = fmt.Errorf("failed to save image: %s %v", beeFile.Path, err)
 		return
 	}
-	if img == nil {
-		logs.Error("conversion %s ", beeFile.Path)
-		return
-	}
-	// Resize the image to the specified width and height
-	var thumb image.Image
-	if beeFile.IsPdf {
-		thumb = img
-	} else {
-		thumb = resize.Thumbnail(width, height, img, resize.Lanczos3)
-	}
-
-	out, err := os.Create(beeFile.Thumb)
-	if err != nil {
-		logs.Error("create %s ", beeFile.Path)
-		return
-	}
-	defer out.Close()
-
-	// write new image to file
-	jpeg.Encode(out, thumb, nil)
 
 	logs.Info("Thumbnail créé %s ", beeFile.Thumb)
 	return
 }
-
-// This function converts the first page of a PDF to a high-resolution image.
-// func convertFirstPageToImage(pdfPath string, outputPath string) error {
-// 	f, err := os.Open(pdfPath)
-// 	if err != nil {
-// 		err = fmt.Errorf("error opening PDF file: %w", err)
-// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
-// 		return err
-// 	}
-// 	defer f.Close()
-
-// 	reader, err := model.NewPdfReader(f)
-// 	if err != nil {
-// 		err = fmt.Errorf("error creating PDF reader: %w", err)
-// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
-// 		return err
-// 	}
-
-// 	page, err := reader.GetPage(1) // Get the first page (page numbers start at 1)
-// 	if err != nil {
-// 		err = fmt.Errorf("error getting first page: %w", err)
-// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
-// 		return err
-// 	}
-
-// 	device := render.NewImageDevice()
-
-// 	// Render the page to the specified output file (e.g., page1.png)
-// 	err = device.RenderToPath(page, outputPath)
-// 	if err != nil {
-// 		err = fmt.Errorf("image rendering error: %w", err)
-// 		shutil.CopyFile("./static/img/beerama800.png", outputPath, false)
-// 		return err
-// 	}
-
-// 	return nil
-
-// }

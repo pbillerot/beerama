@@ -59,10 +59,10 @@ func init() {
 		models.Config.IndexDirs = val
 	}
 	if val, ok := config.Int("width"); ok == nil {
-		models.Config.Width = uint(val)
+		models.Config.Width = int(val)
 	}
 	if val, ok := config.Int("height"); ok == nil {
-		models.Config.Height = uint(val)
+		models.Config.Height = int(val)
 	}
 
 	// lecture des répertoires dans beeDir

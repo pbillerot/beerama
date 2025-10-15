@@ -5,8 +5,8 @@ go 1.24.2
 require (
 	github.com/barasher/go-exiftool v1.10.0
 	github.com/beego/beego/v2 v2.3.8
+	github.com/disintegration/imaging v1.6.2
 	github.com/jbarham/cdb v0.0.0-20200301055225-9d6f6caadef0
-	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/smartystreets/goconvey v1.8.1
 )
 
@@ -26,6 +26,7 @@ require (
 	github.com/smarty/assertions v1.15.0 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
