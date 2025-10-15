@@ -429,7 +429,7 @@ func (beeFile *BeeFile) createThumbnail(width, height int) (err error) {
 	// 2. Create the thumbnail
 	// imaging.Thumbnail resizes the image to fit the specified dimensions
 	// and crops the image to the exact size without distorting the aspect ratio.
-	thumbnail := imaging.Thumbnail(img, width, height, imaging.CatmullRom)
+	thumbnail := imaging.Resize(img, width, 0, imaging.CatmullRom)
 
 	// 3. Save the thumbnail image to a file
 	err = imaging.Save(thumbnail, beeFile.Thumb)
