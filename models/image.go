@@ -409,7 +409,7 @@ func (beeFile *BeeFile) existeThumbnail() bool {
 }
 
 // createThumbnail création de la vignette sous config.vignette
-func (beeFile *BeeFile) createThumbnail(width, height int) (err error) {
+func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 
 	// 0. calcul et création des répertoires parents de la vignette
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
