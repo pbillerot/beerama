@@ -2,6 +2,8 @@
 # CHANGELOG
 
 ### À venir :
+> log avec sessionid tronqué
+> menu fixe si sur tablette ou desktop
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour

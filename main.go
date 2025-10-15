@@ -4,6 +4,7 @@ import (
 	"github.com/beego/beego/v2/core/config"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
+	"github.com/pbillerot/beerama/controllers"
 	"github.com/pbillerot/beerama/models"
 	_ "github.com/pbillerot/beerama/routers"
 )
@@ -77,5 +78,8 @@ func loadBeedirs() {
 	// déclaration des répertoires racine et thumbnail en static
 	web.SetStaticPath("/album", models.Config.Racine)
 	web.SetStaticPath("/thumb", models.Config.Thumbnail)
+
+	// ajout du filtre d'authentification
+	web.InsertFilter("/*", web.BeforeRouter, controllers.AuthFilter)
 
 }
