@@ -69,6 +69,8 @@ var AuthFilter = func(ctx *beecontext.Context) {
 	// 1. Get the Authorization header
 	authHeader := ctx.Input.Header("Authorization")
 
+	logs.Info(authHeader)
+
 	// Check if the header exists and starts with "Bearer "
 	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
 		// Stop execution and send an Unauthorized response
