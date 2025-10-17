@@ -7,12 +7,19 @@
             </div>
             <div class="content">
                 <div class="meta">
-                    <div class="ui floated right image label" href="{{.config.Github}}" target="_blank"
+                    <div class="ui brown left floated label">
+                        <i class="user icon"></i>
+                        {{.username}}
+                        <div class="detail">
+                            {{if .is_admin}}admin{{else if .is_editor}}éditeur{{else}}lecteur{{end}}
+                        </div>
+                    </div>
+                    <a class="ui orange right floated label" href="{{.config.Github}}" target="_blank"
                         title="Voir les sources de l'application">
                         <i class="github icon"></i>
                         {{.config.AppName}}
                         <div class="detail">{{.config.Version}}</div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>

@@ -13,7 +13,7 @@ RUN git clone https://github.com/pbillerot/beerama.git
 
 WORKDIR /github/pbillerot/beerama
 
-# Compilation avec CGO
+# Compilation avec CGO AMD64 ou ARM64
 RUN GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /github/pbillerot/beerama/beerama
 
 # ETAPE GENERATION D'UNE IMAGE ALPINE

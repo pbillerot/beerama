@@ -29,6 +29,4 @@ func init() {
 	web.Router("/search/:beedirid", &controllers.MainController{}, "post:Search")
 	web.Router("/newdraw/:beedirid", &controllers.MainController{}, "post:NewDraw")
 
-	web.Router("/admin", &controllers.MainController{}, "get:Admin")
-
 }

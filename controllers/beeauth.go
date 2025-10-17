@@ -14,7 +14,12 @@ import (
 // SecretAuth : Contrôle existence du username
 // dans le fichier défini dans app.conf.users
 func SecretAuth(username, password string) bool {
-	return models.Config.Users[username].Password == password
+	if models.Config.Users[username].Password == password {
+		return true
+	} else {
+		logs.Error("Connexion [%s]/[%s]", username, password)
+	}
+	return false
 }
 
 // DeclareAuth : Installation du filtre de contrôle d'accès à l'application

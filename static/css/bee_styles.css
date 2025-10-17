@@ -11,12 +11,7 @@ body {
 }
 
 .ui.menu.item.active {
-background-color: orange;
-}
-
-#container {
-    margin-left: 210px;
-    z-index: -1;
+    background-color: orange;
 }
 
 #menu {
@@ -25,6 +20,7 @@ background-color: orange;
     margin-left: 0.5em;
     height: 80%;
 }
+
 #menu_items {
     overflow-y: scroll;
 }
@@ -141,27 +137,47 @@ bee-press,
 /*Skin glightbox */
 
 .glightbox-clean .gslide-description {
-  background: #000;
+    background: #000;
 }
 
 .glightbox-clean .gdesc-inner {
-  padding: 16px 16px;
+    padding: 16px 16px;
 }
 
 .glightbox-clean .gslide-title {
-  font-size: 1em;
-  font-weight: normal;
-  font-family: arial;
-  color: #fff;
-  margin-bottom: 19px;
-  line-height: 1.4em;
+    font-size: 1em;
+    font-weight: normal;
+    font-family: arial;
+    color: #fff;
+    margin-bottom: 19px;
+    line-height: 1.4em;
 }
 
 .glightbox-clean .gslide-desc {
-  font-size: 1em;
-  text-align: center;
-  color: #fff;
-  margin-bottom: 0;
-  font-family: arial;
-  line-height: 1.4em;
+    font-size: 1em;
+    text-align: center;
+    color: #fff;
+    margin-bottom: 0;
+    font-family: arial;
+    line-height: 1.4em;
+}
+
+/* Affichage du menu en fonction de l'écran */
+
+/* Mobile */
+@media only screen and (max-width: 767px) {
+    .bee-mobile-hide {
+        display: none !important;
+    }
+}
+
+/* desktop ou tablette */
+@media only screen and (min-width: 768px) {
+    .bee-mobile-show {
+        display: none !important;
+    }
+    .bee-container {
+        margin-left: 210px;
+        z-index: -1;
+    }
 }

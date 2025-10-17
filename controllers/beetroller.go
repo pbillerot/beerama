@@ -26,6 +26,10 @@ func (c *MainController) Prepare() {
 	username, _, ok := c.Ctx.Request.BasicAuth()
 	if !ok {
 		logs.Error("Username inconnu")
+	} else {
+		c.Data["is_admin"] = models.Config.Users[username].IsAdmin
+		c.Data["is_editor"] = models.Config.Users[username].IsEditor
+		c.Data["is_reader"] = models.Config.Users[username].IsReader
 	}
 	c.Data["username"] = username
 
@@ -46,18 +50,6 @@ func (c *MainController) Prepare() {
 		c.Data["search"] = param
 	} else {
 		c.Data["search"] = ""
-	}
-
-	// admin or not admin
-	if boolValue, ok := c.GetSession("is_admin").(bool); ok {
-		if boolValue {
-			c.Data["is_admin"] = true
-		} else {
-			// is admin ko
-			c.Data["is_admin"] = false
-		}
-	} else {
-		c.Data["is_admin"] = false
 	}
 
 	// XSRF protection des formulaires

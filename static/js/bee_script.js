@@ -174,9 +174,11 @@ $(document).ready(function () {
       .modal({
         closable: false,
         onDeny: function () {
+          $('.ui.nag').nag('hide');
           return true;
         },
         onApprove: function () {
+          $('.ui.nag').nag('show');
           $form.submit();
         }
       }).modal('show');

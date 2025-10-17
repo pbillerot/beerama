@@ -7,6 +7,8 @@
 {{$beedir := .beedir}}
 {{$search := .search}}
 {{$is_admin := .is_admin}}
+{{$is_editor := .is_editor}}
+{{$is_reader := .is_reader}}
 <body>
     <!-- MENU HORIZONTAL FIXED -->
     <div class="ui grey inverted top fixed borderless large menu navbar">
@@ -14,9 +16,9 @@
             <div class="ui mini image">
                 <img src="{{.config.Icon}}">
             </div>
-            {{if not $is_admin}}
+            <div class="menu bee-mobile-show">
             {{template "_menu.html" .}}
-            {{end}}
+            </div>
         </div>
 
         {{ if eq $beedir.Name ""}}
@@ -74,7 +76,7 @@
             {{ if ne $beedir.Name ""}}
             {{if $is_admin}}
             <div class="item">
-                <div class="ui small circular icon button bee-modal-upload bee-nag" title="Déposer une photo dans l'album..."
+                <div class="ui small circular icon button bee-modal-upload" title="Déposer une photo dans l'album..."
                     data-action="/upload/{{$beedir.ID}}">
                     <i class="plus icon"></i>
                 </div>
@@ -85,14 +87,6 @@
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
                     {{ if eq $beedir.Name ""}}
-                    <a class="ui icon item" href="/admin">
-                        {{if $is_admin }}
-                        <i class="icon edit outline"></i>
-                        {{else}}
-                        <i class="icon eye outline"></i>
-                        {{end}}
-                        Mode Lecture/Édition
-                    </a>
                     {{if $is_admin}}
                     <div class="divider"></div>
                     <div class="ui icon item bee-modal-new" title="Créer un nouvel album" data-action="/mkdir">
@@ -103,7 +97,7 @@
                     </a>
                     {{end}}
                     {{else}}
-                    {{if $is_admin}}
+                    {{if $is_editor}}
                     <div class="ui icon item bee-modal-new" title="Créer un dessin..." 
                         data-placeholder="???.drawio.png"
                         data-action="/newdraw/{{$beedir.ID}}">
@@ -134,10 +128,12 @@
                         <i class="icon folder"></i>Renommer le sous-dossier...
                     </div>
                     {{else}}
+                    {{if $is_admin}}
                     <div class="ui icon item bee-modal-rename" title="Renommer l'album"
                         data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer l'album...
                     </div>
+                    {{end}}
                     {{end}}
                     <a class="ui icon item bee-nag" href="/reload/{{$beedir.ID}}">
                         <i class="refresh icon"></i>Recharger les images de l'album
@@ -150,9 +146,9 @@
         <!-- end right menu -->
     </div>
     <!-- template "_menu.html" . -->
-    {{if $is_admin}}
-    {{template "_menu.html" .}}
-    {{end}}
+    <div id="menu" class="ui left fixed vertical menu bee-mobile-hide">
+        {{template "_menu.html" .}}
+    </div>     
     <!-- MAIN -->
     <main>
         <div class="ui orange fixed nag" id="bee-nag">
@@ -160,7 +156,7 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
-        <div {{if $is_admin}}id="container" {{end}}>
+        <div class="bee-container">
             {{if eq $beedir.Name ""}}
             {{template "_home.html" .}}
             {{else}}
@@ -206,7 +202,7 @@
                 </div>
                 <div class="actions">
                     <div class="ui cancel button">Annuler</div>
-                    <div class="ui approve button bee-nag">Valider</div>
+                    <div class="ui approve button">Valider</div>
                 </div>
             </form>
         </div>

@@ -2,12 +2,19 @@
 # CHANGELOG
 
 ### À venir :
+> liste des albums autorisés * 
+> commande pour relire users.yaml si admin
 > log avec userid
-> menu fixe si sur tablette ou desktop
-- vider la corbeille d'un album
+
+- vider la corbeille d'un album si album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
-- passez en mode administrateur via mot de passe dans la session
+x passez en mode administrateur via mot de passe dans la session
+
+1.6.1 du 17 oct. 2025
+- `fixed` correction message orange qui ne s'effacait pas sur abandon upload
+- `added` menu et actions en fonction du profil de l'utilisateur
+- `added` menu fonction de l'écran: si < 768px mobile sinon desktop ou tablette
 
 1.6.0 du 17 oct. 2025
 - `added` ajout d'un contrôle basique de connection user / password défini dans app.conf.users
@@ -15,12 +22,11 @@
 1.5.7 du 15 oct. 2025
 - `changed` changement de module pour créer les vignettes qui n'étaient pas toujours bien orientées
 
-github.com/disintegration/imaging
 1.5.6 du 11 oct. 2025
 - `changed` description lightbox sur fond noir
 
 1.5.5 du 11 oct. 2025
-- `changed` remplacemet de lightbox par glightbox
+- `changed` remplacement de lightbox par glightbox
 
 1.5.4 du 10 oct. 2025
 - `fixed` correction retour sur validation par touche return

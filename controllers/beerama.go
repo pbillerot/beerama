@@ -718,26 +718,3 @@ func (c *MainController) Search() {
 
 	c.TplName = "index.html"
 }
-
-// Mode Administration des albums
-func (c *MainController) Admin() {
-
-	beego.ReadFromRequest(&c.Controller)
-
-	if boolValue, ok := c.GetSession("is_admin").(bool); ok {
-		// boolValue is now the Go boolean true or false
-		if boolValue {
-			// is admin ok
-			c.SetSession("is_admin", false)
-		} else {
-			// is admin ko
-			c.SetSession("is_admin", true)
-
-		}
-	} else {
-		c.SetSession("is_admin", true)
-	}
-
-	c.Ctx.Redirect(302, "/")
-
-}
