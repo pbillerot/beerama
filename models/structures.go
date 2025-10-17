@@ -4,6 +4,13 @@ import (
 	"os"
 )
 
+type User struct {
+	Password string `yaml:"password"`
+	IsAdmin  bool   `yaml:"is_admin"`
+	IsEditor bool   `yaml:"is_editor"`
+	IsReader bool   `yaml:"is_reader"`
+}
+
 // BeeConfig structure du fichier de configuration de l'application app.conf
 type BeeConfig struct {
 	AppName     string
@@ -16,15 +23,17 @@ type BeeConfig struct {
 	Github      string
 	Help        string
 	HelpEditor  string
-	Racine      string    // chemin du répertoire racine
-	Original    string    // chemin du répertoire des originaux
-	Trash       string    // chemin de la corbeille
-	Thumbnail   string    // chemin du répertoire racine des miniatures
-	Width       int       // largeur de la vignette
-	Height      int       // hauteur de la vignette
-	BeeDirs     []*BeeDir // Liste des BeeDir trouvés dans app.conf.beedir
-	IndexDirs   string    // répertoire des index des mots fulltext
-	Index       []byte    // index des mots full text
+	Racine      string          // chemin du répertoire racine
+	Original    string          // chemin du répertoire des originaux
+	Trash       string          // chemin de la corbeille
+	Thumbnail   string          // chemin du répertoire racine des miniatures
+	UsersFile   string          // chemin d'accès au fichier des utilisateurs
+	Width       int             // largeur de la vignette
+	Height      int             // hauteur de la vignette
+	BeeDirs     []*BeeDir       // Liste des BeeDir trouvés dans app.conf.beedir
+	IndexDirs   string          // répertoire des index des mots fulltext
+	Index       []byte          // index des mots full text
+	Users       map[string]User // Les utilisateurs
 }
 
 // Bee Context webapp courante dans la session

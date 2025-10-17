@@ -1,0 +1,22 @@
+
+philippe:
+  password: "philippe"
+  is_admin: true
+  is_editor: true
+  is_reader: true
+
+carom:
+  password: "carom"
+  is_admin: false
+  is_editor: true
+  is_reader: true
+
+# ne pas utiliser les tabulations mais des espaces (2 par exemple)
+# is_admin
+#   peut créer des nouveaux albums
+# is_editor
+#   peut créer des sous-dossiers
+#   crud des fichier jpg png pdf drawio
+# is_reader
+#   lecteur seulement des albums et sous-dossiers
+#   peut télécharger des fichiers

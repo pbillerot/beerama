@@ -56,6 +56,9 @@ func init() {
 	if val, ok := config.String("thumbnail"); ok == nil {
 		models.Config.Thumbnail = val
 	}
+	if val, ok := config.String("users"); ok == nil {
+		models.Config.UsersFile = val
+	}
 	if val, ok := config.String("index"); ok == nil {
 		models.Config.IndexDirs = val
 	}
@@ -80,6 +83,5 @@ func loadBeedirs() {
 	web.SetStaticPath("/thumb", models.Config.Thumbnail)
 
 	// ajout du filtre d'authentification
-	web.InsertFilter("/*", web.BeforeRouter, controllers.AuthFilter)
-
+	controllers.DeclareAuth()
 }

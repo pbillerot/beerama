@@ -2,12 +2,15 @@
 # CHANGELOG
 
 ### À venir :
-> log avec sessionid tronqué
+> log avec userid
 > menu fixe si sur tablette ou desktop
 - vider la corbeille d'un album
 - pattern de recherche
 - echap sur l'éditeur fait <- Retour
 - passez en mode administrateur via mot de passe dans la session
+
+1.6.0 du 17 oct. 2025
+- `added` ajout d'un contrôle basique de connection user / password défini dans app.conf.users
 
 1.5.7 du 15 oct. 2025
 - `changed` changement de module pour créer les vignettes qui n'étaient pas toujours bien orientées
