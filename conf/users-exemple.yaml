@@ -2,14 +2,14 @@
 philippe:
   password: "philippe"
   is_admin: true
-  is_editor: true
-  is_reader: true
 
 carom:
   password: "carom"
-  is_admin: false
-  is_editor: true
-  is_reader: true
+  albums:
+    - Bricolage:
+      is_editor: true
+    - Nature:
+      is_reader: true
 
 # ne pas utiliser les tabulations mais des espaces (2 par exemple)
 # is_admin

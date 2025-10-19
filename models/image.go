@@ -60,7 +60,7 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 	}
 	defer et.Close()
 	originals := et.ExtractMetadata(beeFile.Path)
-	originals[0].SetString("Description", beeFile.Description)
+	originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
 	// Date Time Original
 	originals[0].SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
 	// keywords
@@ -174,7 +174,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 					beeFile.ExposureTime = fmt.Sprintf("%v", v)
 				}
 			case "Description":
-				beeFile.Description = v.(string)
+				beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
 			case "DateTimeOriginal":
 				beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
 				beeFile.TimeOriginal = v.(string)[11:16]
@@ -223,7 +223,7 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	originals := et.ExtractMetadata(beeFile.Path)
 	// description
 	if originals[0].Err == nil {
-		originals[0].SetString("Description", beeFile.Description)
+		originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
 	} else {
 		logs.Error(originals[0].Err)
 	}

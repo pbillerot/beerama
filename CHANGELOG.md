@@ -5,11 +5,17 @@
 > liste des albums autorisés * 
 > commande pour relire users.yaml si admin
 > log avec userid
-
+> voir lors de la restauration d'une image les metadata sont appliquées ? oui
 - vider la corbeille d'un album si album
 - pattern de recherche
-- echap sur l'éditeur fait <- Retour
-x passez en mode administrateur via mot de passe dans la session
+- echap sur l'éditeur faire <- Retour
+
+1.7.0 du 19 oct. 2025
+- `changed` url changée pour gérer les acces editor /e/ admin /a/
+- `added` éditeur du fichier users.yaml
+
+1.6.2 du xx oct. 2025
+- `changed` retour à la ligne acceptée dans champ description
 
 1.6.1 du 17 oct. 2025
 - `fixed` correction message orange qui ne s'effacait pas sur abandon upload

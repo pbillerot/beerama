@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+
+<body>
+  <!-- NAVBAR -->
+  <div class="ui container">
+    <div class="ui large fixed grey inverted menu borderless bee-bar-light">
+      <div class="item">
+        <button class="ui labeled icon button bee-confirm-close" data-url="/">
+          <i class="left arrow icon"></i>
+          Retour
+        </button>
+      </div>
+      <h3 class="header item"><i class="file code large icon"></i>Users.yaml</h3>
+      <!-- RIGHT MENU -->
+      <div class="right menu">
+        <div class="item">
+          <button id="button_validate" class="ui icon google plus button bee-submit-users disabled" data-return="/users"
+            title="Enregistrer">
+            <i class="save icon"></i>
+          </button>
+        </div>
+      </div>
+      <!-- end right menu -->
+    </div>
+  </div>
+  <!-- MAIN -->
+  <main>
+    <p>&nbsp;</p>
+    <div class="ui container" style="height: 100%">
+      {{template "_flash.html" .}}
+      <!-- Formulaire d'Edition -->
+      <form  style="height: 80%" class="ui form attached segment" id="bee-form-users" method="POST" action="/a/users">
+        {{ .xsrfdata }}
+        <section>
+          <div class="field">
+            <textarea  style="font-size: 1.2em; min-height: 600px" class="bee-onchange" name="content" data-mode="yaml">{{.content}}</textarea>
+          </div>
+        </section>
+      </form>
+    </div>
+    </div> <!-- /container -->
+  </main>
+
+  <!-- Demande de confirmation de l'action' -->
+  <div id="bee-modal-confirm" class="ui tiny modal">
+    <div class="header">Abandonner les modifications ?</div>
+    <div class="content">
+      <p>Veuillez le confirmer</p>
+    </div>
+    <div class="actions">
+      <div class="ui cancel button">Annuler</div>
+      <div class="ui approve button">Je confirme</div>
+    </div>
+  </div> <!-- end modal confirm -->
+
+  <!-- CONTEXTE -->
+  {{template "_foot.html" .}}
+</body>
+
+</html>

@@ -202,7 +202,7 @@ func (c *MainController) Meta() {
 	c.TplName = "meta.html"
 }
 
-// Ajout d'un hahtag à l'album courant /tag/beedirid/beefileid
+// Ajout d'un hahtag à l'album courant /e/tag/beedirid/beefileid
 func (c *MainController) Tag() {
 	beeDir := models.GetBeeDir(c.Ctx.Input.Param(":beedirid"))
 	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beedirid"), c.Ctx.Input.Param(":beefileid"))
@@ -222,7 +222,7 @@ func (c *MainController) Tag() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 
-	c.Ctx.Redirect(302, "/meta/"+beeDir.ID+"/"+beeFile.ID)
+	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
 // Restauration de l'image avec son original
@@ -240,7 +240,7 @@ func (c *MainController) Restore() {
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
 
-	c.Ctx.Redirect(302, "/meta/"+beeDir.ID+"/"+beeFile.ID)
+	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
 // FileUpload Charger le fichier sur le serveur
@@ -717,4 +717,34 @@ func (c *MainController) Search() {
 	c.SetSession("search", search)
 
 	c.TplName = "index.html"
+}
+
+// Modifier le fichier des users
+func (c *MainController) Users() {
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	if c.Ctx.Input.Method() == "POST" {
+
+		content := c.GetString("content")
+
+		// ENREGISTREMENT du fichier
+		err := models.UpdateUsers([]byte(content))
+		if err != nil {
+			logs.Error(err)
+			flash.Error("Users %s", err)
+			flash.Store(&c.Controller)
+		}
+	}
+
+	content, err := models.GetUsersContent()
+	if err != nil {
+		flash.Error("%v", err)
+		flash.Store(&c.Controller)
+	}
+
+	// Remplissage du contexte pour le template
+	c.Data["content"] = &content
+
+	c.TplName = "users.html"
 }

@@ -27,7 +27,7 @@ type BeeConfig struct {
 	Original    string          // chemin du répertoire des originaux
 	Trash       string          // chemin de la corbeille
 	Thumbnail   string          // chemin du répertoire racine des miniatures
-	UsersFile   string          // chemin d'accès au fichier des utilisateurs
+	UsersPath   string          // chemin d'accès au fichier des utilisateurs
 	Width       int             // largeur de la vignette
 	Height      int             // hauteur de la vignette
 	BeeDirs     []*BeeDir       // Liste des BeeDir trouvés dans app.conf.beedir

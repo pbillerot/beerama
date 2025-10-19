@@ -29,7 +29,7 @@
 				</a>
 				<a class="item">
 					<div class="ui buttons">
-						<div id="button_validate" data-return="/meta/{{$beedir.ID}}/{{$beefile.ID}}"
+						<div id="button_validate" data-return="/e/meta/{{$beedir.ID}}/{{$beefile.ID}}"
 							class="ui icon red small button bee-submit-meta disabled">
 							<i class="save icon"></i> Enregistrer
 						</div>
@@ -49,7 +49,7 @@
 	<!-- MAIN -->
 	<main>
 		{{template "_flash.html" .}}
-		<form id="form_meta_id" class="ui form" method="POST" action="/meta/{{$beedir.ID}}/{{$beefile.ID}}">
+		<form id="form_meta_id" class="ui form" method="POST" action="/e/meta/{{$beedir.ID}}/{{$beefile.ID}}">
 			{{ .xsrfdata }}
 			<input type="hidden" name="return" value="/return">
 			<div class="ui stackable grid" style="margin: 1em;">
@@ -67,8 +67,8 @@
 						<input class="bee-onchange" type="hidden" name="image" value="">
 						{{else if $beefile.IsPdf}}
 						<div class="ui centered bordered fluid image">
-							<a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank"><img
-									src="{{$beefile.UrlThumb}}?{{$composter}}"></a>
+							<img data-pdf-thumbnail-file="{{$beefile.UrlImage}}" src="/static/pdfThumbnails/pdf.png"
+                            data-pdf-thumbnail-height="400">
 						</div>
 						{{else}}
 						<a class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
@@ -92,8 +92,8 @@
 						<div class="field">
 							<label>Légende</label>
 							<div class="header">
-								<input class="bee-onchange" type="text" name="description" placeholder="Légende"
-									value="{{$beefile.Description}}">
+								<textarea class="bee-onchange" name="description" placeholder="Légende"
+									>{{$beefile.Description}}</textarea>
 							</div>
 						</div>
 						<div class="fields">
@@ -117,7 +117,7 @@
 							<div class="field" style="width: 80px">
 								<label>&nbsp;</label>
 								<button class="ui icon button bee-modal-new"
-									data-action="/tag/{{$beedir.ID}}/{{$beefile.ID}}"
+									data-action="/e/tag/{{$beedir.ID}}/{{$beefile.ID}}"
 									title="Créer une nouvelle étiquette...">
 									<i class="icon file plus"></i>
 								</button>
@@ -172,7 +172,7 @@
 	<div id="bee-modal-restore" class="ui tiny modal">
 		<div class="header">Confirmer la restauration de l'image ?</div>
 		<div class="content">
-			<form class="ui form" method="POST" action="/restore/{{$beedir.ID}}/{{$beefile.ID}}">
+			<form class="ui form" method="POST" action="/e/restore/{{$beedir.ID}}/{{$beefile.ID}}">
 				{{ .xsrfdata }}
 				<div class="ui message">
 					<div class="header">

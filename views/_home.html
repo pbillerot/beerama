@@ -2,16 +2,16 @@
     {{template "_flash.html" .}}
     <div class="ui cards">
         <div class="ui centered card bee-width-xxl">
-            <div class="image" href="#" title='{{.username}}, Bienvenue dans {{.config.Title}} "{{.config.Description}}"'>
+            <div class="image" href="#" title='{{.user_id}}, Bienvenue dans {{.config.Title}} "{{.config.Description}}"'>
                 <img src="/static/img/beerama2.png">
             </div>
             <div class="content">
                 <div class="meta">
                     <div class="ui brown left floated label">
                         <i class="user icon"></i>
-                        {{.username}}
+                        {{.user_id}}
                         <div class="detail">
-                            {{if .is_admin}}admin{{else if .is_editor}}éditeur{{else}}lecteur{{end}}
+                            {{.role}}
                         </div>
                     </div>
                     <a class="ui orange right floated label" href="{{.config.Github}}" target="_blank"

@@ -55,19 +55,19 @@
                     <div class="ui small icon button" id="bee-selector" title="Nombre de sélection">
                         <i class="check icon"></i>
                     </div>
-                    <div class="ui small icon button bee-modal-duplicate" data-action="/duplicate/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-duplicate" data-action="/e/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>
                     </div>
-                    <div class="ui small icon button bee-modal-move" data-action="/cp/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-move" data-action="/e/cp/{{$beedir.ID}}"
                         title="Copier dans un autre album...">
                         <i class="copy outline icon"></i>
                     </div>
-                    <div class="ui small icon button bee-modal-move" data-action="/mv/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-move" data-action="/e/mv/{{$beedir.ID}}"
                         title="Déplacer dans un autre album...">
                         <i class="arrow right icon"></i>
                     </div>
-                    <div class="ui small icon button bee-modal-delete" data-action="/rm/{{$beedir.ID}}"
+                    <div class="ui small icon button bee-modal-delete" data-action="/e/rm/{{$beedir.ID}}"
                         title="Supprimer la diapo de l'album...">
                         <i class="trash alternate outline icon"></i>
                     </div>
@@ -77,7 +77,7 @@
             {{if $is_admin}}
             <div class="item">
                 <div class="ui small circular icon button bee-modal-upload" title="Déposer une photo dans l'album..."
-                    data-action="/upload/{{$beedir.ID}}">
+                    data-action="/e/upload/{{$beedir.ID}}">
                     <i class="plus icon"></i>
                 </div>
             </div>
@@ -89,53 +89,56 @@
                     {{ if eq $beedir.Name ""}}
                     {{if $is_admin}}
                     <div class="divider"></div>
-                    <div class="ui icon item bee-modal-new" title="Créer un nouvel album" data-action="/mkdir">
+                    <div class="ui icon item bee-modal-new" title="Créer un nouvel album" data-action="/a/mkdir">
                         <i class="icon folder plus"></i>Créer un nouvel album...
                     </div>
-                    <a class="ui icon item bee-nag" href="/reload">
+                    <a class="ui icon item bee-nag" href="/a/reload">
                         <i class="refresh icon"></i>Recharger tous les albums
+                    </a>
+                    <a class="ui icon item" href="/a/users">
+                        <i class="user icon"></i>Modifier le fichier des utilisateurs...
                     </a>
                     {{end}}
                     {{else}}
                     {{if $is_editor}}
                     <div class="ui icon item bee-modal-new" title="Créer un dessin..." 
                         data-placeholder="???.drawio.png"
-                        data-action="/newdraw/{{$beedir.ID}}">
+                        data-action="/e/newdraw/{{$beedir.ID}}">
                         <i class="draw polygon icon"></i>Créer un dessin...
                     </div>
                     {{ if eq $beedir.ParentID ""}}
                     <div class="ui icon item bee-modal-new" title="Créer un sous-dossier"
-                        data-action="/mkdir/{{$beedir.ID}}">
+                        data-action="/e/mkdir/{{$beedir.ID}}">
                         <i class="icon folder plus"></i>Créer un sous-dossier...
                     </div>
                     {{end}}
                     {{ if eq (len $beedir.BeeFiles) 0}}
                     {{ if $beedir.ParentID}}
                     <a class="ui icon item bee-modal-confirm" title="Supprimer le sous-dossier..."
-                        data-action="/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
+                        data-action="/e/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
                         <i class="dash icon"></i>Supprimer le sous-dossier...
                     </a>
                     {{else}}
                     <a class="ui icon item bee-modal-confirm" title="Supprimer l'album..."
-                        data-action="/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
+                        data-action="/e/rmdir/{{$beedir.ID}}" data-message="{{$beedir.Name}}">
                         <i class="dash icon"></i>Supprimer l'album...
                     </a>
                     {{end}}
                     {{end}}
                     {{ if $beedir.ParentID}}
                     <div class="ui icon item bee-modal-rename" title="Renommer le sous-dossier..."
-                        data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                        data-action="/e/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer le sous-dossier...
                     </div>
                     {{else}}
                     {{if $is_admin}}
                     <div class="ui icon item bee-modal-rename" title="Renommer l'album"
-                        data-action="/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                        data-action="/e/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer l'album...
                     </div>
                     {{end}}
                     {{end}}
-                    <a class="ui icon item bee-nag" href="/reload/{{$beedir.ID}}">
+                    <a class="ui icon item bee-nag" href="/e/reload/{{$beedir.ID}}">
                         <i class="refresh icon"></i>Recharger les images de l'album
                     </a>
                     {{end}}
@@ -291,7 +294,7 @@
     <div id="bee-modal-upload" class="ui tiny modal">
         <div class="header">Déposer des fichiers...</div>
         <div class="content">
-            <form class="ui form" method="POST" action="/upload/{{$beedir.ID}}" enctype="multipart/form-data">
+            <form class="ui form" method="POST" action="/e/upload/{{$beedir.ID}}" enctype="multipart/form-data">
                 {{ .xsrfdata }}
                 <div class="field">
                     <label>Dans</label>

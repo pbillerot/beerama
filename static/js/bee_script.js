@@ -21,7 +21,7 @@ $(document).ready(function () {
       var $fsrc = ui.draggable.data('fsrc');
       // console.log('drag', $dsrc, $fsrc, 'drop', $dest);
       var $form = $('#bee-drag-drop').find('form');
-      $form.attr('action', '/dragdrop/' + $dest);
+      $form.attr('action', '/e/dragdrop/' + $dest);
       $form.find("input[name='dsrc']").val($dsrc);
       $form.find("input[name='fsrc']").val($fsrc);
       $form.submit();
@@ -45,6 +45,7 @@ $(document).ready(function () {
   });
 
   $('.bee-onchange').on('change', function (event) {
+    $(".bee-submit-users").removeClass('disabled');
     $(".bee-submit-meta").removeClass('disabled');
     $(".bee-submit-meta-retour").removeClass('disabled');
     event.preventDefault();
@@ -131,7 +132,7 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
-  // ACTION CONFIRMATION
+  // ACTION CONFIRMATION universelle
   $('.bee-modal-confirm').on('tap', function (event) {
     var $form = $('#bee-modal-confirm').find('form');
     $('.bee-modal-title').html($(this).attr('title'));
@@ -559,6 +560,13 @@ $(document).ready(function () {
       $content.find('.bee-search-input-1').val($(this).val());
       $content.find('.bee-search-active').trigger('click');
     }
+  });
+
+  // USERS EDITOR
+  $('.bee-submit-users').on('tap', function (event) {
+    var $form = $('#bee-form-users');
+    $form.submit();
+    event.preventDefault();
   });
 
 });

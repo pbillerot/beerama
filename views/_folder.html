@@ -6,6 +6,7 @@
 {{$founds := .founds}}
 {{$search := .search}}
 {{$is_admin := .is_admin}}
+{{$is_editor := .is_editor}}
 {{$composter := .composter}}
 <input type="hidden" id="bee_view" value="folder">
 <div style="margin: 1em">
@@ -33,6 +34,7 @@
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}"
                 data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
                 data-base="{{$beefile.Base}}" style="padding: 0.5em;">
+                <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
                 {{if or $htagid $search}}
                 {{range $i, $bdir := $config.BeeDirs}}
@@ -45,7 +47,7 @@
                 {{end}} <!--/eq $bdir-->
                 {{end}} <!--/range-->
                 {{end}} <!--/$htagid-->
-                <!-- la thumbnail de l'image -->
+                <!-- THUMBNAIL -->
                 {{if $beefile.IsPdf}}
                 <div class="ui centered image" title="{{$beefile.Base}}">
                     <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank">
@@ -63,13 +65,12 @@
                     </a>
                 </div>
                 {{end}}
-                <!-- attributs de la diapo -->
-                <div class="content {{if $is_admin}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"
-                    title="Clic pour modifier légende et étiquettes" data-url="/meta/{{$beedirid}}/{{$beefile.ID}}">
+                <!-- METADATA -->
+                <a class="content {{if $is_editor}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"
+                    title="Clic pour modifier légende et étiquettes" data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <div class="description">
                         <!-- description -->
-                        <div class="ui center aligned sub header" style="font-size: 1em;text-transform: none;">
-                            {{$beefile.Description}}</div>
+                        <div class="ui center aligned sub header" style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Description}}</div>
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
                             {{$beefile.DateOriginal}} {{$beefile.TimeOriginal}}
@@ -83,7 +84,7 @@
                             {{end}}
                         </div>
                     </div>
-                </div>
+                </a>
             </div>
         </div>
         {{end}} <!-- /if image-->

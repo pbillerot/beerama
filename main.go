@@ -57,7 +57,7 @@ func init() {
 		models.Config.Thumbnail = val
 	}
 	if val, ok := config.String("users"); ok == nil {
-		models.Config.UsersFile = val
+		models.Config.UsersPath = val
 	}
 	if val, ok := config.String("index"); ok == nil {
 		models.Config.IndexDirs = val
