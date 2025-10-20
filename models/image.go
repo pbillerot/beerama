@@ -176,8 +176,16 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 			case "Description":
 				beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
 			case "DateTimeOriginal":
-				beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
-				beeFile.TimeOriginal = v.(string)[11:16]
+				if len(v.(string)) > 9 {
+					beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
+				} else {
+					beeFile.DateOriginal = ""
+				}
+				if len(v.(string)) > 15 {
+					beeFile.TimeOriginal = v.(string)[11:16]
+				} else {
+					beeFile.TimeOriginal = ""
+				}
 			}
 		}
 	}

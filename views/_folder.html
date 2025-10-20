@@ -59,7 +59,7 @@
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}"
                         data-gallery="gallery"
-                        data-description="{{$beefile.DateOriginal}} <b>{{$beefile.Description}}</b>"
+                        data-description="{{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}}{{$beefile.TimeOriginal}} <b>{{$beefile.Description}}</b>"
                         ><img
                             src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
                     </a>
