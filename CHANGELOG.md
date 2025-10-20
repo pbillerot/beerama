@@ -3,12 +3,15 @@
 
 ### À venir :
 > liste des albums autorisés * 
-> commande pour relire users.yaml si admin
+> log voir rotation
 > log avec userid
 > voir lors de la restauration d'une image les metadata sont appliquées ? oui
 - vider la corbeille d'un album si album
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+1.7.1 du 20 oct. 2025
+- `added` protection des albums et vignettes du site 
 
 1.7.0 du 19 oct. 2025
 - `changed` url changée pour gérer les acces editor /e/ admin /a/

@@ -9,7 +9,6 @@ carom:
     - Bricolage:
       is_editor: true
     - Nature:
-      is_reader: true
 
 # ne pas utiliser les tabulations mais des espaces (2 par exemple)
 # is_admin
@@ -17,6 +16,6 @@ carom:
 # is_editor
 #   peut créer des sous-dossiers
 #   crud des fichier jpg png pdf drawio
-# is_reader
+# lecteur
 #   lecteur seulement des albums et sous-dossiers
 #   peut télécharger des fichiers

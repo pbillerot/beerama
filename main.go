@@ -1,15 +1,17 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/beego/beego/v2/core/config"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
-	"github.com/pbillerot/beerama/controllers"
 	"github.com/pbillerot/beerama/models"
+
+	// pour charger les init() des packages suivants
+	_ "github.com/pbillerot/beerama/controllers"
 	_ "github.com/pbillerot/beerama/routers"
 )
-
-var err error
 
 func main() {
 	web.Run()
@@ -69,19 +71,18 @@ func init() {
 		models.Config.Height = int(val)
 	}
 
-	// lecture des répertoires dans beeDir
-	loadBeedirs()
-}
+	// chargement des users
+	models.LoadUsers()
 
-func loadBeedirs() {
-	err = models.LoadBeeDirs()
+	// lecture des répertoires dans beeDir
+	err := models.LoadBeeDirs()
 	if err != nil {
 		logs.Error("LoadBeeDirs", err)
 	}
-	// déclaration des répertoires racine et thumbnail en static
-	web.SetStaticPath("/album", models.Config.Racine)
-	web.SetStaticPath("/thumb", models.Config.Thumbnail)
 
-	// ajout du filtre d'authentification
-	controllers.DeclareAuth()
+	// déclaration des répertoires racine et thumbnail en static et protégé par login
+	web.SetStaticPath("/s/album", models.Config.Racine)
+	web.SetStaticPath("/s/thumb", models.Config.Thumbnail)
+
+	fmt.Println("Main init. Proceeding.")
 }

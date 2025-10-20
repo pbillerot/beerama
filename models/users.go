@@ -23,6 +23,7 @@ func LoadUsers() (err error) {
 		logs.Error("Unmarshal", msg)
 		return err
 	}
+	fmt.Println("LoadUsers. Proceeding.")
 	return err
 }
 
@@ -61,7 +62,7 @@ func CheckUser(user_id, password string) bool {
 	if Config.Users[user_id].Password == password {
 		return true
 	} else {
-		logs.Error("Connexion [%s]/[%s]", user_id, password)
+		logs.Error("Tentative Connexion [%s]/[%s]", user_id, password)
 	}
 	return false
 }

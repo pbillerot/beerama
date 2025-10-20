@@ -8,7 +8,6 @@ type User struct {
 	Password string `yaml:"password"`
 	IsAdmin  bool   `yaml:"is_admin"`
 	IsEditor bool   `yaml:"is_editor"`
-	IsReader bool   `yaml:"is_reader"`
 }
 
 // BeeConfig structure du fichier de configuration de l'application app.conf

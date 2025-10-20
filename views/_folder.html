@@ -73,7 +73,9 @@
                         <div class="ui center aligned sub header" style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Description}}</div>
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
-                            {{$beefile.DateOriginal}} {{$beefile.TimeOriginal}}
+                            {{if ne (len $beefile.DateOriginal) 0 }}
+                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}
+                            {{end}}
                         </span>
                         <!-- étiquettes hashtags -->
                         <div>

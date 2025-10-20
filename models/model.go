@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -70,6 +71,7 @@ func LoadBeeDirs() error {
 		beeDir.UpdateBeeDir()
 	}
 	err = Config.IndexAllBeefiles()
+	fmt.Println("LoadBeeDirs. Proceeding.")
 	return err
 }
 

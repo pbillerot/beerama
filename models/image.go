@@ -94,7 +94,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 	beeFile.Dir = filepath.Dir(path)
 	beeFile.Base = filepath.Base(path)
 	beeFile.Ext = filepath.Ext(path)
-	beeFile.UrlImage = "/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
+	beeFile.UrlImage = "/s/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
 
 	if contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
@@ -187,11 +187,11 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	if beeFile.IsPdf {
 		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
-		beeFile.UrlThumb = "/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
+		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
 
 	} else {
 		beeFile.Thumb = dirThumb + "th_" + beeFile.Base
-		beeFile.UrlThumb = "/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
+		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
 	}
 
 	// ajout dans BeeFiles
