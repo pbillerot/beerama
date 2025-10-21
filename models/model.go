@@ -25,7 +25,7 @@ func LoadBeeDirs() error {
 		return err
 	}
 	// Instanciation des BeeDirs
-	Config.BeeDirs = Config.BeeDirs[:0]
+	Config.BeeDirs = make(map[string]*BeeDir)
 	var dirid = 0
 	for _, pi := range pis {
 		var beeDir BeeDir
@@ -37,12 +37,12 @@ func LoadBeeDirs() error {
 		if err != nil {
 			return err
 		}
-		Config.BeeDirs = append(Config.BeeDirs, &beeDir)
+		Config.BeeDirs[beeDir.ID] = &beeDir // append(Config.BeeDirs, &beeDir)
 		dirid = dirid + 1
 	}
-	sort.Slice(Config.BeeDirs, func(i, j int) bool {
-		return Config.BeeDirs[i].Name < Config.BeeDirs[j].Name
-	})
+	// sort.Slice(Config.BeeDirs, func(i, j int) bool {
+	// 	return Config.BeeDirs[i].Name < Config.BeeDirs[j].Name
+	// })
 
 	// sous-dossiers
 	for _, beeDir := range Config.BeeDirs {
@@ -63,7 +63,8 @@ func LoadBeeDirs() error {
 				return err
 			}
 			beeDir.WithChildren = true
-			Config.BeeDirs = append(Config.BeeDirs, &bdir)
+			Config.BeeDirs[bdir.ID] = &bdir
+			// Config.BeeDirs = append(Config.BeeDirs, &bdir)
 			dirid = dirid + 1
 			// beeDir.BeeFiles = append(beeDir.BeeFiles, bdir.BeeFiles...)
 
@@ -125,24 +126,26 @@ func (config *BeeConfig) AddFolder(path string) {
 	beeDir.ID = "dir" + strconv.Itoa(len(config.BeeDirs))
 	beeDir.Path = config.Racine + "/" + path
 	beeDir.Name = path
-	config.BeeDirs = append(config.BeeDirs, &beeDir)
-	sort.Slice(config.BeeDirs, func(i, j int) bool {
-		return config.BeeDirs[i].Name < config.BeeDirs[j].Name
-	})
+	config.BeeDirs[beeDir.ID] = &beeDir
+	// config.BeeDirs = append(config.BeeDirs, &beeDir)
+	// sort.Slice(config.BeeDirs, func(i, j int) bool {
+	// 	return config.BeeDirs[i].Name < config.BeeDirs[j].Name
+	// })
 }
 
 // AddSubFolder
 func (config *BeeConfig) AddSubFolder(parent *BeeDir, name string) {
 	parent.WithChildren = true
-	var beedir BeeDir
-	beedir.ID = "dir" + strconv.Itoa(len(config.BeeDirs))
-	beedir.Path = config.Racine + "/" + parent.Name + "/" + name
-	beedir.Name = name
-	beedir.ParentID = parent.ID
-	config.BeeDirs = append(config.BeeDirs, &beedir)
-	sort.Slice(config.BeeDirs, func(i, j int) bool {
-		return config.BeeDirs[i].Name < config.BeeDirs[j].Name
-	})
+	var beeDir BeeDir
+	beeDir.ID = "dir" + strconv.Itoa(len(config.BeeDirs))
+	beeDir.Path = config.Racine + "/" + parent.Name + "/" + name
+	beeDir.Name = name
+	beeDir.ParentID = parent.ID
+	config.BeeDirs[beeDir.ID] = &beeDir
+	// config.BeeDirs = append(config.BeeDirs, &beedir)
+	// sort.Slice(config.BeeDirs, func(i, j int) bool {
+	// 	return config.BeeDirs[i].Name < config.BeeDirs[j].Name
+	// })
 }
 
 // RemoveFolder
@@ -154,15 +157,16 @@ func (config *BeeConfig) RemoveFolder(beeDir *BeeDir) {
 	}
 	// suppression du beeDir de conig.BeeDirs
 	// recherche de l'indice dans le tableau
-	for index, bdir := range config.BeeDirs {
-		if bdir.Path == beeDir.Path {
-			config.BeeDirs = append(config.BeeDirs[:index], config.BeeDirs[index+1:]...)
-			break
-		}
-	}
-	sort.Slice(config.BeeDirs, func(i, j int) bool {
-		return config.BeeDirs[i].Name < config.BeeDirs[j].Name
-	})
+	delete(config.BeeDirs, beeDir.ID)
+	// for index, bdir := range config.BeeDirs {
+	// 	if bdir.Path == beeDir.Path {
+	// 		config.BeeDirs = append(config.BeeDirs[:index], config.BeeDirs[index+1:]...)
+	// 		break
+	// 	}
+	// }
+	// sort.Slice(config.BeeDirs, func(i, j int) bool {
+	// 	return config.BeeDirs[i].Name < config.BeeDirs[j].Name
+	// })
 }
 
 // readFolder retourne la liste des fichiers dans BeePathInfo
