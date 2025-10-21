@@ -2,10 +2,10 @@
 # CHANGELOG
 
 ### À venir :
+> copier déplacer ne marche plus
+> upload ou new images -> keyword new_[user_id]
 > liste des albums autorisés * 
-> log voir rotation
 > log avec userid
-> voir lors de la restauration d'une image les metadata sont appliquées ? oui
 - vider la corbeille d'un album si album
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour

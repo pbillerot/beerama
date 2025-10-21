@@ -22,6 +22,7 @@ func LoadBeeDirs() error {
 	// dossiers racines
 	err := getOnlyFolders(Config.Racine, &pis)
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 	// Instanciation des BeeDirs
@@ -35,6 +36,7 @@ func LoadBeeDirs() error {
 		beeDir.Name = pi.Info.Name()
 		err := beeDir.LoadBeeFiles(0)
 		if err != nil {
+			logs.Error(err)
 			return err
 		}
 		Config.BeeDirs[beeDir.ID] = &beeDir // append(Config.BeeDirs, &beeDir)
@@ -49,6 +51,7 @@ func LoadBeeDirs() error {
 		pis = pis[:0]
 		err = getOnlyFolders(Config.Racine+"/"+beeDir.Name, &pis)
 		if err != nil {
+			logs.Error(err)
 			return err
 		}
 		// ajout des images du sous-dossier
@@ -60,6 +63,7 @@ func LoadBeeDirs() error {
 			bdir.Name = pi.Info.Name()
 			err := bdir.LoadBeeFiles(len(beeDir.BeeFiles) + 1)
 			if err != nil {
+				logs.Error(err)
 				return err
 			}
 			beeDir.WithChildren = true
@@ -82,6 +86,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 	// create new index with temp dir (usually "" is fine)
 	idx, err := fulltext.NewIndexer(string(config.IndexDirs))
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 	defer idx.Close()
@@ -109,11 +114,13 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 	// when done, write out to final index
 	f, err := os.Create(config.IndexDirs + "/idxout")
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 
 	err = idx.FinalizeAndWrite(f)
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 	logs.Info("Images", "indexées")
@@ -153,6 +160,7 @@ func (config *BeeConfig) RemoveFolder(beeDir *BeeDir) {
 
 	err := os.RemoveAll(beeDir.Path)
 	if err != nil {
+		logs.Error(err)
 		return
 	}
 	// suppression du beeDir de conig.BeeDirs
@@ -174,6 +182,7 @@ func getOnlyFolders(directory string, info *[]BeePathInfo) (err error) {
 	var pis []BeePathInfo
 	err = readFolder(directory, &pis)
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 	for _, pi := range pis {
@@ -201,9 +210,10 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 	var pis []BeePathInfo
 	err := readFolder(beeDir.Path, &pis)
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
-	beeDir.BeeFiles = beeDir.BeeFiles[:0]
+	beeDir.BeeFiles = make(map[string]*BeeFile) // beeDir.BeeFiles[:0]
 	for _, pi := range pis {
 		if !pi.Info.IsDir() {
 			err, _ := beeDir.AddBeeFile(pi.Path, idstart)
@@ -243,9 +253,17 @@ func (beeDir *BeeDir) UpdateBeeDir() {
 	keyUniqueSorted := BeeUniqueString(beeDir.Keywords)
 	sort.Strings(keyUniqueSorted)
 	beeDir.Keywords = keyUniqueSorted
-	// tri des images sur la date original
-	sort.Slice(beeDir.BeeFiles, func(i, j int) bool {
-		return beeDir.BeeFiles[i].DateOriginal < beeDir.BeeFiles[j].DateOriginal
+
+	// tri des images sur la date et l'heure original
+	keys := make([]string, 0, len(beeDir.BeeFiles))
+	for k := range beeDir.BeeFiles {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if beeDir.BeeFiles[keys[i]].DateOriginal != beeDir.BeeFiles[keys[j]].DateOriginal {
+			return beeDir.BeeFiles[keys[i]].DateOriginal < beeDir.BeeFiles[keys[j]].DateOriginal
+		}
+		return beeDir.BeeFiles[keys[i]].TimeOriginal < beeDir.BeeFiles[keys[j]].TimeOriginal
 	})
 
 }
@@ -263,7 +281,7 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 		thumbOld = Config.Thumbnail + "/" + beeDir.Name
 		thumbNew = Config.Thumbnail + "/" + newName
 	} else {
-		parent := GetBeeDir(beeDir.ParentID)
+		parent := Config.BeeDirs[beeDir.ParentID]
 		pathOld = Config.Racine + "/" + parent.Name + "/" + beeDir.Name
 		pathNew = Config.Racine + "/" + parent.Name + "/" + newName
 		originalOld = Config.Original + "/" + parent.Name + "/" + beeDir.Name
@@ -304,7 +322,7 @@ func (beeDir *BeeDir) AddKeyword(keyword string) {
 	beeDir.UpdateBeeDir()
 	if beeDir.ParentID != "" {
 		// report des keywords dans l'album
-		parent := GetBeeDir(beeDir.ParentID)
+		parent := Config.BeeDirs[beeDir.ParentID]
 		parent.Keywords = append(parent.Keywords, beeDir.Keywords...)
 		parent.UpdateBeeDir()
 	}
@@ -340,12 +358,10 @@ func GetBeePathDir(path string) *BeeDir {
 
 // GetBeeDir retourne la BeeDir
 func GetBeeDir(beedirid string) *BeeDir {
-	for _, dir := range Config.BeeDirs {
-		if beedirid == dir.ID {
-			return dir
-		}
+	if Config.BeeDirs[beedirid] == nil {
+		return &BeeDir{}
 	}
-	return &BeeDir{}
+	return Config.BeeDirs[beedirid]
 }
 
 // GetFirstBeeDir retourne la première BeeDir
@@ -356,25 +372,7 @@ func GetFirstBeeDir() *BeeDir {
 	return &BeeDir{}
 }
 
-// GetBeeDir retourne la BeeDir
-func GetBeeFile(beedirid, beefileid string) *BeeFile {
-	for _, dir := range Config.BeeDirs {
-		if beedirid == dir.ID {
-			for _, bfile := range dir.BeeFiles {
-				switch beefileid {
-				case bfile.ID:
-					return bfile
-				case beedirid + "_" + bfile.ID:
-					// l'id d'un beefile est identifié par la concaténation d'index du fulltext
-					return bfile
-				}
-			}
-		}
-	}
-	return &BeeFile{}
-}
-
-// GetBeeDir retourne la BeeDir qui correspond au path
+// GetBeeFilePath retourne la BeeDir qui correspond au path
 func GetBeeFilePath(beeDir *BeeDir, path string) *BeeFile {
 	for _, file := range beeDir.BeeFiles {
 		if path == file.Path {

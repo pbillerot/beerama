@@ -204,7 +204,8 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 
 	// ajout dans BeeFiles
 	beeFile.ID = "id" + strconv.Itoa(idstart+len(beeDir.BeeFiles)+1)
-	beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
+	beeDir.BeeFiles[beeFile.ID] = beeFile
+	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
 
 	// report des keywords dand beeDir
 	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
@@ -287,13 +288,14 @@ func (beeFile *BeeFile) DeleteImage(beeDir *BeeDir) (err error) {
 	}
 
 	// suppression du beeFile de beeDir.BeeFiles
+	delete(beeDir.BeeFiles, beeFile.ID)
 	// recherche de l'indice dans le tableau
-	for index, file := range beeDir.BeeFiles {
-		if file.Path == beeFile.Path {
-			beeDir.BeeFiles = append(beeDir.BeeFiles[:index], beeDir.BeeFiles[index+1:]...)
-			break
-		}
-	}
+	// for index, file := range beeDir.BeeFiles {
+	// 	if file.Path == beeFile.Path {
+	// 		beeDir.BeeFiles = append(beeDir.BeeFiles[:index], beeDir.BeeFiles[index+1:]...)
+	// 		break
+	// 	}
+	// }
 	return nil
 }
 
