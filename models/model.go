@@ -39,6 +39,9 @@ func LoadBeeDirs() error {
 			logs.Error(err)
 			return err
 		}
+		// chargement des beeaccess.yaml
+		beeDir.LoadAccess()
+
 		Config.BeeDirs[beeDir.ID] = &beeDir // append(Config.BeeDirs, &beeDir)
 		dirid = dirid + 1
 	}
@@ -307,6 +310,38 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 	// rename de beeDir
 	beeDir.Name = newName
 	beeDir.Path = pathNew
+	return nil
+}
+
+// RenameBeeFile beeFile.path en newName
+func (beeFile *BeeFile) RenameBeeFile(newName string) error {
+
+	// rename du fichier, original et thumbnail
+	var pathOld, pathNew, originalOld, originalNew, thumbOld, thumbNew string
+	pathOld = beeFile.Path
+	pathNew = strings.Replace(beeFile.Path, beeFile.Base, newName, 1)
+	originalOld = beeFile.Original
+	originalNew = strings.Replace(beeFile.Original, beeFile.Base, newName, 1)
+	thumbOld = beeFile.Thumb
+	thumbNew = strings.Replace(beeFile.Thumb, beeFile.Base, newName, 1)
+
+	err := os.Rename(pathOld, pathNew)
+	if err != nil {
+		return err
+	}
+	_, err = os.Stat(originalOld)
+	if os.IsExist(err) {
+		err = os.Rename(originalOld, originalNew)
+		if err != nil {
+			return err
+		}
+	}
+	err = os.Rename(thumbOld, thumbNew)
+	if err != nil {
+		return err
+	}
+	beeFile.UrlImage = strings.Replace(beeFile.UrlImage, beeFile.Base, newName, 1)
+	beeFile.UrlThumb = strings.Replace(beeFile.UrlThumb, beeFile.Base, newName, 1)
 	return nil
 }
 

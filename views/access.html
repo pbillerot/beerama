@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
 {{template "_head.html" .}}
-
+{{$beedir := .beedir}}
 <body>
   <!-- NAVBAR -->
   <div class="ui container">
     <div class="ui large fixed grey inverted menu borderless bee-bar-light">
       <div class="item">
-        <button class="ui labeled icon button bee-confirm-close" data-url="/">
+        <button class="ui labeled icon button bee-confirm-close" data-url="/return">
           <i class="left arrow icon"></i>
           Retour
         </button>
       </div>
-      <h3 class="header item"><i class="file code large icon"></i>beeusers.yaml</h3>
+      <h3 class="header item"><i class="file code large icon"></i>{{$beedir.Name}} / .beeaccess.yaml</h3>
       <!-- RIGHT MENU -->
       <div class="right menu">
         <div class="item">
-          <button id="button_validate" class="ui icon google plus button bee-submit-users disabled" data-return="/users"
+          <button id="button_validate" class="ui icon google plus button bee-submit-users disabled" data-return="/return"
             title="Enregistrer">
             <i class="save icon"></i>
           </button>
@@ -31,7 +31,7 @@
     <div class="ui container" style="height: 100%">
       {{template "_flash.html" .}}
       <!-- Formulaire d'Edition -->
-      <form  style="height: 80%" class="ui form attached segment" id="bee-form-users" method="POST" action="/a/users">
+      <form  style="height: 80%" class="ui form attached segment" id="bee-form-users" method="POST" action="/a/access/{{$beedir.ID}}">
         {{ .xsrfdata }}
         <section>
           <div class="field">

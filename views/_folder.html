@@ -1,5 +1,5 @@
-{{$config := .config}}
 {{$parent := .parent}}
+{{$beedirs := .beedirs}}
 {{$beedir := .beedir}}
 {{$beefiles := .beefiles}}
 {{$htagid := .htagid}}
@@ -31,13 +31,13 @@
         {{$beedirid := $beefile.DirID}}
         {{if or $beefile.IsImage $beefile.IsPdf }}
         <div class="grey grid-item" style="margin: 0.5em">
-            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_admin}}bee-press draggable{{end}}"
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press draggable{{end}}"
                 data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
                 data-base="{{$beefile.Base}}" style="padding: 0.5em;">
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
                 {{if or $htagid $search}}
-                {{range $i, $bdir := $config.BeeDirs}}
+                {{range $i, $bdir := $beedirs}}
                 {{if eq $bdir.ID $beefile.DirID}}
                 <div class="grey content" style="padding: 0.3em 0 0.3em 0;">
                     <a href="/folder/{{$beedirid}}" class="ui center aligned sub header">
@@ -52,7 +52,7 @@
                 <div class="ui centered image" title="{{$beefile.Base}}">
                     <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank">
                         <img data-pdf-thumbnail-file="{{$beefile.UrlImage}}" src="/static/pdfThumbnails/pdf.png"
-                            data-pdf-thumbnail-height="400">
+                            data-pdf-thumbnail-heightX="400">
                     </a>
                 </div>
                 {{else}}

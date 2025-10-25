@@ -2,13 +2,31 @@
 # CHANGELOG
 
 ### À venir :
-> copier déplacer ne marche plus
+x éclater index en home.html et folder.html
+x si clic sur vignette mémoriser l'anchor
+x liste des albums autorisés
+x ne pas afficher l'icône menu si vide
+x home liste albums triés
+x intégrer fomantic js dans static
+x bug acces album non autorisé
+x vignette pdf width 100%
+x download de fichiers
+x renommer un fichier fileRename
+> ajout fichier beenote.md
+> menu orange pour drag & drop
+> éclater meta en _meta_file _meta_meta
+> vignette pdf dans meta plus grande voire visu dans une iframe
+> bug htag # tout seul en prod
 > upload ou new images -> keyword new_[user_id]
-> liste des albums autorisés * 
 > log avec userid
+Plus tard
 - vider la corbeille d'un album si album
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+1.8.0 du 25 oct. 2025
+- `added` gestion des accès aux albums lecture/écriture via le fichier beeaccess.yaml
+- `added` ajout action de renommage d'une diapo
 
 1.7.1 du 20 oct. 2025
 - `added` protection des albums et vignettes du site 
@@ -16,8 +34,6 @@
 1.7.0 du 19 oct. 2025
 - `changed` url changée pour gérer les acces editor /e/ admin /a/
 - `added` éditeur du fichier users.yaml
-
-1.6.2 du xx oct. 2025
 - `changed` retour à la ligne acceptée dans champ description
 
 1.6.1 du 17 oct. 2025

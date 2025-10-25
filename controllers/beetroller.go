@@ -32,7 +32,6 @@ func (c *MainController) Prepare() {
 	c.Data["user_id"] = c.GetSession("user_id")
 	c.Data["role"] = c.GetSession("role")
 	c.Data["is_admin"] = models.Config.Users[user_id].IsAdmin
-	c.Data["is_editor"] = models.Config.Users[user_id].IsEditor
 
 	// Contexte lié à app.conf
 	c.Data["config"] = &models.Config

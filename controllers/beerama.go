@@ -1,14 +1,18 @@
 package controllers
 
 import (
+	"archive/zip"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"html/template"
 	"io"
 	"os"
+	"path/filepath"
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/beego/beego/v2/core/logs"
 
@@ -23,9 +27,20 @@ func (c *MainController) Main() {
 
 	beego.ReadFromRequest(&c.Controller)
 
-	c.Data["beedir"] = models.BeeDir{}
-	c.Data["beefiles"] = ""
-	c.Data["htagid"] = ""
+	// Sélection des bdirs accessibles par le user_id
+	user_id := c.GetSession("user_id").(string)
+	var beeDirs []models.BeeDir
+	for _, bdir := range models.Config.BeeDirs {
+		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
+			beeDirs = append(beeDirs, *bdir)
+		}
+	}
+	// tri des albums
+	sort.Slice(beeDirs, func(i, j int) bool {
+		return beeDirs[i].Name < beeDirs[j].Name
+	})
+
+	c.Data["beedirs"] = &beeDirs
 
 	beego.ReadFromRequest(&c.Controller)
 
@@ -42,10 +57,47 @@ func (c *MainController) Return() {
 	}
 }
 
-// Folder Sélection d'un folder à administrer /folder/:beedirid
+// Folder Sélection d'un folder /folder/:beedirid
 func (c *MainController) Folder() {
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	var parent models.BeeDir
+	if beeDir.ParentID == "" {
+		parent = *models.GetBeeDir(beeDir.ID)
+	} else {
+		parent = *models.GetBeeDir(beeDir.ParentID)
+	}
+
+	// Sélection des bdirs accessibles et des sous-dossiers du bdir courant
+	user_id := c.GetSession("user_id").(string)
+	var beeDirs []models.BeeDir
+	// sélection des albums accessibles par user_id
+	for _, bdir := range models.Config.BeeDirs {
+		if bdir.ParentID == "" {
+			if bdir.ID == beeDir.ID {
+				beeDirs = append(beeDirs, *bdir)
+			} else {
+				// sélection seulement des bdirs modifiables par user_id
+				// pour alimenter la liste des bdirs destinataires des copies et deplacées
+				if bdir.IsUserEditor(user_id) {
+					beeDirs = append(beeDirs, *bdir)
+				}
+			}
+		}
+	}
+	// ajout des enfants de l'album
+	children := []models.BeeDir{}
+	for _, bdir := range models.Config.BeeDirs {
+		if bdir.ParentID == parent.ID {
+			children = append(children, *bdir)
+		}
+	}
+	// tri des enfants
+	sort.Slice(children, func(i, j int) bool {
+		return children[i].Name < children[j].Name
+	})
+	// ajout des enfants à la fin
+	beeDirs = append(beeDirs, children...)
 
 	// Construction de la liste des beefiles
 	beeFiles := []models.BeeFile{}
@@ -56,21 +108,93 @@ func (c *MainController) Folder() {
 	sort.Slice(beeFiles, func(i, j int) bool {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
-
-	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
+	c.Data["parent"] = &parent
+	c.Data["beedirs"] = &beeDirs
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = ""
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
 
 	// Mémorisation du dernier appel
 	c.SetSession("folder", c.Ctx.Request.RequestURI)
 
 	beego.ReadFromRequest(&c.Controller)
 
-	c.TplName = "index.html"
+	c.TplName = "folder.html"
 }
 
-// FolderHtag Sélection d'un folder à administrer /folder/:beedirid/htagid
+// FolderDownload Téléchargement des fichiers sélectionnés
+func (c *MainController) FolderDownload() {
+
+	files := c.GetStrings("files[]")
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+
+	if len(files) == 1 {
+		beeFile := beeDir.BeeFiles[files[0]]
+		c.Ctx.Output.Download(beeFile.Path, beeFile.Base)
+		return
+	}
+
+	filesToZip := []string{}
+	for _, beefile := range beeDir.BeeFiles {
+		if slices.Contains(files, beefile.ID) {
+			filesToZip = append(filesToZip, beefile.Path)
+		}
+	}
+
+	// 1. Set the necessary headers for a ZIP file download
+	c.Ctx.ResponseWriter.Header().Set("Content-Type", "application/zip")
+	// The Content-Disposition header forces a download and suggests a filename.
+	filename := fmt.Sprintf("beerama-%d.zip", time.Now().Unix())
+	c.Ctx.ResponseWriter.Header().Set("Content-Disposition", "attachment; filename=\""+filename+"\"")
+
+	// 2. Create a new zip writer that writes directly to the HTTP response body
+	zipWriter := zip.NewWriter(c.Ctx.ResponseWriter)
+	defer zipWriter.Close() // Ensure the zip writer is closed to finalize the archive
+
+	// 3. Loop through the files and add them to the zip archive
+	for _, filename := range filesToZip {
+		// Open the file from the disk
+		file, err := os.Open(filename)
+		if err != nil {
+			logs.Error("Failed to open file:", filename, err)
+			// Optionally, skip the file and continue, or return an error response
+			continue
+		}
+		defer file.Close()
+
+		// Get the base filename (e.g., "document_A.pdf" from "static/downloads/document_A.pdf")
+		// This ensures the files inside the zip don't have the full server path.
+		baseFilename := filepath.Base(filename)
+
+		// Create a file header within the zip archive
+		header := &zip.FileHeader{
+			Name:   baseFilename,
+			Method: zip.Deflate, // Use Deflate for compression
+		}
+
+		// Create the writer for the file within the zip archive
+		fileWriter, err := zipWriter.CreateHeader(header)
+		if err != nil {
+			logs.Error("Failed to create zip header for:", filename, err)
+			continue
+		}
+
+		// Copy the content of the file into the zip file writer
+		_, err = io.Copy(fileWriter, file)
+		if err != nil {
+			logs.Error("Failed to copy file content:", filename, err)
+			continue
+		}
+	}
+
+	// 4. (Implicitly handled by defer zipWriter.Close())
+	// The zip stream is sent directly to the client as the files are added.
+	// No need to load the entire archive into memory.
+
+}
+
+// FolderHtag Sélection d'un tag d'un album /folder/:beedirid/htagid
 func (c *MainController) FolderHtag() {
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
@@ -97,12 +221,13 @@ func (c *MainController) FolderHtag() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = htagid
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
 
 	c.SetSession("folder", c.Ctx.Request.RequestURI)
 
 	beego.ReadFromRequest(&c.Controller)
 
-	c.TplName = "index.html"
+	c.TplName = "folder.html"
 }
 
 // Modifier un données metadata de l'image
@@ -169,6 +294,7 @@ func (c *MainController) Meta() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["htagid"] = ""
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
 
 	// cas des images drawio
 
@@ -221,6 +347,7 @@ func (c *MainController) Tag() {
 	// actualisation
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
 
 	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
@@ -337,6 +464,28 @@ func (c *MainController) MkFolder() {
 	c.Ctx.Redirect(302, "/")
 }
 
+// FileRename
+func (c *MainController) FileRename() {
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
+	newName := c.GetString("new_name")
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	err := beeFile.RenameBeeFile(newName)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("RenameBeeFile %s", err)
+		flash.Store(&c.Controller)
+	}
+	beeDir.LoadBeeFiles(0)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
+}
+
 // FolderRename
 func (c *MainController) FolderRename() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
@@ -360,7 +509,7 @@ func (c *MainController) FolderRename() {
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
-// FolderRename
+// NewDraw
 func (c *MainController) NewDraw() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	newName := c.GetString("new_name")
@@ -712,11 +861,12 @@ func (c *MainController) Search() {
 	c.Data["beefiles"] = &beeFiles
 	c.Data["search"] = search
 	c.Data["htagid"] = ""
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
 
 	// Mémorisation du texte recherché dans la session
 	c.SetSession("search", search)
 
-	c.TplName = "index.html"
+	c.TplName = "folder.html"
 }
 
 // Modifier le fichier des users
@@ -747,4 +897,38 @@ func (c *MainController) Users() {
 	c.Data["content"] = &content
 
 	c.TplName = "users.html"
+}
+
+// Modifier le fichier des .beeaccess.yaml d'un album
+func (c *MainController) Access() {
+
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	if c.Ctx.Input.Method() == "POST" {
+
+		content := c.GetString("content")
+
+		// ENREGISTREMENT du fichier
+		err := beeDir.UpdateAccess([]byte(content))
+		if err != nil {
+			logs.Error(err)
+			flash.Error("Access %s", err)
+			flash.Store(&c.Controller)
+		}
+	}
+
+	content, err := beeDir.GetAccessContent()
+	if err != nil {
+		flash.Error("%v", err)
+		flash.Store(&c.Controller)
+	}
+
+	// Remplissage du contexte pour le template
+	c.Data["beedir"] = &beeDir
+	c.Data["content"] = &content
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+
+	c.TplName = "access.html"
 }

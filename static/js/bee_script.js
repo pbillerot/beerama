@@ -35,6 +35,16 @@ $(document).ready(function () {
       })
   });
 
+  // mémorisation anchor on clic sur vignette
+  $('.glightbox').on('tap', function (event) {
+    var $card = $(this).closest('.card');
+    var $anchorid = $card.attr('id');
+    Cookies.set($bee_view, $anchorid)
+    $('.bee-card-anchor').removeClass('bee-card-anchor');
+    $card.addClass('bee-card-anchor');
+    event.preventDefault();
+  });
+
   $('.bee-meta').on('tap', function (event) {
     var $card = $(this).closest('.card');
     var $anchorid = $card.attr('id');
@@ -71,14 +81,35 @@ $(document).ready(function () {
       }
     } else {
       // sélection
-      // $(this).parent().find('.bee-selected').removeClass('bee-selected');
       $(this).addClass("bee-selected");
       $('.bee-press-visible').show();
       $('#bee-selector').html($('.bee-selected').length);
     }
+    if ($('.bee-selected').length > 1) {
+      $('.bee-modal-filerename').hide();
+    } else if ($('.bee-selected').length == 1) {
+      $('.bee-modal-filerename').show();
+    }
     event.preventDefault();
   });
 
+  // ACTION DOWNLOAD
+  $('.bee-download').on('tap', function (event) {
+    var $form = $('#bee-download').find('form');
+    $('.bee-selected').each(function () {
+      // Create a new input element
+      const input = document.createElement('input');
+      // Set the attributes for a hidden input
+      input.type = 'hidden';
+      input.name = $form.data('name');
+      input.value = $(this).data('fsrc');
+      // Append the new input to the form
+      $form.append(input);
+    });
+    // Submit the form
+    $form.submit();
+    event.preventDefault();
+  });
   // ACTION NEW
   $('.bee-modal-new').on('tap', function (event) {
     var $form = $('#bee-modal-new').find('form');
@@ -99,6 +130,7 @@ $(document).ready(function () {
       }).modal('show');
     event.preventDefault();
   });
+
   // ACTION RENAME
   $('.bee-modal-rename').on('tap', function (event) {
     var $form = $('#bee-modal-rename').find('form');
@@ -117,18 +149,6 @@ $(document).ready(function () {
           $form.submit();
         }
       }).modal('show');
-    event.preventDefault();
-  });
-
-  // ACTION DOWNLOAD
-  $('.bee-select-download').on('tap', function (event) {
-    // Recherche du fichier sélectionné qui sera unique
-    $selected = getSelectedPathHtml();
-    var link = document.createElement('a');
-    link.href = $selected.paths;
-    link.download = $selected.baseUnique;
-    link.click();
-    // window.open($selected.paths, '_blank');
     event.preventDefault();
   });
 
@@ -196,6 +216,32 @@ $(document).ready(function () {
     $('#bee-files-selected').html($html);
   });
 
+  // ACTION FILERENAME
+  $('.bee-modal-filerename').on('tap', function (event) {
+    var $modal = $('#bee-modal-rename')
+    $modal.find('.bee-modal-title').html($(this).attr('title'));
+    var $form = $modal.find('form');
+    // valorisation de bases
+    $selected = getSelectedPathHtml();
+    // Le champ input 
+    $form.find('input[name="new_name"]').val($selected.baseUnique)
+    $form.find('input[name="new_name"]').attr('placeholder', $selected.baseUnique)
+    // l'action à déclencher sur le serveur
+    $form.attr('action', $(this).data('action') + '/' + $selected.fileid);
+    Cookies.set($bee_view, $selected.anchorid)
+    $modal
+      .modal({
+        closable: false,
+        onDeny: function () {
+          return true;
+        },
+        onApprove: function () {
+          $form.submit();
+        }
+      }).modal('show');
+    event.preventDefault();
+  });
+
   // ACTION DUPLIQUER
   $('.bee-modal-duplicate').on('click', function (event) {
     var $modal = $('#bee-modal-duplicate')
@@ -227,7 +273,7 @@ $(document).ready(function () {
     var $modal = $('#bee-modal-move')
     // titre
     $modal.find('.bee-modal-title').html($(this).attr('title'));
-    var $form = $modal.find('form'); bee - input - search
+    var $form = $modal.find('form');
     // valorisation de paths et bases
     $selected = getSelectedPathHtml();
     // Le champ input des fichiers sources
@@ -411,17 +457,19 @@ $(document).ready(function () {
    */
   function getSelectedPathHtml() {
     // valorisation de bee-path
-    var $paths = ""; var $bases = ""; var $baseUnique = ""
+    var $paths = ""; var $bases = ""; var $baseUnique = ""; var $fileid = ""; var $anchorid = "";
     $('.bee-selected').each(function () {
       if ($paths.length > 0) {
         $paths += ",";
       }
+      $fileid += $(this).data('fsrc');
       $paths += $(this).data('path');
       $bases += '<span class="ui teal label">' + $(this).data('base') + '</span>';
       $baseUnique = $(this).data('base');
+      $anchorid += $(this).attr('id');
     });
     return {
-      paths: $paths, bases: $bases, baseUnique: $baseUnique
+      paths: $paths, bases: $bases, baseUnique: $baseUnique, fileid: $fileid, anchorid: $anchorid
     }
   }
 
@@ -505,7 +553,7 @@ $(document).ready(function () {
               scrollTop: $anchor.offset().top - 100
             }, 1000);
             // encadremant de la diapo
-            $anchor.addClass("bee-card-anchor");
+            $anchor.addClass("bee-card-anchor");// $('.bee-selected').removeClass('bee-selected');
             // $anchor.css("border", "3px");
             // positionnement sur le menu sélectionné
             if ($('.active').length != 0) {

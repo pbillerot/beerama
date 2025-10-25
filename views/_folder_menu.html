@@ -1,0 +1,33 @@
+{{ $user_id := .user_id}}
+{{ $parent := .parent}}
+{{ $beedirs := .beedirs}}
+{{ $beedir := .beedir}}
+{{$is_admin := .is_admin}}
+<!-- retour home au menu des albums -->
+<a href="/" class="item">
+    <div class="content">
+        <div class="header">
+            <i class="arrow left icon"></i>
+            Retour aux albums
+        </div>
+    </div>
+</a>
+<!-- aff du dossier parent -->
+<a href="/folder/{{$parent.ID}}" class="droppable item" data-bdir="{{$parent.ID}}">
+    {{if eq $beedir.ID $parent.ID }}
+    <i class="photo video symbol orange icon"></i>
+    {{else}}
+    <i class="photo video symbol icon"></i>
+    {{end}}
+    {{$parent.Name}} <span class="ui small text">({{$parent.Count}}/{{$parent.CountAlbum}})</span>
+</a>
+<!-- sous-dossiers enfants -->
+{{ range $i, $bdir := $beedirs}}
+{{ if eq $bdir.ParentID $parent.ID}}
+<!-- enfant de beedir -->
+<a href="/folder/{{$bdir.ID}}" class="{{if eq $bdir.ID $beedir.ID}}droppable{{end}} item" data-bdir="{{$bdir.ID}}">
+    <i class="folder {{if eq $bdir.ID $beedir.ID}}open orange{{end}} outline icon"></i>{{$bdir.Name}} <span
+        class="ui small text">({{$bdir.Count}})</span>
+</a>
+{{end}}
+{{end}} <!-- end range-->

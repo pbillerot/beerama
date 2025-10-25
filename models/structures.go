@@ -47,6 +47,10 @@ type BeeDir struct {
 	CountAlbum   int                 // nbre de photos de l'album (tous les dossiers)
 	BeeFiles     map[string]*BeeFile // la liste des fichiers de content
 	Keywords     []string            // les hashtags de l'album
+	Users        map[string]Access
+}
+type Access struct {
+	IsEditor bool `yaml:"is_editor"`
 }
 
 // BeeFile propriétés d'un fichier dans le sous-dossier BeeDir
