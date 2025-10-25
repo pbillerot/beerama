@@ -396,6 +396,8 @@ func (c *MainController) Upload() {
 			goto Erreur
 		}
 		beeFile, err := beeDir.AddBeeFile(path, 0)
+		// ajout htag new
+		beeFile.Keywords = append(beeFile.Keywords, "new")
 		if err == nil {
 			flash.Notice("L'image %s a été ajoutée", beeFile.Path)
 			flash.Store(&c.Controller)
@@ -404,6 +406,7 @@ func (c *MainController) Upload() {
 		}
 
 	}
+
 	beeDir.UpdateBeeDir()
 
 	// réindexation des beefiles

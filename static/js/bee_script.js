@@ -117,7 +117,7 @@ $(document).ready(function () {
     $('#bee-modal-new').find('.header').html($(this).attr('title'));
     $input = $('#bee-modal-new').find("input[name='new_name']");
     $input.attr('placeholder', $(this).data('placeholder'));
-    $input.val('');
+    $input.val($(this).data('placeholder'));
     $('#bee-modal-new')
       .modal({
         closable: false,
@@ -183,6 +183,22 @@ $(document).ready(function () {
         },
         onApprove: function () {
           $form.submit();
+        }
+      }).modal('show');
+    event.preventDefault();
+  });
+  // ACTION RESTAURATION
+  $('.bee-modal-pdf').on('tap', function (event) {
+    $('#bee-modal-pdf').find('.header').html($(this).data('title'));
+    $('#bee-modal-pdf').find('iframe').attr('src', $(this).data('src'))
+    $('#bee-modal-pdf')
+      .modal({
+        closable: true,
+        onDeny: function () {
+          return true;
+        },
+        onApprove: function () {
+          return true;
         }
       }).modal('show');
     event.preventDefault();

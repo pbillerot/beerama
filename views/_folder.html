@@ -50,17 +50,16 @@
                 <!-- THUMBNAIL -->
                 {{if $beefile.IsPdf}}
                 <div class="ui centered image" title="{{$beefile.Base}}">
-                    <a class="" href="{{$beefile.UrlImage}}?{{$composter}}" target="_blank">
+                    <div class="bee-modal-pdf" data-src="{{$beefile.UrlImage}}?{{$composter}}"
+                        data-title="[{{$beefile.Base}}] {{$beefile.Description}}">
                         <img data-pdf-thumbnail-file="{{$beefile.UrlImage}}" src="/static/pdfThumbnails/pdf.png"
                             data-pdf-thumbnail-heightX="400">
-                    </a>
+                    </div>
                 </div>
                 {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
-                    <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}"
-                        data-gallery="gallery"
-                        data-description="{{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}}{{$beefile.TimeOriginal}} <b>{{$beefile.Description}}</b>"
-                        ><img
+                    <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}" data-gallery="gallery"
+                        data-description="{{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}}{{$beefile.TimeOriginal}} <b>{{$beefile.Description}}</b>"><img
                             src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
                     </a>
                 </div>
@@ -70,11 +69,14 @@
                     title="Clic pour modifier légende et étiquettes" data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <div class="description">
                         <!-- description -->
-                        <div class="ui center aligned sub header" style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Description}}</div>
+                        <div class="ui center aligned sub header"
+                            style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Description}}
+                        </div>
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
                             {{if ne (len $beefile.DateOriginal) 0 }}
-                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}
+                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr
+                            $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}
                             {{end}}
                         </span>
                         <!-- étiquettes hashtags -->
@@ -101,7 +103,7 @@
         <form class="ui form" method="POST" action="bee-modal-new">
             {{ .xsrfdata }}
             <div class="required field">
-                <label>Nouvelle étiquette (en un seul mot)</label>
+                <label for="keyword">Nouvelle étiquette (en un seul mot)</label>
                 <input type="text" id="keyword" name="keyword" placeholder="étiquette" value="a venir">
             </div>
         </form>
@@ -109,5 +111,16 @@
     <div class="actions">
         <div class="ui cancel button">Annuler</div>
         <div class="ui approve button">Valider</div>
+    </div>
+</div>
+<div id="bee-modal-pdf" class="ui large modal">
+    <div class="header bee-modal-title">à venir</div>
+    <div class="content" style="height:700px">
+        <iframe src="" width="100%" height="100%">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
+    </div>
+    <div class="actions">
+        <div class="ui cancel button">Fermer</div>
     </div>
 </div>

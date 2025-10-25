@@ -17,7 +17,7 @@
                 <img src="{{.config.Icon}}">
             </div>
             <div class="menu bee-mobile-show">
-                {{template "_folder_menu.html" .}}
+                {{template "_menu.html" .}}
             </div>
         </div>
 
@@ -129,7 +129,7 @@
     </div>
     <!-- template "_menu.html" . -->
     <div id="menu" class="ui left fixed vertical menu bee-mobile-hide">
-        {{template "_folder_menu.html" .}}
+        {{template "_menu.html" .}}
     </div>
     <!-- MAIN -->
     <main>
@@ -252,8 +252,8 @@
                     </div>
                 </div>
                 <div class="field">
-                    <label>Vers</label>
-                    <select class="ui dropdown bee-onchange" name="destid">
+                    <label for="destid">Vers</label>
+                    <select class="ui dropdown bee-onchange" name="destid" id="destid">
                         <option value="">Sélectionner un album...</option>
                         {{ range $i, $bdir := $beedirs }}
                         {{ if and (ne $bdir.ID $beedir.ID) (eq $bdir.ParentID "")}}

@@ -2,30 +2,24 @@
 # CHANGELOG
 
 ### À venir :
-x éclater index en home.html et folder.html
-x si clic sur vignette mémoriser l'anchor
-x liste des albums autorisés
-x ne pas afficher l'icône menu si vide
-x home liste albums triés
-x intégrer fomantic js dans static
-x bug acces album non autorisé
-x vignette pdf width 100%
-x download de fichiers
-x renommer un fichier fileRename
+> bug pdf htag # tout seul
 > ajout fichier beenote.md
-> menu orange pour drag & drop
 > éclater meta en _meta_file _meta_meta
 > vignette pdf dans meta plus grande voire visu dans une iframe
-> bug htag # tout seul en prod
-> upload ou new images -> keyword new_[user_id]
 > log avec userid
 Plus tard
 - vider la corbeille d'un album si album
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+1.8.1 du 25 oct. 2025
+- `fixed` drag & drop incohérent sur dossiers
+- `added` htag new lors d'import de fichiers ou de nouveau dessin
+- `added` visualiseur pdf intégré
+
 1.8.0 du 25 oct. 2025
 - `added` gestion des accès aux albums lecture/écriture via le fichier beeaccess.yaml
+- `added` ajout action download de diapo
 - `added` ajout action de renommage d'une diapo
 
 1.7.1 du 20 oct. 2025
