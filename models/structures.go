@@ -5,9 +5,9 @@ import (
 )
 
 type User struct {
-	Password string `yaml:"password"`
-	IsAdmin  bool   `yaml:"is_admin"`
-	IsEditor bool   `yaml:"is_editor"`
+	Password string `toml:"password"`
+	IsAdmin  bool   `toml:"is_admin"`
+	IsEditor bool   `toml:"is_editor"`
 }
 
 // BeeConfig structure du fichier de configuration de l'application app.conf
@@ -40,7 +40,7 @@ type BeeDir struct {
 	Name         string              // nom du répertoire
 	ID           string              // calculé par LoadBeeDirs
 	Path         string              // chemin complet
-	Title        string              // Titre de la répertoire trouve dans beemage.yaml
+	Title        string              // Titre de la répertoire trouve dans beemage.conf
 	ParentID     string              // ID de l'album parent
 	WithChildren bool                // l'album possède de(s) sous-dossier(s)
 	Count        int                 // nbre de photos du dossier
@@ -50,7 +50,7 @@ type BeeDir struct {
 	Users        map[string]Access
 }
 type Access struct {
-	IsEditor bool `yaml:"is_editor"`
+	IsEditor bool `toml:"is_editor"`
 }
 
 // BeeFile propriétés d'un fichier dans le sous-dossier BeeDir
@@ -75,6 +75,7 @@ type BeeFile struct {
 	IsSvg        bool
 	IsSystem     bool
 	IsText       bool
+	IsUrl        bool
 	IsWord       bool
 	Path         string // path de l'image calculé
 	DirID        string // id du répertoire de l'image
@@ -111,4 +112,14 @@ type Breadcrumb struct {
 	Base   string
 	Path   string
 	IsLast bool
+}
+
+type FileUrl struct {
+	Description      string `toml:"Description"`
+	DateOriginal     string
+	TimeOriginal     string
+	Keywords         []string
+	InternetShortcut struct {
+		URL string
+	}
 }

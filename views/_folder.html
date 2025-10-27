@@ -29,7 +29,7 @@
     <div class="grid">
         {{range $ibeefile, $beefile := $beefiles }}
         {{$beedirid := $beefile.DirID}}
-        {{if or $beefile.IsImage $beefile.IsPdf }}
+        {{if or $beefile.IsImage $beefile.IsPdf $beefile.IsUrl }}
         <div class="grey grid-item" style="margin: 0.5em">
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press draggable{{end}}"
                 data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
@@ -51,11 +51,17 @@
                 {{if $beefile.IsPdf}}
                 <div class="ui centered image" title="{{$beefile.Base}}">
                     <div class="bee-modal-pdf" data-src="{{$beefile.UrlImage}}?{{$composter}}"
-                        data-title="[{{$beefile.Base}}] {{$beefile.Description}}">
+                        data-title="{{$beedir.Name}} / {{$beefile.Base}} : {{$beefile.Description}} {{$beefile.Keywords}} {{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}} {{$beefile.TimeOriginal}}">
                         <img data-pdf-thumbnail-file="{{$beefile.UrlImage}}" src="/static/pdfThumbnails/pdf.png"
                             data-pdf-thumbnail-heightX="400">
                     </div>
                 </div>
+                {{else if $beefile.IsUrl}}
+                <a class="ui button bee-modal-doc" title="{{$beefile.Base}}"
+                    data-title="{{$beedir.Name}} / {{$beefile.Base}} : {{$beefile.Description}} {{$beefile.Keywords}} {{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}} {{$beefile.TimeOriginal}}"
+                    data-src="{{$beefile.UrlImage}}">
+                    <i class="linkify big icon"></i>{{$beefile.Base}}
+                </a>
                 {{else}}
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}" data-gallery="gallery"
@@ -114,13 +120,26 @@
     </div>
 </div>
 <div id="bee-modal-pdf" class="ui large modal">
-    <div class="header bee-modal-title">à venir</div>
-    <div class="content" style="height:700px">
+    <div class="actions" style="padding: 0.5em">
+        <div class="ui button bee-modal-title {{if $is_editor}}bee-meta{{end}}" title="Modifier les propriétés...">
+        </div>
+        <div class="ui cancel button">Fermer</div>
+    </div>
+    <div class="ui centered bordered fluid image">
         <iframe src="" width="100%" height="100%">
             <p>Your browser does not support iframes.</p>
         </iframe>
     </div>
-    <div class="actions">
+</div>
+<div id="bee-modal-doc" class="ui overlay fullscreen modal">
+    <div class="actions" style="padding: 0.5em">
+        <div class="ui button bee-modal-title {{if $is_editor}}bee-meta{{end}}" title="Modifier les propriétés...">
+        </div>
         <div class="ui cancel button">Fermer</div>
+    </div>
+    <div class="ui centered bordered fluid image">
+        <iframe src="" width="100%" height="100%">
+            <p>Your browser does not support iframes.</p>
+        </iframe>
     </div>
 </div>

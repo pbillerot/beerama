@@ -47,9 +47,6 @@
                     <div class="ui small icon button" id="bee-selector" title="Nombre de sélection">
                         <i class="check icon"></i>
                     </div>
-                    <div class="ui small icon button bee-modal-filerename" data-action="/e/rename/{{$beedir.ID}}"
-                        title="Renommer la diapo..."><i class="file alternate outline icon"></i>
-                    </div>
                     <div class="ui small icon button bee-modal-duplicate" data-action="/e/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>
@@ -84,6 +81,10 @@
             <div class="ui dropdown item bee-press-hidden-mobile">
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
+                    <div class="ui icon item bee-modal-new" title="Créer un document lié..." data-placeholder="???.drawio.png"
+                        data-action="/e/newurl/{{$beedir.ID}}">
+                        <i class="draw polygon icon"></i>Créer un document lié...
+                    </div>
                     <div class="ui icon item bee-modal-new" title="Créer un dessin..." data-placeholder="???.drawio.png"
                         data-action="/e/newdraw/{{$beedir.ID}}">
                         <i class="draw polygon icon"></i>Créer un dessin...

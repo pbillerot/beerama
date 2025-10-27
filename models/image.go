@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/disintegration/imaging"
@@ -117,74 +118,92 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 		}
 		beeFile.Content = content
 		beeFile.IsConf = true
+	} else if contains([]string{".url"}, beeFile.Ext) {
+		content, err := os.ReadFile(beeFile.Path)
+		if err != nil {
+			logs.Error(err)
+		}
+		fileurl := FileUrl{}
+		err = toml.Unmarshal(content, &fileurl)
+		if err != nil {
+			logs.Error(err)
+		}
+		beeFile.Content = content
+		beeFile.IsUrl = true
+		beeFile.Description = fileurl.Description
+		beeFile.DateOriginal = fileurl.DateOriginal
+		beeFile.TimeOriginal = fileurl.TimeOriginal
+		beeFile.Keywords = fileurl.Keywords
+		beeFile.UrlImage = fileurl.InternetShortcut.URL
 	} else {
 		beeFile.IsSystem = true
 	}
-
-	fileInfos := et.ExtractMetadata(beeFile.Path)
-	for _, fileInfo := range fileInfos {
-		if fileInfo.Err != nil {
-			fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
-			continue
-		}
-		for k, v := range fileInfo.Fields {
-			switch k {
-			case "Model":
-				beeFile.Model = v.(string)
-			case "Make":
-				beeFile.Make = v.(string)
-			case "Keywords":
-				beeFile.Keywords = beeFile.Keywords[:0]
-				switch v := v.(type) {
-				case string:
-					kw := strings.Split(strings.ToLower(v), ",")
-					beeFile.Keywords = append(beeFile.Keywords, kw...)
-				case float64:
-					beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
-				default:
-					for _, vv := range v.([]any) {
-						switch t := vv.(type) {
-						case string:
-							kw := strings.Split(strings.ToLower(vv.(string)), ",")
-							beeFile.Keywords = append(beeFile.Keywords, kw...)
-						case float64:
-							beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
-						default:
-							fmt.Printf("Type inconnu : %T pour %v", t, v)
+	if beeFile.IsImage || beeFile.IsPdf {
+		fileInfos := et.ExtractMetadata(beeFile.Path)
+		for _, fileInfo := range fileInfos {
+			if fileInfo.Err != nil {
+				fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
+				continue
+			}
+			for k, v := range fileInfo.Fields {
+				switch k {
+				case "Model":
+					beeFile.Model = v.(string)
+				case "Make":
+					beeFile.Make = v.(string)
+				case "Keywords":
+					beeFile.Keywords = beeFile.Keywords[:0]
+					switch v := v.(type) {
+					case string:
+						kw := strings.Split(strings.ToLower(v), ",")
+						beeFile.Keywords = append(beeFile.Keywords, kw...)
+					case float64:
+						beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
+					default:
+						for _, vv := range v.([]any) {
+							switch t := vv.(type) {
+							case string:
+								kw := strings.Split(strings.ToLower(vv.(string)), ",")
+								beeFile.Keywords = append(beeFile.Keywords, kw...)
+							case float64:
+								beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
+							default:
+								fmt.Printf("Type inconnu : %T pour %v", t, v)
+							}
 						}
 					}
-				}
-			case "ISO":
-				beeFile.ISO = fmt.Sprintf("%v", v.(float64))
-			case "ImageWidth":
-				beeFile.ImageWidth = fmt.Sprintf("%v", v.(float64))
-			case "ImageHeight":
-				beeFile.ImageHeight = fmt.Sprintf("%v", v.(float64))
-			case "FocalLength":
-				beeFile.FocalLength = v.(string)
-			case "FileSize":
-				beeFile.FileSize = v.(string)
-			case "ExposureTime":
-				switch v := v.(type) {
-				case string:
-					beeFile.ExposureTime = v
-				case float64:
-					beeFile.ExposureTime = fmt.Sprintf("%v", v)
-				default:
-					beeFile.ExposureTime = fmt.Sprintf("%v", v)
-				}
-			case "Description":
-				beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
-			case "DateTimeOriginal":
-				if len(v.(string)) > 9 {
-					beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
-				} else {
-					beeFile.DateOriginal = ""
-				}
-				if len(v.(string)) > 15 {
-					beeFile.TimeOriginal = v.(string)[11:16]
-				} else {
-					beeFile.TimeOriginal = ""
+				case "ISO":
+					beeFile.ISO = fmt.Sprintf("%v", v.(float64))
+				case "ImageWidth":
+					beeFile.ImageWidth = fmt.Sprintf("%v", v.(float64))
+				case "ImageHeight":
+					beeFile.ImageHeight = fmt.Sprintf("%v", v.(float64))
+				case "FocalLength":
+					beeFile.FocalLength = v.(string)
+				case "FileSize":
+					beeFile.FileSize = v.(string)
+				case "ExposureTime":
+					switch v := v.(type) {
+					case string:
+						beeFile.ExposureTime = v
+					case float64:
+						beeFile.ExposureTime = fmt.Sprintf("%v", v)
+					default:
+						beeFile.ExposureTime = fmt.Sprintf("%v", v)
+					}
+				case "Description":
+					beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
+				case "DateTimeOriginal":
+					if len(v.(string)) > 9 {
+						beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
+					} else {
+						beeFile.DateOriginal = ""
+					}
+					if len(v.(string)) > 15 {
+						beeFile.TimeOriginal = v.(string)[11:16]
+					} else {
+						beeFile.TimeOriginal = ""
+					}
 				}
 			}
 		}

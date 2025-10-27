@@ -497,63 +497,71 @@ $(document).ready(function () {
   }
 
   // APPEL DRAWIO
-  $('.bee-drawio-editor').on('tap', function (event) {
-    // DiagramEditor.editElement(this);
-    // ancienne façon de faire
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json';
-    var source = $('#bee-drawio')[0];
-    // var title = source.getAttribute('title')
-    // url += '&title=' + title;
-    if (source.drawIoWindow == null || source.drawIoWindow.closed) {
-      // Implements protocol for loading and exporting with embedded XML
-      var receive = function (evt) {
-        if (evt.data.length > 0 && evt.source == source.drawIoWindow) {
-          var msg = JSON.parse(evt.data);
+  $('.bee-modal-drawio').on('tap', function (event) {
+    var $modal = $('#bee-modal-drawio');
+    // event.preventDefault();
+    // URL for the embed mode of diagrams.net
+    const embedUrl = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json';;
+    var xmlData = $(this).attr('src');
+    const loadMessage = JSON.stringify({
+      action: 'load',
+      xml: xmlData || '', // Send XML data or an empty string for a new diagram
+      autosave: 1,        // Enable autosave
+    });
+    var iframe = $modal.find('iframe');
+    iframe.attr('src', embedUrl)
+    // Wait for the iframe to fully load before sending
+    iframe.onload = () => {
+      iframe.contentWindow.postMessage(loadMessage, '*'); // '*' is generally safe for app.diagrams.net
+    };
+    window.addEventListener('message', function (event) {
+      // Check origin for security
+      if (event.origin !== 'https://app.diagrams.net' && event.origin !== 'https://embed.diagrams.net') {
+        return;
+      }
+      try {
+        const data = JSON.parse(event.data);
 
-          // Received if the editor is ready
-          if (msg.event == 'init') {
-            // Sends the data URI with embedded XML to editor
-            source.drawIoWindow.postMessage(JSON.stringify(
-              { action: 'load', xmlpng: source.getAttribute('src') }), '*');
-          }
-          // Received if the user clicks save
-          else if (msg.event == 'save') {
-            // Sends a request to export the diagram as XML with embedded PNG
-            source.drawIoWindow.postMessage(JSON.stringify(
-              { action: 'export', format: 'xmlpng', spinKey: 'saving' }), '*');
-          }
-          // Received if the export request was processed
-          else if (msg.event == 'export') {
-            // Updates the data URI of the image
-            source.setAttribute('src', msg.data);
-            $('input[name="image"]').val(msg.data);
-            $(".bee-submit-meta").removeClass('disabled');
-            $(".bee-submit-meta-retour").removeClass('disabled');
-          }
+        switch (data.event) {
+          case 'init':
+            // The editor is ready. Now you can send the 'load' action.
+            // e.g., iframe.contentWindow.postMessage(loadMessage, '*');
+            console.log('draw.io editor ready.');
+            break;
 
-          // Received if the user clicks exit or after export
-          if (msg.event == 'exit' || msg.event == 'export') {
-            // Closes the editor
-            window.removeEventListener('message', receive);
-            source.drawIoWindow.close();
-            source.drawIoWindow = null;
-          }
+          case 'save':
+          case 'exit':
+            const newXml = data.xml;
+            // Save the newXml to your backend/storage
+            console.log('Diagram saved/exited. New XML:', newXml);
+
+            // Optional: Remove the iframe if the user clicks 'exit'
+            if (data.event === 'exit') {
+              iframe.remove();
+            }
+            break;
+
+          // Handle other events like 'configure', 'export', 'autosave', etc.
+          default:
+            // console.log('Received message:', data);
+            break;
         }
-      };
-      // Opens the editor
-      window.addEventListener('message', receive);
-      // var $height = '900';
-      // var $width = '1400';
-      // var $posx = '100';
-      // var $posy = '50';
-      // var $target = '_blank';
-      // //source.drawIoWindow = window.open(url, $target, computeWindow($posx, $posy, $width, $height, false));
-      source.drawIoWindow = window.open(url);
-    }
-    else {
-      // Shows existing editor window
-      source.drawIoWindow.focus();
-    }
+      } catch (e) {
+        // Handle non-JSON messages if necessary
+        // console.error('Error parsing message:', e);
+      }
+    });
+    $modal
+      .modal({
+        closable: true,
+        onDeny: function () {
+          return true;
+        },
+        onApprove: function () {
+          return true;
+        }
+      }).modal('show');
+
     event.preventDefault();
   });
 

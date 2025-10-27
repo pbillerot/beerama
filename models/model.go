@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/pbillerot/beerama/fulltext"
 	"github.com/pbillerot/beerama/shutil"
@@ -39,7 +40,7 @@ func LoadBeeDirs() error {
 			logs.Error(err)
 			return err
 		}
-		// chargement des beeaccess.yaml
+		// chargement des beeaccess.conf
 		beeDir.LoadAccess()
 
 		Config.BeeDirs[beeDir.ID] = &beeDir // append(Config.BeeDirs, &beeDir)
@@ -313,8 +314,8 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 	return nil
 }
 
-// RenameBeeFile beeFile.path en newName
-func (beeFile *BeeFile) RenameBeeFile(newName string) error {
+// Rename beeFile.path en newName
+func (beeFile *BeeFile) Rename(newName string) error {
 
 	// rename du fichier, original et thumbnail
 	var pathOld, pathNew, originalOld, originalNew, thumbOld, thumbNew string
@@ -342,6 +343,26 @@ func (beeFile *BeeFile) RenameBeeFile(newName string) error {
 	}
 	beeFile.UrlImage = strings.Replace(beeFile.UrlImage, beeFile.Base, newName, 1)
 	beeFile.UrlThumb = strings.Replace(beeFile.UrlThumb, beeFile.Base, newName, 1)
+	return nil
+}
+
+// Update du fichier.url
+func (beeFile *BeeFile) UpdateFileUrl() error {
+
+	fileUrl := FileUrl{}
+	fileUrl.Description = beeFile.Description
+	fileUrl.DateOriginal = beeFile.DateOriginal
+	fileUrl.TimeOriginal = beeFile.TimeOriginal
+	fileUrl.Keywords = beeFile.Keywords
+	fileUrl.InternetShortcut.URL = beeFile.UrlImage
+
+	updatedData, err := toml.Marshal(&fileUrl)
+	if err != nil {
+		return err
+	}
+	if err := os.WriteFile(beeFile.Path, updatedData, 0644); err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -237,6 +237,8 @@ func (c *MainController) Meta() {
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
+	isRenamed := false
+
 	if c.Ctx.Input.Method() == "POST" {
 
 		// URL de url_return
@@ -273,17 +275,47 @@ func (c *MainController) Meta() {
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}
-
-		// report des meta dans l'image
-		err := beeFile.UpdateMeta()
-		if err != nil {
-			logs.Error(err)
-			flash.Error("Beerama %s", err)
-			flash.Store(&c.Controller)
-			c.Ctx.Redirect(302, c.GetSession("folder").(string))
+		// cas particulier isUrl
+		if beeFile.IsUrl {
+			url := c.GetString("url")
+			if url != beeFile.UrlImage {
+				err := beeFile.UpdateFileUrl()
+				if err != nil {
+					logs.Error(err)
+					flash.Error("Beerama %s", err)
+					flash.Store(&c.Controller)
+					c.Ctx.Redirect(302, url_return)
+				}
+			}
+			beeFile.UrlImage = url
+		} else {
+			// report des meta dans l'image
+			err := beeFile.UpdateMeta()
+			if err != nil {
+				logs.Error(err)
+				flash.Error("Beerama %s", err)
+				flash.Store(&c.Controller)
+				c.Ctx.Redirect(302, url_return)
+			}
 		}
 
-		beeDir.UpdateBeeDir()
+		// Renommage du fichier si changé
+		base := c.GetString("filename")
+		if base != beeFile.Base {
+			isRenamed = true
+			err := beeFile.Rename(base)
+			if err != nil {
+				logs.Error(err)
+				flash.Error("Beerama %s", err)
+				flash.Store(&c.Controller)
+				c.Ctx.Redirect(302, url_return)
+			}
+		}
+		if isRenamed {
+			beeDir.LoadBeeFiles(0)
+		} else {
+			beeDir.UpdateBeeDir()
+		}
 		// réindexation des beefiles
 		models.Config.IndexAllBeefiles()
 		c.Ctx.Redirect(302, url_return)
@@ -467,28 +499,6 @@ func (c *MainController) MkFolder() {
 	c.Ctx.Redirect(302, "/")
 }
 
-// FileRename
-func (c *MainController) FileRename() {
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
-	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
-	newName := c.GetString("new_name")
-
-	flash := beego.ReadFromRequest(&c.Controller)
-
-	err := beeFile.RenameBeeFile(newName)
-	if err != nil {
-		logs.Error(err)
-		flash.Error("RenameBeeFile %s", err)
-		flash.Store(&c.Controller)
-	}
-	beeDir.LoadBeeFiles(0)
-
-	// réindexation des beefiles
-	models.Config.IndexAllBeefiles()
-
-	c.Ctx.Redirect(302, c.GetSession("folder").(string))
-}
-
 // FolderRename
 func (c *MainController) FolderRename() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
@@ -519,7 +529,33 @@ func (c *MainController) NewDraw() {
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
-	pathSrc := "./static/img/mini.drawio.png"
+	pathSrc := "./static/modeles/modele.drawio.png"
+	pathDest := beeDir.Path + "/" + newName
+	// copy du fichier source dans la destination
+	err := shutil.CopyFile(pathSrc, pathDest, false)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama Mkdir %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	// Rechargement de l'album
+	beeDir.LoadBeeFiles(0)
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
+}
+
+// NewUrl
+func (c *MainController) NewUrl() {
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	newName := c.GetString("new_name")
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	pathSrc := "./static/modeles/modele.url"
 	pathDest := beeDir.Path + "/" + newName
 	// copy du fichier source dans la destination
 	err := shutil.CopyFile(pathSrc, pathDest, false)
@@ -902,7 +938,7 @@ func (c *MainController) Users() {
 	c.TplName = "users.html"
 }
 
-// Modifier le fichier des .beeaccess.yaml d'un album
+// Modifier le fichier des .beeaccess.conf d'un album
 func (c *MainController) Access() {
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]

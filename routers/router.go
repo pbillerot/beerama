@@ -41,7 +41,6 @@ func init() {
 	nsEditor := web.NewNamespace("/e",
 		// Enchaîne plusieurs filtres : l'utilisateur doit être authentifié ET Editor
 		web.NSBefore(controllers.AuthRequiredProfile, controllers.EditorRoleProfile),
-		web.NSRouter("/rename/:beedirid/:beefileid", &controllers.MainController{}, "post:FileRename"),
 		web.NSRouter("/rename/:beedirid", &controllers.MainController{}, "post:FolderRename"),
 		web.NSRouter("/reload/:beedirid", &controllers.MainController{}, "get:Reload"),
 		web.NSRouter("/meta/:beedirid/:beefileid", &controllers.MainController{}, "get:Meta;post:Meta"),
@@ -55,6 +54,7 @@ func init() {
 		web.NSRouter("/rmdir/:beedirid", &controllers.MainController{}, "post:Rmdir"),
 		web.NSRouter("/dragdrop/:beedirid", &controllers.MainController{}, "post:DragDrop"),
 		web.NSRouter("/newdraw/:beedirid", &controllers.MainController{}, "post:NewDraw"),
+		web.NSRouter("/newurl/:beedirid", &controllers.MainController{}, "post:NewUrl"),
 		web.NSRouter("/restore/:beedirid/:beefileid", &controllers.MainController{}, "post:Restore"),
 	)
 

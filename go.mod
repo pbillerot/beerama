@@ -3,12 +3,12 @@ module github.com/pbillerot/beerama
 go 1.24.2
 
 require (
+	github.com/BurntSushi/toml v1.5.0
 	github.com/barasher/go-exiftool v1.10.0
 	github.com/beego/beego/v2 v2.3.8
 	github.com/disintegration/imaging v1.6.2
 	github.com/jbarham/cdb v0.0.0-20200301055225-9d6f6caadef0
 	github.com/smartystreets/goconvey v1.8.1
-	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -32,4 +32,5 @@ require (
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

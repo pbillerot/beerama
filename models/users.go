@@ -4,20 +4,20 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/BurntSushi/toml"
 	"github.com/beego/beego/v2/core/logs"
-	"gopkg.in/yaml.v3"
 )
 
-// Lecture du fichier beeusers.yaml et chargement dans la structure
+// Lecture du fichier beeusers.conf et chargement dans la structure
 func LoadUsers() (err error) {
 
-	yamlFile, err := os.ReadFile(Config.UsersPath)
+	content, err := os.ReadFile(Config.UsersPath)
 	if err != nil {
 		msg := fmt.Sprintf("%s : [%v]", Config.UsersPath, err)
 		logs.Error("Open", msg)
 		return err
 	}
-	err = yaml.Unmarshal(yamlFile, &Config.Users)
+	err = toml.Unmarshal(content, &Config.Users)
 	if err != nil {
 		msg := fmt.Sprintf("%s : [%v]", Config.UsersPath, err)
 		logs.Error("Unmarshal", msg)
@@ -27,7 +27,7 @@ func LoadUsers() (err error) {
 	return err
 }
 
-// Lecture du fichier beeusers.yaml et chargement dans la structure
+// Lecture du fichier beeusers.conf et chargement dans la structure
 func GetUsersContent() (content string, err error) {
 
 	buf, err := os.ReadFile(Config.UsersPath)
@@ -39,7 +39,7 @@ func GetUsersContent() (content string, err error) {
 	return string(buf), err
 }
 
-// Mise à jour du fichiers beeusers.yaml et rechargement dans la structure
+// Mise à jour du fichiers beeusers.conf et rechargement dans la structure
 func UpdateUsers(content []byte) (err error) {
 
 	err = os.WriteFile(Config.UsersPath, content, 0644)
@@ -115,9 +115,9 @@ func (beeDir *BeeDir) IsUserReader(user_id string) bool {
 	return false
 }
 
-// Mise à jour du fichiers .beeaccess.yaml et rechargement dans la structure
+// Mise à jour du fichiers .beeaccess.conf et rechargement dans la structure
 func (beeDir *BeeDir) UpdateAccess(content []byte) (err error) {
-	pathAccess := beeDir.Path + "/.beeaccess.yaml"
+	pathAccess := beeDir.Path + "/.beeaccess.conf"
 	err = os.WriteFile(pathAccess, content, 0644)
 	if err != nil {
 		msg := fmt.Sprintf("%s : [%v]", pathAccess, err)
@@ -134,21 +134,21 @@ func (beeDir *BeeDir) UpdateAccess(content []byte) (err error) {
 	return err
 }
 
-// Lecture du fichier beeusers.yaml et chargement dans la structure
+// Lecture du fichier beeusers.conf et chargement dans la structure
 func (beeDir *BeeDir) GetAccessContent() (content string, err error) {
-	pathAccess := beeDir.Path + "/.beeaccess.yaml"
+	pathAccess := beeDir.Path + "/.beeaccess.conf"
 	buf, err := os.ReadFile(pathAccess)
 	if err != nil {
 		// lecture du modèle
-		buf, _ := os.ReadFile("./conf/beeaccess-exemple.yaml")
+		buf, _ := os.ReadFile("./conf/beeaccess-exemple.conf")
 		return string(buf), nil
 	}
 	return string(buf), nil
 }
 
-// Lecture du fichier beeaccess.yaml et chargement dans la structure beedir s'il existe
+// Lecture du fichier beeaccess.conf et chargement dans la structure beedir s'il existe
 func (beeDir *BeeDir) LoadAccess() (err error) {
-	pathAccess := beeDir.Path + "/.beeaccess.yaml"
+	pathAccess := beeDir.Path + "/.beeaccess.conf"
 
 	buf, err := os.ReadFile(pathAccess)
 	if err != nil {
@@ -156,7 +156,7 @@ func (beeDir *BeeDir) LoadAccess() (err error) {
 		return nil
 	}
 
-	err = yaml.Unmarshal(buf, &beeDir.Users)
+	err = toml.Unmarshal(buf, &beeDir.Users)
 	if err != nil {
 		msg := fmt.Sprintf("%s : [%v]", pathAccess, err)
 		logs.Error("Unmarshal", msg)
