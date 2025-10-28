@@ -308,13 +308,7 @@ func (beeFile *BeeFile) DeleteImage(beeDir *BeeDir) (err error) {
 
 	// suppression du beeFile de beeDir.BeeFiles
 	delete(beeDir.BeeFiles, beeFile.ID)
-	// recherche de l'indice dans le tableau
-	// for index, file := range beeDir.BeeFiles {
-	// 	if file.Path == beeFile.Path {
-	// 		beeDir.BeeFiles = append(beeDir.BeeFiles[:index], beeDir.BeeFiles[index+1:]...)
-	// 		break
-	// 	}
-	// }
+
 	return nil
 }
 

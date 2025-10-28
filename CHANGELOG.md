@@ -9,6 +9,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+2.0.1 du 28 oct. 2025
+- `fixed` correction création sous-dossier (beefiles non initialisées)
+
 2.0.0 du 27 oct. 2025
 - `added` gestion des users dans beeusers.conf
 - `added` gestion des droits dans beeaccess.conf

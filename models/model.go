@@ -152,6 +152,7 @@ func (config *BeeConfig) AddSubFolder(parent *BeeDir, name string) {
 	beeDir.Path = config.Racine + "/" + parent.Name + "/" + name
 	beeDir.Name = name
 	beeDir.ParentID = parent.ID
+	beeDir.BeeFiles = make(map[string]*BeeFile)
 	config.BeeDirs[beeDir.ID] = &beeDir
 	// config.BeeDirs = append(config.BeeDirs, &beedir)
 	// sort.Slice(config.BeeDirs, func(i, j int) bool {
@@ -232,7 +233,8 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 	return nil
 }
 
-// UpdateBeeDir - maj count keywords tri - tri des beefiles sur la date original
+// UpdateBeeDir sans relire le répertoire
+// - maj count keywords tri - tri des beefiles sur la date original
 // suite ajout suppression d'une image et modification date et keyword
 func (beeDir *BeeDir) UpdateBeeDir() {
 	// ajout des keywords doublon et tri
