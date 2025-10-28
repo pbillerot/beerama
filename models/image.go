@@ -156,6 +156,15 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 					switch v := v.(type) {
 					case string:
 						kw := strings.Split(strings.ToLower(v), ",")
+						j := 0 // Index to write non-empty strings
+						for _, val := range kw {
+							if len(val) > 0 {
+								kw[j] = val
+								j++
+							}
+						}
+						// Reslice to the new length
+						kw = kw[:j]
 						beeFile.Keywords = append(beeFile.Keywords, kw...)
 					case float64:
 						beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
@@ -164,6 +173,15 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 							switch t := vv.(type) {
 							case string:
 								kw := strings.Split(strings.ToLower(vv.(string)), ",")
+								j := 0 // Index to write non-empty strings
+								for _, val := range kw {
+									if len(val) > 0 {
+										kw[j] = val
+										j++
+									}
+								}
+								// Reslice to the new length
+								kw = kw[:j]
 								beeFile.Keywords = append(beeFile.Keywords, kw...)
 							case float64:
 								beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))

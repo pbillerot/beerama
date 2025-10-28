@@ -9,6 +9,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+2.0.2 du 28 oct. 2025
+- `fixed` keywords à blanc
+
 2.0.1 du 28 oct. 2025
 - `fixed` correction création sous-dossier (beefiles non initialisées)
 
