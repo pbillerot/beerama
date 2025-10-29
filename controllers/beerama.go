@@ -61,43 +61,10 @@ func (c *MainController) Return() {
 func (c *MainController) Folder() {
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
-	var parent models.BeeDir
-	if beeDir.ParentID == "" {
-		parent = *models.GetBeeDir(beeDir.ID)
-	} else {
-		parent = *models.GetBeeDir(beeDir.ParentID)
-	}
+	parent := beeDir.GetParent()
 
-	// Sélection des bdirs accessibles et des sous-dossiers du bdir courant
-	user_id := c.GetSession("user_id").(string)
-	var beeDirs []models.BeeDir
-	// sélection des albums accessibles par user_id
-	for _, bdir := range models.Config.BeeDirs {
-		if bdir.ParentID == "" {
-			if bdir.ID == beeDir.ID {
-				beeDirs = append(beeDirs, *bdir)
-			} else {
-				// sélection seulement des bdirs modifiables par user_id
-				// pour alimenter la liste des bdirs destinataires des copies et deplacées
-				if bdir.IsUserEditor(user_id) {
-					beeDirs = append(beeDirs, *bdir)
-				}
-			}
-		}
-	}
-	// ajout des enfants de l'album
-	children := []models.BeeDir{}
-	for _, bdir := range models.Config.BeeDirs {
-		if bdir.ParentID == parent.ID {
-			children = append(children, *bdir)
-		}
-	}
-	// tri des enfants
-	sort.Slice(children, func(i, j int) bool {
-		return children[i].Name < children[j].Name
-	})
-	// ajout des enfants à la fin
-	beeDirs = append(beeDirs, children...)
+	// Sélection des bdirs des sous-dossiers du parent courant
+	beeDirs := parent.GetParentBeedirs()
 
 	// Construction de la liste des beefiles
 	beeFiles := []models.BeeFile{}
@@ -200,10 +167,15 @@ func (c *MainController) FolderHtag() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	htagid := c.Ctx.Input.Param(":htagid")
 
+	parent := beeDir.GetParent()
+
+	// Sélection des sous-dossiers accessibles du bdir courant
+	beeDirs := parent.GetParentBeedirs()
+
 	// Construction de la liste des beefiles
 	// album et sous-dossiers concernés par le htag
 	beeFiles := []models.BeeFile{}
-	for _, bdir := range models.Config.BeeDirs {
+	for _, bdir := range *beeDirs {
 		if bdir.ParentID == beeDir.ID || bdir.ID == beeDir.ID {
 			for _, bfile := range bdir.BeeFiles {
 				if slices.Contains(bfile.Keywords, htagid) {
@@ -217,7 +189,8 @@ func (c *MainController) FolderHtag() {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
 
-	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
+	c.Data["parent"] = parent
+	c.Data["beedirs"] = &beeDirs
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = htagid
@@ -234,6 +207,7 @@ func (c *MainController) FolderHtag() {
 func (c *MainController) Meta() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
+	parent := beeDir.GetParent()
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
@@ -313,16 +287,15 @@ func (c *MainController) Meta() {
 		}
 		if isRenamed {
 			beeDir.LoadBeeFiles(0)
-		} else {
-			beeDir.UpdateBeeDir()
 		}
+		beeDir.UpdateAlbum()
 		// réindexation des beefiles
 		models.Config.IndexAllBeefiles()
 		c.Ctx.Redirect(302, url_return)
 	}
 
 	// Remplissage du contexte pour le template
-	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
+	c.Data["parent"] = parent
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["htagid"] = ""
@@ -394,7 +367,7 @@ func (c *MainController) Restore() {
 	if c.Ctx.Input.Method() == "POST" {
 		beeFile.RestoreOriginal()
 	}
-	beeDir.UpdateBeeDir()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -439,7 +412,7 @@ func (c *MainController) Upload() {
 
 	}
 
-	beeDir.UpdateBeeDir()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -473,7 +446,7 @@ func (c *MainController) FileRm() {
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
 	}
-	beeDir.UpdateBeeDir()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -636,6 +609,7 @@ func (c *MainController) Reload() {
 	beego.ReadFromRequest(&c.Controller)
 
 	beeDir.LoadBeeFiles(0)
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -681,7 +655,7 @@ func (c *MainController) Duplicate() {
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
 	}
-	beeDir.UpdateBeeDir()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -725,7 +699,7 @@ func (c *MainController) FileCopy() {
 			goto Erreur
 		}
 	}
-	beeDirDest.UpdateBeeDir()
+	beeDirDest.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -774,8 +748,8 @@ func (c *MainController) FileMove() {
 			goto Erreur
 		}
 	}
-	beeDir.UpdateBeeDir()
-	beeDirDest.UpdateBeeDir()
+	beeDir.UpdateAlbum()
+	beeDirDest.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -840,8 +814,8 @@ func (c *MainController) DragDrop() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 
-	beeDirDest.UpdateBeeDir()
-	beeDirSrc.UpdateBeeDir()
+	beeDirDest.UpdateAlbum()
+	beeDirSrc.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -852,6 +826,9 @@ func (c *MainController) DragDrop() {
 // Search
 func (c *MainController) Search() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	parent := beeDir.GetParent()
+	// Sélection des sous-dossiers accessibles du bdir courant
+	beeDirs := parent.GetParentBeedirs()
 
 	search := c.GetString("search")
 
@@ -885,8 +862,13 @@ func (c *MainController) Search() {
 	for _, item := range sr.Items {
 		dirid, fileid, found := strings.Cut(string(item.Id), "_")
 		if found {
-			beeFile := models.Config.BeeDirs[dirid].BeeFiles[fileid]
-			beeFiles = append(beeFiles, *beeFile)
+			// on ne prend que les bdirs de l'album parent
+			for _, bdir := range *beeDirs {
+				if bdir.ID == dirid {
+					beeFile := models.Config.BeeDirs[dirid].BeeFiles[fileid]
+					beeFiles = append(beeFiles, *beeFile)
+				}
+			}
 		}
 	}
 
@@ -895,7 +877,8 @@ func (c *MainController) Search() {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
 
-	c.Data["parent"] = models.GetBeeDir(beeDir.ParentID)
+	c.Data["parent"] = parent
+	c.Data["beedirs"] = &beeDirs
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["search"] = search

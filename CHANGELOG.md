@@ -2,12 +2,16 @@
 # CHANGELOG
 
 ### À venir :
-> bug pdf htag # tout seul
-> log avec userid
+> en cours
 Plus tard
+- sur recherche recalculer les compteurs et n'afficher que les dossiers concernés
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.0.3 du 29 oct. 2025
+- `fixed` compteur des albums à zéro
+- `changed` optimisation calcul compteurs et vignettes
 
 2.0.2 du 28 oct. 2025
 - `fixed` keywords à blanc

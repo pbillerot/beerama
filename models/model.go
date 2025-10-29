@@ -43,16 +43,13 @@ func LoadBeeDirs() error {
 		// chargement des beeaccess.conf
 		beeDir.LoadAccess()
 
-		Config.BeeDirs[beeDir.ID] = &beeDir // append(Config.BeeDirs, &beeDir)
+		Config.BeeDirs[beeDir.ID] = &beeDir
 		dirid = dirid + 1
 	}
-	// sort.Slice(Config.BeeDirs, func(i, j int) bool {
-	// 	return Config.BeeDirs[i].Name < Config.BeeDirs[j].Name
-	// })
-
 	// sous-dossiers
+	var childrens = make(map[string]*BeeDir)
 	for _, beeDir := range Config.BeeDirs {
-		pis = pis[:0]
+		var pis []BeePathInfo
 		err = getOnlyFolders(Config.Racine+"/"+beeDir.Name, &pis)
 		if err != nil {
 			logs.Error(err)
@@ -70,14 +67,17 @@ func LoadBeeDirs() error {
 				logs.Error(err)
 				return err
 			}
-			beeDir.WithChildren = true
-			Config.BeeDirs[bdir.ID] = &bdir
-			// Config.BeeDirs = append(Config.BeeDirs, &bdir)
+			childrens[bdir.ID] = &bdir
 			dirid = dirid + 1
-			// beeDir.BeeFiles = append(beeDir.BeeFiles, bdir.BeeFiles...)
-
 		}
-		beeDir.UpdateBeeDir()
+	}
+	// on ajoute les enfants
+	for _, bdir := range childrens {
+		Config.BeeDirs[bdir.ID] = bdir
+	}
+	// Calcul des compteurs et keywords des dossiers
+	for _, bdir := range Config.BeeDirs {
+		bdir.UpdateAlbum()
 	}
 	err = Config.IndexAllBeefiles()
 	fmt.Println("LoadBeeDirs. Proceeding.")
@@ -220,6 +220,9 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 	}
 	beeDir.BeeFiles = make(map[string]*BeeFile) // beeDir.BeeFiles[:0]
 	for _, pi := range pis {
+		if strings.Contains(pi.Path, "/.") {
+			continue
+		}
 		if !pi.Info.IsDir() {
 			err, _ := beeDir.AddBeeFile(pi.Path, idstart)
 			if err != nil {
@@ -227,36 +230,73 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 			}
 		}
 	}
-	// maj beedir
-	beeDir.UpdateBeeDir()
-	logs.Info(beeDir.Name, "rechargé")
+	// tri des images sur la date et l'heure original
+	keys := make([]string, 0, len(beeDir.BeeFiles))
+	for k := range beeDir.BeeFiles {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		if beeDir.BeeFiles[keys[i]].DateOriginal != beeDir.BeeFiles[keys[j]].DateOriginal {
+			return beeDir.BeeFiles[keys[i]].DateOriginal < beeDir.BeeFiles[keys[j]].DateOriginal
+		}
+		return beeDir.BeeFiles[keys[i]].TimeOriginal < beeDir.BeeFiles[keys[j]].TimeOriginal
+	})
+	if beeDir.ParentID == "" {
+		logs.Info("Album:", beeDir.Name, "rechargé")
+	} else {
+		logs.Info("...", beeDir.Name, "rechargé")
+	}
+
 	return nil
 }
 
+func (beeDir *BeeDir) GetParent() *BeeDir {
+	var parent *BeeDir
+	if beeDir.ParentID == "" {
+		parent = beeDir
+	} else {
+		parent = GetBeeDir(beeDir.ParentID)
+	}
+	return parent
+}
+
+// Retourne les beedirs liés beedir courant accessibles par le user_id
+// calcul du nombre de fichiers de l'album
+func (beeDir *BeeDir) GetParentBeedirs() *[]BeeDir {
+	var beedirs []BeeDir
+	// sélection des albums accessibles par user_id liés à l'album courant parent
+	beedirs = append(beedirs, *beeDir)
+	// ajout des enfants de l'album
+	children := []BeeDir{}
+	for _, bdir := range Config.BeeDirs {
+		if bdir.ParentID == beeDir.ID {
+			children = append(children, *bdir)
+		}
+	}
+	// tri des enfants
+	sort.Slice(children, func(i, j int) bool {
+		return children[i].Name < children[j].Name
+	})
+	// ajout des enfants à la fin
+	beedirs = append(beedirs, children...)
+
+	return &beedirs
+}
+
 // UpdateBeeDir sans relire le répertoire
-// - maj count keywords tri - tri des beefiles sur la date original
-// suite ajout suppression d'une image et modification date et keyword
+// calcul de count et keywords puis tri des beefiles
 func (beeDir *BeeDir) UpdateBeeDir() {
-	// ajout des keywords doublon et tri
-	beeDir.Keywords = beeDir.Keywords[:0]
+	// calcul des compeurs keywords et tri des beefiles
+	keywords := []string{}
 	// les keywords de l'album
 	count := 0
 	for _, beeFile := range beeDir.BeeFiles {
-		beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
+		keywords = append(keywords, beeFile.Keywords...)
 		count++
-		// beeFile.ID = "id" + strconv.Itoa(id)
 	}
 	beeDir.Count = count
-	// ajout des keywords des sous-dossiers
-	for _, bdir := range Config.BeeDirs {
-		if bdir.ParentID == beeDir.ID {
-			beeDir.Keywords = append(beeDir.Keywords, bdir.Keywords...)
-			bdir.Count = len(bdir.BeeFiles)
-			count += bdir.Count
-		}
-	}
-	beeDir.CountAlbum = count
-	keyUniqueSorted := BeeUniqueString(beeDir.Keywords)
+	// suppression des keywords en doublon
+	keyUniqueSorted := BeeUniqueString(keywords)
 	sort.Strings(keyUniqueSorted)
 	beeDir.Keywords = keyUniqueSorted
 
@@ -271,6 +311,51 @@ func (beeDir *BeeDir) UpdateBeeDir() {
 		}
 		return beeDir.BeeFiles[keys[i]].TimeOriginal < beeDir.BeeFiles[keys[j]].TimeOriginal
 	})
+}
+
+// UpdateAlbum sans relire le répertoire
+// pour tous les fichiers de l'album et sous-dossiers
+// lance UpdateBeeDir
+// compte le nombre de fichiers
+// fusionne les keywords
+func (beeDir *BeeDir) UpdateAlbum() {
+	parent := beeDir.GetParent()
+
+	// les keywords et compteur du dossier de l'album
+	keywords := []string{}
+	count := 0
+	for _, beeFile := range parent.BeeFiles {
+		keywords = append(keywords, beeFile.Keywords...)
+		count++
+	}
+	// maj du dossier
+	parent.Count = count
+	// suppression des keywords en doublon
+	keyUniqueSorted := BeeUniqueString(keywords)
+	sort.Strings(keyUniqueSorted)
+	parent.Keywords = keywords
+
+	// calcul des countAlbum et keywordsAlbum des sous-dossiers
+	for _, bdir := range Config.BeeDirs {
+		if bdir.ParentID == parent.ID {
+			parent.WithChildren = true
+			bdir.UpdateBeeDir()
+			keywords = append(keywords, bdir.Keywords...)
+			count += bdir.Count
+		}
+	}
+	// suppression des keywords en doublon
+	keyUniqueSorted = BeeUniqueString(keywords)
+	sort.Strings(keyUniqueSorted)
+	parent.KeywordsAlbum = keyUniqueSorted
+	parent.CountAlbum = count
+	// maj des countAlbum et keywordsAlbum des sous-dossiers
+	for _, bdir := range Config.BeeDirs {
+		if bdir.ParentID == parent.ID {
+			bdir.CountAlbum = count
+			bdir.KeywordsAlbum = keyUniqueSorted
+		}
+	}
 
 }
 
@@ -378,12 +463,6 @@ func (beeDir *BeeDir) AddKeywords(keywords []string) {
 func (beeDir *BeeDir) AddKeyword(keyword string) {
 	beeDir.Keywords = append(beeDir.Keywords, keyword)
 	beeDir.UpdateBeeDir()
-	if beeDir.ParentID != "" {
-		// report des keywords dans l'album
-		parent := Config.BeeDirs[beeDir.ParentID]
-		parent.Keywords = append(parent.Keywords, beeDir.Keywords...)
-		parent.UpdateBeeDir()
-	}
 }
 
 func BeeUniqueString(s []string) []string {

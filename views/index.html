@@ -24,12 +24,10 @@
                     </div>
                 </div>
                 {{ range $beedir := $beedirs }}
-                {{if eq $beedir.ParentID ""}}
                 <a class="item" href="/folder/{{$beedir.ID}}">
                     <i class="photo video symbol icon"></i> {{$beedir.Name}} <span
                         class="ui small text">({{$beedir.CountAlbum}})</span>
                 </a>
-                {{end}}
                 {{end}}
             </div>
         </div>

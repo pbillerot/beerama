@@ -13,6 +13,20 @@
     {{template "_flash.html" .}}
     <!-- liste des étiquettes hashtags -->
     <div class="ui labels" style="margin-left: 0.5em;">
+        {{if $beedir.WithChildren}}
+        <!-- album-->
+        {{range $i, $keyword := $parent.KeywordsAlbum }}
+        {{if eq $htagid $keyword }}
+        <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">
+            #{{$keyword}}
+        </a>
+        {{else}}
+        <a href="/folder/{{$beedir.ID}}/{{$keyword}}" class="ui tag small label">
+            #{{$keyword}}
+        </a>
+        {{end}}
+        {{end}}
+        {{else}} <!-- dossier -->
         {{range $i, $keyword := $beedir.Keywords }}
         {{if eq $htagid $keyword }}
         <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">
@@ -22,6 +36,7 @@
         <a href="/folder/{{$beedir.ID}}/{{$keyword}}" class="ui tag small label">
             #{{$keyword}}
         </a>
+        {{end}}
         {{end}}
         {{end}}
     </div>
@@ -38,7 +53,7 @@
                 <!-- recherche du nom de dossier si htag ou search -->
                 {{if or $htagid $search}}
                 {{range $i, $bdir := $beedirs}}
-                {{if eq $bdir.ID $beefile.DirID}}
+                {{if eq $bdir.ID $beedirid}}
                 <div class="grey content" style="padding: 0.3em 0 0.3em 0;">
                     <a href="/folder/{{$beedirid}}" class="ui center aligned sub header">
                         <i class="{{if $bdir.ParentID}}folder outline{{else}}photo video symbol{{end}} icon"></i>

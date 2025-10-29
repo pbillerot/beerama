@@ -37,17 +37,18 @@ type BeeConfig struct {
 
 // Bee Context webapp courante dans la session
 type BeeDir struct {
-	Name         string              // nom du répertoire
-	ID           string              // calculé par LoadBeeDirs
-	Path         string              // chemin complet
-	Title        string              // Titre de la répertoire trouve dans beemage.conf
-	ParentID     string              // ID de l'album parent
-	WithChildren bool                // l'album possède de(s) sous-dossier(s)
-	Count        int                 // nbre de photos du dossier
-	CountAlbum   int                 // nbre de photos de l'album (tous les dossiers)
-	BeeFiles     map[string]*BeeFile // la liste des fichiers de content
-	Keywords     []string            // les hashtags de l'album
-	Users        map[string]Access
+	Name          string              // nom du répertoire
+	ID            string              // calculé par LoadBeeDirs
+	Path          string              // chemin complet
+	Title         string              // Titre de la répertoire trouve dans beemage.conf
+	ParentID      string              // ID de l'album parent
+	WithChildren  bool                // l'album possède de(s) sous-dossier(s)
+	Count         int                 // nbre de photos du dossier
+	CountAlbum    int                 // nbre de photos de l'album (tous les dossiers)
+	BeeFiles      map[string]*BeeFile // la liste des fichiers de content
+	Keywords      []string            // les hashtags du dossier
+	KeywordsAlbum []string            // les hashtags de l'album
+	Users         map[string]Access
 }
 type Access struct {
 	IsEditor bool `toml:"is_editor"`

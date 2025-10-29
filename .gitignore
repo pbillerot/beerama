@@ -21,3 +21,4 @@ beerama
 sandbox/
 drawio-old/
 conf/users.yaml
+*.log
