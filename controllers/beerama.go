@@ -252,16 +252,14 @@ func (c *MainController) Meta() {
 		// cas particulier isUrl
 		if beeFile.IsUrl {
 			url := c.GetString("url")
-			if url != beeFile.UrlImage {
-				err := beeFile.UpdateFileUrl()
-				if err != nil {
-					logs.Error(err)
-					flash.Error("Beerama %s", err)
-					flash.Store(&c.Controller)
-					c.Ctx.Redirect(302, url_return)
-				}
-			}
 			beeFile.UrlImage = url
+			err := beeFile.UpdateFileUrl()
+			if err != nil {
+				logs.Error(err)
+				flash.Error("Beerama %s", err)
+				flash.Store(&c.Controller)
+				c.Ctx.Redirect(302, url_return)
+			}
 		} else {
 			// report des meta dans l'image
 			err := beeFile.UpdateMeta()
@@ -286,7 +284,7 @@ func (c *MainController) Meta() {
 			}
 		}
 		if isRenamed {
-			beeDir.LoadBeeFiles(0)
+			beeDir.LoadBeeFiles()
 		}
 		beeDir.UpdateAlbum()
 		// réindexation des beefiles
@@ -343,10 +341,10 @@ func (c *MainController) Tag() {
 	if c.Ctx.Input.Method() == "POST" {
 		// AJOUT DU TAG
 		keyword := strings.ToLower(c.GetString("keyword"))
-		// maj du beefile
-		beeFile.Keywords = append(beeFile.Keywords, keyword)
-		// report des keywords dans BeeDir sans doublons et triés
-		beeDir.AddKeyword(keyword)
+		// maj
+		parent := beeDir.GetParent()
+		parent.KeywordsAlbum = append(parent.Keywords, keyword)
+		beeDir.KeywordsAlbum = parent.KeywordsAlbum
 	}
 
 	// actualisation
@@ -400,7 +398,7 @@ func (c *MainController) Upload() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFile, err := beeDir.AddBeeFile(path, 0)
+		beeFile, err := beeDir.AddBeeFile(path)
 		// ajout htag new
 		beeFile.Keywords = append(beeFile.Keywords, "new")
 		if err == nil {
@@ -487,7 +485,7 @@ func (c *MainController) FolderRename() {
 		flash.Store(&c.Controller)
 	}
 	// Rechargement de albums
-	beeDir.LoadBeeFiles(0)
+	beeDir.LoadBeeFiles()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -513,7 +511,7 @@ func (c *MainController) NewDraw() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	// Rechargement de l'album
-	beeDir.LoadBeeFiles(0)
+	beeDir.LoadBeeFiles()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -539,7 +537,8 @@ func (c *MainController) NewUrl() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	// Rechargement de l'album
-	beeDir.LoadBeeFiles(0)
+	beeDir.LoadBeeFiles()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -608,7 +607,7 @@ func (c *MainController) Reload() {
 
 	beego.ReadFromRequest(&c.Controller)
 
-	beeDir.LoadBeeFiles(0)
+	beeDir.LoadBeeFiles()
 	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
@@ -640,7 +639,7 @@ func (c *MainController) Duplicate() {
 			flash.Store(&c.Controller)
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
-		beeFileDuplicate, err := beeDir.AddBeeFile(pathDest, 0)
+		beeFileDuplicate, err := beeDir.AddBeeFile(pathDest)
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama.Upload %s", err)
@@ -690,7 +689,7 @@ func (c *MainController) FileCopy() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, 0)
+		beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
 		if err != nil {
 			goto Erreur
 		}
@@ -735,7 +734,7 @@ func (c *MainController) FileMove() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, 0)
+		beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
 		if err != nil {
 			goto Erreur
 		}
@@ -792,7 +791,7 @@ func (c *MainController) DragDrop() {
 		flash.Store(&c.Controller)
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
-	beeFileDest, err := beeDirDest.AddBeeFile(pathDest, 0)
+	beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
 	if err != nil {
 		logs.Error(err)
 		flash.Error("drag drop %s", err)

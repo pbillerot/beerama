@@ -79,7 +79,7 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 // - ajout du beefile dans beedir.beefiles
 // - report de tout les hashtags des beefiles dans beedir
 // - création du thumbnail
-func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
+func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)
@@ -240,7 +240,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, idstart int) (*BeeFile, error) {
 	}
 
 	// ajout dans BeeFiles
-	beeFile.ID = "id" + strconv.Itoa(idstart+len(beeDir.BeeFiles)+1)
+	beeFile.ID = "id" + strconv.Itoa(len(beeDir.BeeFiles)+1)
 	beeDir.BeeFiles[beeFile.ID] = beeFile
 	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
 

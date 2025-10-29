@@ -2,12 +2,20 @@
 # CHANGELOG
 
 ### À venir :
-> en cours
+
 Plus tard
-- sur recherche recalculer les compteurs et n'afficher que les dossiers concernés
+- sur recherche recalculer les compteurs
+    et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.0.4 du 29 oct. 2025
+- `fixed` nouvelle étiquette ne fonctiannait plus
+- `fixed` nouvel album opérationnel de nouveau
+- `fixed` étiquettes qui ne s'affichaient pas
+- `changed` bouton à gauche dans meta
+- `changed` pas de légende pour pdf drawio url
 
 2.0.3 du 29 oct. 2025
 - `fixed` compteur des albums à zéro

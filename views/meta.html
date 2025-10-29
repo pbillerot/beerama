@@ -79,7 +79,7 @@
 						<input class="bee-onchange" type="hidden" name="image" value="">
 						{{end}}
 					</div>
-					{{if $beefile.IsImage}}
+					{{if and $beefile.IsImage (not $beefile.IsDrawio) }}
 					<div class="ui attached message">
 						<div class="sub header">
 							{{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px
@@ -122,10 +122,7 @@
 								<select class="ui fluid search three column dropdown bee-onchange" name="keywords"
 									id="keywords" multiple="">
 									<!-- recup des keywords de l'album si sous-dossier-->
-									{{ $keywords := $beedir.Keywords}}
-									{{ if ne $beedir.ParentID "" }}
-									{{ $keywords = $parent.Keywords}}
-									{{end}}
+									{{ $keywords := $beedir.KeywordsAlbum}}
 									<option value="">Sélectionner une ou plusieurs étiquettes</option>
 									{{ range $ikey, $key := $keywords }}
 									<option {{if BeeIN $beefile.Keywords $key}}selected{{end}} value="{{$key}}">

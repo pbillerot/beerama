@@ -102,18 +102,6 @@ var AdminRoleProfile = func(ctx *context.Context) {
 		ctx.Output.Body([]byte("403 Forbidden - Admin required"))
 		// panic("Stop")
 	}
-	// config := models.Config
-	// user_id, _, _ := ctx.Request.BasicAuth()
-	// if !config.IsUserAdmin(user_id) {
-	// 	fmt.Println("Filter: User is not Admin. Blocking.")
-	// 	ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
-	// 	ctx.Output.Body([]byte("403 Forbidden - Admin required"))
-	// 	// panic("Stop")
-	// } else {
-	// 	ctx.Output.Session("role", "admin")
-	// }
-
-	// fmt.Println("Filter: User is Admin. Proceeding.")
 }
 
 // AuthRequiredProfile : Vérifie si l'utilisateur est authentifié
@@ -126,6 +114,10 @@ var AuthRequiredProfile = func(ctx *context.Context) {
 	if ctx.Input.Session("user_id") == nil {
 		ctx.Output.Session("user_id", user_id)
 		logs.Info("new session", user_id)
+		if models.Config.IsUserAdmin(user_id) {
+			ctx.Output.Session("role", "admin")
+		}
+
 	}
 	// fmt.Println("Filter: User authenticated. Proceeding.")
 }

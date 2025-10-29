@@ -35,7 +35,7 @@ func LoadBeeDirs() error {
 		beeDir.ParentID = ""
 		beeDir.Path = pi.Path
 		beeDir.Name = pi.Info.Name()
-		err := beeDir.LoadBeeFiles(0)
+		err := beeDir.LoadBeeFiles()
 		if err != nil {
 			logs.Error(err)
 			return err
@@ -62,7 +62,7 @@ func LoadBeeDirs() error {
 			bdir.ParentID = beeDir.ID
 			bdir.Path = pi.Path
 			bdir.Name = pi.Info.Name()
-			err := bdir.LoadBeeFiles(len(beeDir.BeeFiles) + 1)
+			err := bdir.LoadBeeFiles()
 			if err != nil {
 				logs.Error(err)
 				return err
@@ -209,7 +209,7 @@ func getOnlyFolders(directory string, info *[]BeePathInfo) (err error) {
 }
 
 // LoadBeeFiles chargement des fichier de BeeDir
-func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
+func (beeDir *BeeDir) LoadBeeFiles() error {
 
 	// lecture du répertoire
 	var pis []BeePathInfo
@@ -224,7 +224,7 @@ func (beeDir *BeeDir) LoadBeeFiles(idstart int) error {
 			continue
 		}
 		if !pi.Info.IsDir() {
-			err, _ := beeDir.AddBeeFile(pi.Path, idstart)
+			err, _ := beeDir.AddBeeFile(pi.Path)
 			if err != nil {
 				continue
 			}
@@ -417,19 +417,21 @@ func (beeFile *BeeFile) Rename(newName string) error {
 	if err != nil {
 		return err
 	}
-	_, err = os.Stat(originalOld)
-	if os.IsExist(err) {
-		err = os.Rename(originalOld, originalNew)
+	if !beeFile.IsUrl {
+		_, err = os.Stat(originalOld)
+		if os.IsExist(err) {
+			err = os.Rename(originalOld, originalNew)
+			if err != nil {
+				return err
+			}
+		}
+		err = os.Rename(thumbOld, thumbNew)
 		if err != nil {
 			return err
 		}
-	}
-	err = os.Rename(thumbOld, thumbNew)
-	if err != nil {
-		return err
+		beeFile.UrlThumb = strings.Replace(beeFile.UrlThumb, beeFile.Base, newName, 1)
 	}
 	beeFile.UrlImage = strings.Replace(beeFile.UrlImage, beeFile.Base, newName, 1)
-	beeFile.UrlThumb = strings.Replace(beeFile.UrlThumb, beeFile.Base, newName, 1)
 	return nil
 }
 

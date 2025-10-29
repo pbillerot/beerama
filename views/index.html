@@ -111,6 +111,22 @@
             </div>
         </div>
     </main>
+    <div id="bee-modal-new" class="ui tiny modal">
+        <div class="header bee-modal-title"></div>
+        <div class="content">
+            <form class="ui form" method="POST" action="">
+                {{ .xsrfdata }}
+                <div class="required field">
+                    <input type="text" name="new_name" placeholder="" value="">
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Valider</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     {{template "_foot.html" .}}
 </body>
 
