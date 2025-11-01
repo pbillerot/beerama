@@ -140,11 +140,8 @@ func (config *BeeConfig) AddFolder(path string) {
 	beeDir.ID = "dir" + strconv.Itoa(len(config.BeeDirs))
 	beeDir.Path = config.Racine + "/" + path
 	beeDir.Name = path
+	beeDir.BeeFiles = make(map[string]*BeeFile)
 	config.BeeDirs[beeDir.ID] = &beeDir
-	// config.BeeDirs = append(config.BeeDirs, &beeDir)
-	// sort.Slice(config.BeeDirs, func(i, j int) bool {
-	// 	return config.BeeDirs[i].Name < config.BeeDirs[j].Name
-	// })
 }
 
 // AddSubFolder

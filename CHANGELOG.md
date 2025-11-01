@@ -20,6 +20,9 @@ Plus tard
 - `changed` bouton à gauche dans meta
 - `changed` pas de légende pour pdf drawio url
 
+2.1.1 du 1er nov. 2025
+- `fixed` création d'un album beedir.beefiles non initialisée
+
 2.1.0 du 1er nov. 2025
 - `changed` id file en clé unique
 - `changed` viewer pdf plus large
