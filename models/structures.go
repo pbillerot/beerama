@@ -56,6 +56,7 @@ type Access struct {
 
 // BeeFile propriétés d'un fichier dans le sous-dossier BeeDir
 type BeeFile struct {
+	ID           string // calculé par LoadBeeFiles
 	Action       string
 	Base         string
 	Categories   string
@@ -63,7 +64,6 @@ type BeeFile struct {
 	Date         string
 	Dir          string
 	Ext          string // extension du fichier
-	ID           string // calculé par LoadBeeFiles
 	IsAudio      bool
 	IsConf       bool
 	IsDir        bool
@@ -116,6 +116,7 @@ type Breadcrumb struct {
 }
 
 type FileUrl struct {
+	Id               string `toml:"Id"`
 	Description      string `toml:"Description"`
 	DateOriginal     string
 	TimeOriginal     string

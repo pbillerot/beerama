@@ -2,7 +2,10 @@
 # CHANGELOG
 
 ### À venir :
-
+> supprimer l'album si admin
+> bug ajout htag sur un doc en doublon dans album
+> visualiser les vidéo
+>  donner une clé unique à chaque fichier sqlite + metadata figées
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
@@ -16,6 +19,10 @@ Plus tard
 - `fixed` étiquettes qui ne s'affichaient pas
 - `changed` bouton à gauche dans meta
 - `changed` pas de légende pour pdf drawio url
+
+2.1.0 du 1er nov. 2025
+- `changed` id file en clé unique
+- `changed` viewer pdf plus large
 
 2.0.3 du 29 oct. 2025
 - `fixed` compteur des albums à zéro

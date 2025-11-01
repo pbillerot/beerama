@@ -6,7 +6,6 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/BurntSushi/toml"
@@ -135,6 +134,7 @@ func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 		beeFile.TimeOriginal = fileurl.TimeOriginal
 		beeFile.Keywords = fileurl.Keywords
 		beeFile.UrlImage = fileurl.InternetShortcut.URL
+		beeFile.ID = fileurl.Id
 	} else {
 		beeFile.IsSystem = true
 	}
@@ -147,6 +147,14 @@ func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 			}
 			for k, v := range fileInfo.Fields {
 				switch k {
+				case "Title":
+					switch t := v.(type) {
+					case string:
+						beeFile.ID = v.(string)
+					default:
+						beeFile.ID = ""
+						logs.Error(beeFile.Base, t)
+					}
 				case "Model":
 					beeFile.Model = v.(string)
 				case "Make":
@@ -240,7 +248,8 @@ func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 	}
 
 	// ajout dans BeeFiles
-	beeFile.ID = "id" + strconv.Itoa(len(beeDir.BeeFiles)+1)
+	// reprise existant des document sans clé
+	beeFile.GetNewId()
 	beeDir.BeeFiles[beeFile.ID] = beeFile
 	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
 
@@ -267,6 +276,12 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	}
 	defer et.Close()
 	originals := et.ExtractMetadata(beeFile.Path)
+	// id
+	if originals[0].Err == nil {
+		originals[0].SetString("Title", beeFile.GetNewId())
+	} else {
+		logs.Error(originals[0].Err)
+	}
 	// description
 	if originals[0].Err == nil {
 		originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))

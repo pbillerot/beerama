@@ -2,14 +2,17 @@ package models
 
 import (
 	"fmt"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/beego/beego/v2/core/logs"
+	"github.com/oklog/ulid"
 	"github.com/pbillerot/beerama/fulltext"
 	"github.com/pbillerot/beerama/shutil"
 )
@@ -435,6 +438,30 @@ func (beeFile *BeeFile) Rename(newName string) error {
 	return nil
 }
 
+// création id si à blanc 01K8ZHD17V12CV5SA29K1DW6TM
+func (beeFile *BeeFile) GetNewId() string {
+	if len(beeFile.ID) != 26 {
+		// Use current time for the timestamp part
+		t := time.Now().UTC()
+
+		// Use crypto/rand or math/rand for the randomness part (entropy)
+		entropy := rand.New(rand.NewSource(t.UnixNano()))
+
+		serialNumber := ulid.MustNew(ulid.Timestamp(t), entropy)
+
+		// e.g., 01AN4Z07BY79KA1307SR9X4MV3
+		beeFile.ID = serialNumber.String()
+		if beeFile.IsUrl {
+			beeFile.UpdateFileUrl()
+		} else {
+			// report des meta dans l'image
+			beeFile.UpdateMeta()
+		}
+		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
+	}
+	return beeFile.ID
+}
+
 // Update du fichier.url
 func (beeFile *BeeFile) UpdateFileUrl() error {
 
@@ -444,6 +471,7 @@ func (beeFile *BeeFile) UpdateFileUrl() error {
 	fileUrl.TimeOriginal = beeFile.TimeOriginal
 	fileUrl.Keywords = beeFile.Keywords
 	fileUrl.InternetShortcut.URL = beeFile.UrlImage
+	fileUrl.Id = beeFile.GetNewId()
 
 	updatedData, err := toml.Marshal(&fileUrl)
 	if err != nil {
