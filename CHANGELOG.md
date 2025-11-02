@@ -13,7 +13,7 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
-2.0.4 du 29 oct. 2025
+2.1.2 du 2 nov 2025
 - `fixed` nouvelle étiquette ne fonctiannait plus
 - `fixed` nouvel album opérationnel de nouveau
 - `fixed` étiquettes qui ne s'affichaient pas
@@ -26,6 +26,13 @@ Plus tard
 2.1.0 du 1er nov. 2025
 - `changed` id file en clé unique
 - `changed` viewer pdf plus large
+
+2.0.4 du 29 oct. 2025
+- `fixed` nouvelle étiquette ne fonctiannait plus
+- `fixed` nouvel album opérationnel de nouveau
+- `fixed` étiquettes qui ne s'affichaient pas
+- `changed` bouton à gauche dans meta
+- `changed` pas de légende pour pdf drawio url
 
 2.0.3 du 29 oct. 2025
 - `fixed` compteur des albums à zéro

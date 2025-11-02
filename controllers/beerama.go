@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"net/http"
 	"os"
 	"path/filepath"
 	"slices"
@@ -355,6 +356,12 @@ func (c *MainController) Tag() {
 	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
+// Retourne l'image
+func (c *MainController) Image() {
+	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
+	http.ServeFile(c.Ctx.ResponseWriter, c.Ctx.Request, beeFile.Path)
+}
+
 // Restauration de l'image avec son original
 func (c *MainController) Restore() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
@@ -398,7 +405,7 @@ func (c *MainController) Upload() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFile, err := beeDir.AddBeeFile(path)
+		beeFile, err := beeDir.AddBeeFile(path, true)
 		// ajout htag new
 		beeFile.Keywords = append(beeFile.Keywords, "new")
 		if err == nil {
@@ -639,7 +646,7 @@ func (c *MainController) Duplicate() {
 			flash.Store(&c.Controller)
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
-		beeFileDuplicate, err := beeDir.AddBeeFile(pathDest)
+		beeFileDuplicate, err := beeDir.AddBeeFile(pathDest, true)
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama.Upload %s", err)
@@ -689,7 +696,7 @@ func (c *MainController) FileCopy() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
+		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, true)
 		if err != nil {
 			goto Erreur
 		}
@@ -734,7 +741,7 @@ func (c *MainController) FileMove() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
+		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, false)
 		if err != nil {
 			goto Erreur
 		}
@@ -791,7 +798,7 @@ func (c *MainController) DragDrop() {
 		flash.Store(&c.Controller)
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
-	beeFileDest, err := beeDirDest.AddBeeFile(pathDest)
+	beeFileDest, err := beeDirDest.AddBeeFile(pathDest, false)
 	if err != nil {
 		logs.Error(err)
 		flash.Error("drag drop %s", err)

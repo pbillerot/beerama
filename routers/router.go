@@ -21,6 +21,7 @@ func init() {
 	// Routes static pour protéger les photos des albums
 	nsStatic := web.NewNamespace("/s",
 		web.NSBefore(controllers.AuthRequiredProfile),
+		web.NSRouter("/image/:beefileid", &controllers.MainController{}, "get:Image"),
 	)
 
 	// Routes avec rôle reader

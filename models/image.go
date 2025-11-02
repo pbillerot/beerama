@@ -78,7 +78,7 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 // - ajout du beefile dans beedir.beefiles
 // - report de tout les hashtags des beefiles dans beedir
 // - création du thumbnail
-func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
+func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)
@@ -249,6 +249,9 @@ func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 
 	// ajout dans BeeFiles
 	// reprise existant des document sans clé
+	if newid {
+		beeFile.ID = ""
+	}
 	beeFile.GetNewId()
 	beeDir.BeeFiles[beeFile.ID] = beeFile
 	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
@@ -261,6 +264,8 @@ func (beeDir *BeeDir) AddBeeFile(path string) (*BeeFile, error) {
 		beeFile.createThumbnail(Config.Width, Config.Height)
 	}
 
+	// Indexation du beefile
+	beeFile.Idx()
 	// logs.Info(beeDir.ID, beeFile.ID, beeFile.Path)
 
 	return beeFile, nil

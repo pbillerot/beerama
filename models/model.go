@@ -22,6 +22,7 @@ var Config BeeConfig
 
 // LoadBeeDirs chargement de la liste des répertoires BeeDir
 func LoadBeeDirs() error {
+	Config.BeeFiles = make(map[string]*BeeFile)
 	var pis []BeePathInfo
 	// dossiers racines
 	err := getOnlyFolders(Config.Racine, &pis)
@@ -224,7 +225,7 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 			continue
 		}
 		if !pi.Info.IsDir() {
-			err, _ := beeDir.AddBeeFile(pi.Path)
+			err, _ := beeDir.AddBeeFile(pi.Path, false)
 			if err != nil {
 				continue
 			}
@@ -603,4 +604,16 @@ func contains(s []string, str string) bool {
 	}
 
 	return false
+}
+func (beeFile *BeeFile) Idx() {
+	if Config.BeeFiles[beeFile.ID] == nil {
+		Config.BeeFiles[beeFile.ID] = beeFile
+	}
+}
+func GetBeeFile(id string) *BeeFile {
+	if Config.BeeFiles[id] == nil {
+		return &BeeFile{}
+	} else {
+		return Config.BeeFiles[id]
+	}
 }
