@@ -71,6 +71,11 @@
 								<p>Your browser does not support iframes.</p>
 							</iframe>
 						</div>
+						{{else if $beefile.IsVideo}}
+						<a class="ui centered bordered fluid image" href="{{$beefile.UrlImage}}" target="_blank">
+							<img src="{{$beefile.UrlThumb}}" width="100%" height="700px">
+							</img>
+						</a>
 						{{else}}
 						<a class="ui centered bordered fluid image" data-src="{{$beefile.UrlImage}}">
 							<img class="bee-popup-image-editor" style="cursor: pointer;"

@@ -84,6 +84,7 @@ type BeeFile struct {
 	IsSystem     bool
 	IsText       bool
 	IsUrl        bool
+	IsVideo      bool
 	IsWord       bool
 	Path         string // path de l'image calculé
 	DirID        string // id du répertoire de l'image

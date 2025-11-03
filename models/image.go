@@ -3,8 +3,13 @@ package models
 import (
 	"encoding/base64"
 	"fmt"
+	"image"
+	"image/draw"
+	"image/png"
 	"io"
+	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -96,20 +101,22 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 	beeFile.Ext = filepath.Ext(path)
 	beeFile.UrlImage = "/s/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
 
-	if contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
+	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
-	} else if contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
+	} else if Contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
 		beeFile.IsSvg = true
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
-	} else if contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
+	} else if Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsVideo = true
+	} else if Contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsPdf = true
-	} else if contains([]string{".conf"}, beeFile.Ext) {
+	} else if Contains([]string{".conf"}, beeFile.Ext) {
 		var content []byte
 		content, err = os.ReadFile(beeFile.Path)
 		if err != nil {
@@ -117,7 +124,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 		}
 		beeFile.Content = content
 		beeFile.IsConf = true
-	} else if contains([]string{".url"}, beeFile.Ext) {
+	} else if Contains([]string{".url"}, beeFile.Ext) {
 		content, err := os.ReadFile(beeFile.Path)
 		if err != nil {
 			logs.Error(err)
@@ -138,7 +145,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 	} else {
 		beeFile.IsSystem = true
 	}
-	if beeFile.IsImage || beeFile.IsPdf {
+	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
 		fileInfos := et.ExtractMetadata(beeFile.Path)
 		for _, fileInfo := range fileInfos {
 			if fileInfo.Err != nil {
@@ -238,7 +245,7 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 	dirOriginal := Config.Original + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	beeFile.Original = dirOriginal + beeFile.Base
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
-	if beeFile.IsPdf {
+	if beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
 		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
 
@@ -477,28 +484,104 @@ func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 	perm := os.FileMode(0755)
 	err = os.MkdirAll(dirThumb, perm)
 	if err != nil {
-		return
+		return fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
 	}
+	if beeFile.IsVideo {
+		cmd := exec.Command("ffmpeg", "-i", beeFile.Path, "-ss", "00:00:01", "-vframes", "1", beeFile.Thumb)
+		// Optional: Capture command output or errors
+		// output, err := cmd.CombinedOutput()
+		err = cmd.Run()
+		if err != nil {
+			err = fmt.Errorf("failed to save thumbnail: %s %v", beeFile.Thumb, err)
+			return err
+		}
+		StampOnImage(beeFile.Thumb, "./static/img/video-256.png")
+	} else {
+		// 1. Open the original image
+		img, err := imaging.Open(beeFile.Path, imaging.AutoOrientation(true))
+		if err != nil {
+			err = fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
+			return err
+		}
+		// 2. Create the thumbnail
+		// imaging.Thumbnail resizes the image to fit the specified dimensions
+		// and crops the image to the exact size without distorting the aspect ratio.
+		thumbnail := imaging.Resize(img, width, 0, imaging.CatmullRom)
 
-	// 1. Open the original image
-	img, err := imaging.Open(beeFile.Path, imaging.AutoOrientation(true))
-	if err != nil {
-		err = fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
-		return
-	}
-
-	// 2. Create the thumbnail
-	// imaging.Thumbnail resizes the image to fit the specified dimensions
-	// and crops the image to the exact size without distorting the aspect ratio.
-	thumbnail := imaging.Resize(img, width, 0, imaging.CatmullRom)
-
-	// 3. Save the thumbnail image to a file
-	err = imaging.Save(thumbnail, beeFile.Thumb)
-	if err != nil {
-		err = fmt.Errorf("failed to save image: %s %v", beeFile.Path, err)
-		return
+		// 3. Save the thumbnail image to a file
+		err = imaging.Save(thumbnail, beeFile.Thumb)
+		if err != nil {
+			err = fmt.Errorf("failed to save image: %s %v", beeFile.Path, err)
+			return err
+		}
 	}
 
 	logs.Info("Thumbnail créé %s ", beeFile.Thumb)
 	return
+}
+
+func StampOnImage(pathImage, pathIcon string) (err error) {
+	// 1. Charger l'image de base
+	baseImageFile, err := os.Open(pathImage)
+	if err != nil {
+		log.Fatalf("Failed to open base image: %v", err)
+	}
+	defer baseImageFile.Close()
+
+	baseImage, _, err := image.Decode(baseImageFile)
+	if err != nil {
+		log.Fatalf("Failed to decode base image: %v", err)
+	}
+
+	// 2. Charger l'icône
+	iconFile, err := os.Open(pathIcon)
+	if err != nil {
+		log.Fatalf("Failed to open icon image: %v", err)
+	}
+	defer iconFile.Close()
+
+	iconImage, _, err := image.Decode(iconFile)
+	if err != nil {
+		log.Fatalf("Failed to decode icon image: %v", err)
+	}
+
+	// 3. Créer une nouvelle image
+	// La nouvelle image aura la même taille que l'image de base.
+	// Nous utilisons un image.RGBA pour supporter la transparence si nécessaire.
+	bounds := baseImage.Bounds()
+	newImage := image.NewRGBA(bounds)
+
+	// 4. Dessiner l'image de base sur la nouvelle image
+	// Copie l'image de base sur la nouvelle image, en utilisant un opérateur de source pour copier simplement les pixels.
+	draw.Draw(newImage, bounds, baseImage, image.Point{}, draw.Src)
+
+	// 5. Dessiner l'icône sur la nouvelle image
+	// Définissez la position de l'icône. Ici, nous la plaçons dans le coin supérieur gauche.
+	// Vous pouvez ajuster iconX et iconY pour placer l'icône où vous le souhaitez.
+	iconX := 10 // Décalage X depuis le coin supérieur gauche de l'image de base
+	iconY := 10 // Décalage Y depuis le coin supérieur gauche de l'image de base
+
+	// Calculer le rectangle de destination pour l'icône sur la nouvelle image
+	iconBounds := iconImage.Bounds()
+	iconDestRect := image.Rect(iconX, iconY, iconX+iconBounds.Dx(), iconY+iconBounds.Dy())
+
+	// Dessiner l'icône. draw.Over est généralement utilisé pour superposer avec transparence.
+	// Si l'icône n'a pas de transparence, draw.Src fonctionnera aussi.
+	draw.Draw(newImage, iconDestRect, iconImage, image.Point{}, draw.Over)
+
+	// 6. Sauvegarder la nouvelle image
+	outputFile, err := os.Create(pathImage)
+	if err != nil {
+		log.Fatalf("Failed to create output file: %v", err)
+	}
+	defer outputFile.Close()
+
+	if err := png.Encode(outputFile, newImage); err != nil {
+		log.Fatalf("Failed to encode image: %v", err)
+	}
+
+	log.Println("Image with icon overlay saved as output_image.png")
+
+	return err
+
 }

@@ -44,7 +44,7 @@
     <div class="grid">
         {{range $ibeefile, $beefile := $beefiles }}
         {{$beedirid := $beefile.DirID}}
-        {{if or $beefile.IsImage $beefile.IsPdf $beefile.IsUrl }}
+        {{if or $beefile.IsImage $beefile.IsPdf $beefile.IsUrl $beefile.IsVideo }}
         <div class="grey grid-item" style="margin: 0.5em">
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press draggable{{end}}"
                 data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
@@ -78,6 +78,7 @@
                     <i class="linkify big icon"></i>{{$beefile.Base}}
                 </a>
                 {{else}}
+                <!-- isimage isvideo-->
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}" data-gallery="gallery"
                         data-description="{{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}} {{$beefile.TimeOriginal}} <b>{{$beefile.Description}}</b>"><img

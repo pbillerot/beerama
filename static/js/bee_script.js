@@ -500,7 +500,8 @@ $(document).ready(function () {
   $('.bee-drawio-editor').on('tap', function (event) {
     // DiagramEditor.editElement(this);
     // ancienne façon de faire
-    var url = 'https://embed.diagrams.net/?embed=1&ui=atlas&spin=1&modified=unsavedChanges&proto=json';
+    // ui=[kennedy|min|atlas|dark|sketch|simple]
+    var url = 'https://embed.diagrams.net/?embed=1&ui=min&spin=1&modified=unsavedChanges&proto=json';
     var source = $('#bee-drawio')[0];
     // var title = source.getAttribute('title')
     // url += '&title=' + title;

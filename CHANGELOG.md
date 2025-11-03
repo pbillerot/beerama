@@ -1,4 +1,3 @@
-
 # CHANGELOG
 
 ### À venir :
@@ -12,6 +11,10 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.2.0 du 3 nov 2025
+- `added` gestion des vidéos
+- `changed` toolbar drawio plus simple
 
 2.1.2 du 2 nov 2025
 - `fixed` nouvelle étiquette ne fonctiannait plus

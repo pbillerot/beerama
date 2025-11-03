@@ -7,11 +7,13 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"path/filepath"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -359,7 +361,41 @@ func (c *MainController) Tag() {
 // Retourne l'image
 func (c *MainController) Image() {
 	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
-	http.ServeFile(c.Ctx.ResponseWriter, c.Ctx.Request, beeFile.Path)
+	// réponse directe
+	// http.ServeFile(c.Ctx.ResponseWriter, c.Ctx.Request, beeFile.Path)
+
+	w := c.Ctx.ResponseWriter
+	// 1. Lire le contenu du fichier
+	imageData, err := os.ReadFile(beeFile.Path)
+	if err != nil {
+		http.Error(c.Ctx.ResponseWriter, "Impossible de lire l'image", http.StatusInternalServerError)
+		return
+	}
+
+	// 2. Définir l'entête Content-Type
+	// L'entête doit correspondre au format de l'image
+	if beeFile.IsImage {
+		if models.Contains([]string{".jpeg", ".jpg"}, strings.ToLower(beeFile.Ext)) {
+			w.Header().Set("Content-Type", "image/jpg")
+		} else if models.Contains([]string{".png"}, strings.ToLower(beeFile.Ext)) {
+			w.Header().Set("Content-Type", "image/png")
+		} else if models.Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
+			w.Header().Set("Content-Type", "image/gif")
+		} else if models.Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
+			w.Header().Set("Content-Type", "video/mp4")
+		} else {
+			http.Error(c.Ctx.ResponseWriter, "Not Image or vidéo", http.StatusInternalServerError)
+		}
+	}
+
+	// Vous pouvez également définir Content-Length si vous connaissez la taille
+	w.Header().Set("Content-Length", strconv.Itoa(len(imageData)))
+
+	// 3. Écrire les données de l'image dans la réponse
+	_, err = c.Ctx.ResponseWriter.Write(imageData)
+	if err != nil {
+		log.Println("Erreur lors de l'écriture de la réponse:", err)
+	}
 }
 
 // Restauration de l'image avec son original
