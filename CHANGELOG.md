@@ -1,16 +1,17 @@
 # CHANGELOG
 
 ### À venir :
-> supprimer l'album si admin
 > bug ajout htag sur un doc en doublon dans album
-> visualiser les vidéo
->  donner une clé unique à chaque fichier sqlite + metadata figées
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.2.1 du 4 nov 2025
+- `added` supprimer un album / admin
+- `changed` lightbox pour visualiser la vidéa dans l'écram meta
 
 2.2.0 du 3 nov 2025
 - `added` gestion des vidéos

@@ -64,6 +64,7 @@ func init() {
 		// Enchaîne plusieurs filtres : l'utilisateur doit être authentifié ET Admin
 		web.NSBefore(controllers.AuthRequiredProfile, controllers.AdminRoleProfile),
 		web.NSRouter("/access/:beedirid", &controllers.MainController{}, "get:Access;post:Access"),
+		web.NSRouter("/rmdir/:beedirid", &controllers.MainController{}, "post:Rmdir"),
 		web.NSRouter("/mkdir", &controllers.MainController{}, "post:MkFolder"),
 		web.NSRouter("/reload", &controllers.MainController{}, "get:ReloadAll"),
 		web.NSRouter("/users", &controllers.MainController{}, "get:Users;post:Users"),

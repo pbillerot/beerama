@@ -117,6 +117,14 @@
                         data-action="/e/rename/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
                         <i class="icon folder"></i>Renommer l'album...
                     </div>
+                    {{ if eq (len $beedir.BeeFiles) 0}}
+                    {{ if and (not $beedir.ParentID) (not $beedir.WithChildren)}}
+                    <div class="ui icon item bee-modal-rename" title="Supprimer l'album"
+                        data-action="/a/rmdir/{{$beedir.ID}}" data-default="{{$beedir.Name}}">
+                        <i class="icon folder"></i>Supprimer l'album...
+                    </div>
+                    {{end}}
+                    {{end}}
                     {{end}}
                     {{end}}
                     <a class="ui icon item bee-nag" href="/e/reload/{{$beedir.ID}}">
