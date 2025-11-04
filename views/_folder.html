@@ -72,9 +72,7 @@
                     </div>
                 </div>
                 {{else if $beefile.IsUrl}}
-                <a class="ui button bee-modal-doc" title="{{$beefile.Base}}"
-                    data-title="{{$beedir.Name}} / {{$beefile.Base}} : {{$beefile.Description}} {{$beefile.Keywords}} {{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}} {{$beefile.TimeOriginal}}"
-                    data-src="{{$beefile.UrlImage}}">
+                <a class="ui button" href="{{$beefile.UrlImage}}" title="{{$beefile.Base}}" target="_blank">
                     <i class="linkify big icon"></i>{{$beefile.Base}}
                 </a>
                 {{else}}

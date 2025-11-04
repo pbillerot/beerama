@@ -1,6 +1,8 @@
 # CHANGELOG
 
 ### À venir :
+> upload en new
+> url dans nouvelle fenêtre
 > bug ajout htag sur un doc en doublon dans album
 Plus tard
 - sur recherche recalculer les compteurs
@@ -8,6 +10,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.2.2 du 4 nov 2025
+- `changed` ouverture url dans nouvelle fenêtre
 
 2.2.1 du 4 nov 2025
 - `added` supprimer un album / admin
