@@ -384,7 +384,8 @@ func (c *MainController) Image() {
 		} else if models.Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
 			w.Header().Set("Content-Type", "video/mp4")
 		} else {
-			http.Error(c.Ctx.ResponseWriter, "Not Image or vidéo", http.StatusInternalServerError)
+			w.Header().Set("Content-Type", "application/octet-stream")
+			// http.Error(c.Ctx.ResponseWriter, "Not Image or vidéo", http.StatusInternalServerError)
 		}
 	}
 
@@ -427,6 +428,7 @@ func (c *MainController) Upload() {
 		goto Erreur
 	}
 	for _, mfile := range files {
+
 		file, err := mfile.Open()
 		if err != nil {
 			goto Erreur
@@ -527,7 +529,7 @@ func (c *MainController) FolderRename() {
 		flash.Error("FolderRename %s", err)
 		flash.Store(&c.Controller)
 	}
-	// Rechargement de albums
+	// Rechargement de l'album
 	beeDir.LoadBeeFiles()
 
 	// réindexation des beefiles

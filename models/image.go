@@ -106,13 +106,15 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
+	} else if Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsImage = true
 	} else if Contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
 		beeFile.IsSvg = true
 		if strings.Contains(beeFile.Base, "drawio") {
 			beeFile.IsDrawio = true
 		}
-	} else if Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
+	} else if Contains([]string{".mov", ".m4v", ".mkv", ".mp4", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsVideo = true
 	} else if Contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsPdf = true
@@ -280,6 +282,11 @@ func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
 
 // updateMeta
 func (beeFile *BeeFile) UpdateMeta() (err error) {
+	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
+		// attention certains types ne sont pas modifiables
+		// https://exiftool.org/exiftool_pod.html
+		return fmt.Errorf("extension non modifiable: %s", beeFile.Base)
+	}
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)
 	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
@@ -317,10 +324,16 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	} else {
 		logs.Error(originals[0].Err)
 	}
-	if originals[0].Err == nil {
-		et.WriteMetadata(originals)
+	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
+		// attention certains types ne sont pas modifiables
+		// https://exiftool.org/exiftool_pod.html
+		logs.Warning("%s : metadata non modifiables", beeFile.Base)
 	} else {
-		logs.Error(originals[0].Err)
+		if originals[0].Err == nil {
+			et.WriteMetadata(originals)
+		} else {
+			logs.Error(originals[0].Err)
+		}
 	}
 
 	return originals[0].Err

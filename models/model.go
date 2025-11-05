@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -381,20 +382,29 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 		thumbOld = Config.Thumbnail + "/" + parent.Name + "/" + beeDir.Name
 		thumbNew = Config.Thumbnail + "/" + parent.Name + "/" + newName
 	}
+	// le répertoire de l'image
 	err := os.Rename(pathOld, pathNew)
 	if err != nil {
+		log.Fatalf("Failed to rename directory: %s en %s : %v", pathOld, pathNew, err)
 		return err
 	}
+	// le répertoire de l'original
 	_, err = os.Stat(originalOld)
 	if os.IsExist(err) {
 		err = os.Rename(originalOld, originalNew)
 		if err != nil {
+			log.Fatalf("Failed to rename directory: %s en %s : %v", originalOld, originalNew, err)
 			return err
 		}
 	}
-	err = os.Rename(thumbOld, thumbNew)
-	if err != nil {
-		return err
+	// le répertoire de la vignette
+	_, err = os.Stat(thumbOld)
+	if os.IsExist(err) {
+		err = os.Rename(thumbOld, thumbNew)
+		if err != nil {
+			log.Fatalf("Failed to rename directory: %s en %s : %v", thumbOld, thumbNew, err)
+			return err
+		}
 	}
 	// rename de beeDir
 	beeDir.Name = newName

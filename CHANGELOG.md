@@ -1,15 +1,20 @@
 # CHANGELOG
 
 ### À venir :
-> upload en new
-> url dans nouvelle fenêtre
-> bug ajout htag sur un doc en doublon dans album
+> gif accepté
+> afficher liste des fichiers refusés
+> admin effacer les fichiers refusés
+
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+2.2.3 du 4 nov 2025
+- `added` .gif traité
+- `changed` les fichiers non traités ou extension inconnue sont affichés pour suppression éventuelle
 
 2.2.2 du 4 nov 2025
 - `changed` ouverture url dans nouvelle fenêtre
@@ -19,7 +24,7 @@ Plus tard
 - `changed` lightbox pour visualiser la vidéa dans l'écram meta
 
 2.2.0 du 3 nov 2025
-- `added` gestion des vidéos
+- `added` gestion des vidéos mp4 webm mov m4v mkv
 - `changed` toolbar drawio plus simple
 
 2.1.2 du 2 nov 2025
