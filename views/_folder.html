@@ -99,11 +99,19 @@
                 <!-- METADATA -->
                 <a class="content {{if $is_editor}}bee-meta{{end}}" style="padding: 0.3em 0 0 0;min-height: 2em;"
                     title="Clic pour modifier légende et étiquettes" data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
-                    <div class="description">
+                    <!-- title -->
+                     {{if $beefile.Title}}
+                    <div class="ui center aligned sub header"
+                        style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Title}}
+                    </div>
+                    {{end}}
+                    <div class="description" style="margin-top: 0;">
                         <!-- description -->
-                        <div class="ui center aligned sub header"
+                        {{if $beefile.Description}}
+                        <div class="ui center aligned"
                             style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Description}}
                         </div>
+                        {{end}}
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
                             {{if ne (len $beefile.DateOriginal) 0 }}

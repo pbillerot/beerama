@@ -2,18 +2,17 @@ package models
 
 import (
 	"fmt"
-	"log"
 	"math/rand"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strconv"
 	"strings"
-	"time"
+	"unicode"
 
 	"github.com/BurntSushi/toml"
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/oklog/ulid"
 	"github.com/pbillerot/beerama/fulltext"
 	"github.com/pbillerot/beerama/shutil"
 )
@@ -109,7 +108,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 			idx.StopWordCheck = fulltext.FrenchStopWordChecker
 
 			// for each document you want to add, you do something like this:
-			text := strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Base), "  ", " ")
+			text := strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Title+" "+bfile.ID), "  ", " ")
 			doc := fulltext.IndexDoc{
 				Id:         []byte(bdir.ID + "_" + bfile.ID), // unique identifier (the path to a webpage works...)
 				StoreValue: []byte(text),                     // bytes you want to be able to retrieve from search results
@@ -226,7 +225,7 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 			continue
 		}
 		if !pi.Info.IsDir() {
-			err, _ := beeDir.AddBeeFile(pi.Path, false)
+			err, _ := beeDir.CreateBeeFile(pi.Path)
 			if err != nil {
 				continue
 			}
@@ -250,6 +249,108 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 	}
 
 	return nil
+}
+
+// CreateBeeFile
+// - renommage du fichier
+// - création d'un beefile
+// - recup des metadata
+// - recopie de l'ancien nom title
+// - ajout du beefile dans beedir.beefiles
+// - report de tout les hashtags des beefiles dans beedir
+// - création du thumbnail
+func (beeDir *BeeDir) CreateBeeFile(path string) (*BeeFile, error) {
+	beeFile := &BeeFile{}
+
+	beeFile.ComputePaths(path)
+	beeFile.DirID = beeDir.ID
+
+	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsImage = true
+		if strings.Contains(beeFile.Base, "drawio") {
+			beeFile.IsDrawio = true
+		}
+	} else if Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsImage = true
+	} else if Contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsImage = true
+		beeFile.IsSvg = true
+	} else if Contains([]string{".mov", ".m4v", ".mkv", ".mp4", ".webm"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsVideo = true
+	} else if Contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
+		beeFile.IsPdf = true
+	} else if Contains([]string{".conf"}, beeFile.Ext) {
+		var content []byte
+		content, err := os.ReadFile(beeFile.Path)
+		if err != nil {
+			logs.Error(err)
+		}
+		beeFile.Content = content
+		beeFile.IsConf = true
+	} else if Contains([]string{".url"}, beeFile.Ext) {
+		content, err := os.ReadFile(beeFile.Path)
+		if err != nil {
+			logs.Error(err)
+		}
+		fileurl := FileUrl{}
+		err = toml.Unmarshal(content, &fileurl)
+		if err != nil {
+			logs.Error(err)
+		}
+		beeFile.Content = content
+		beeFile.IsUrl = true
+		beeFile.Description = fileurl.Description
+		beeFile.DateOriginal = fileurl.DateOriginal
+		beeFile.TimeOriginal = fileurl.TimeOriginal
+		beeFile.Keywords = fileurl.Keywords
+		beeFile.UrlImage = fileurl.InternetShortcut.URL
+		beeFile.ID = fileurl.Id
+	} else {
+		beeFile.IsSystem = true
+	}
+
+	beeFile.ComputePaths(path)
+
+	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
+		beeFile.GetMetadata()
+	}
+	// title avec le nom du fichier aseptisé
+	if !VerifierFormat(beeFile.Name) {
+		beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
+	}
+
+	// ajout dans BeeFiles
+	// calcul de la clé du fichier dans ID
+	beeFile.GetNewId()
+	beeDir.BeeFiles[beeFile.ID] = beeFile
+	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
+
+	// report des keywords dand beeDir
+	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
+
+	// création de la miniature dans Config.Thumbnail si n'existe pas
+	if !beeFile.existeThumbnail() {
+		beeFile.createThumbnail(Config.Width, Config.Height)
+	}
+
+	// Indexation du beefile
+	beeFile.Idx()
+	// logs.Info(beeDir.ID, beeFile.ID, beeFile.Path)
+
+	// Renommage du fichier avec le ID
+	if beeFile.ID != beeFile.Name {
+		logs.Info("Renommage du fichier en %s de %s", beeFile.ID+beeFile.Ext, beeFile.Path)
+		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
+		if err == nil {
+			if beeFile.IsUrl {
+				beeFile.UpdateFileUrl()
+			} else {
+				beeFile.UpdateMeta()
+			}
+		}
+	}
+
+	return beeFile, nil
 }
 
 func (beeDir *BeeDir) GetParent() *BeeDir {
@@ -385,24 +486,24 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 	// le répertoire de l'image
 	err := os.Rename(pathOld, pathNew)
 	if err != nil {
-		log.Fatalf("Failed to rename directory: %s en %s : %v", pathOld, pathNew, err)
+		logs.Error("Failed to rename directory: %s en %s : %v", pathOld, pathNew, err)
 		return err
 	}
 	// le répertoire de l'original
 	_, err = os.Stat(originalOld)
-	if os.IsExist(err) {
+	if !os.IsNotExist(err) {
 		err = os.Rename(originalOld, originalNew)
 		if err != nil {
-			log.Fatalf("Failed to rename directory: %s en %s : %v", originalOld, originalNew, err)
+			logs.Error("Failed to rename directory: %s en %s : %v", originalOld, originalNew, err)
 			return err
 		}
 	}
 	// le répertoire de la vignette
 	_, err = os.Stat(thumbOld)
-	if os.IsExist(err) {
+	if !os.IsNotExist(err) {
 		err = os.Rename(thumbOld, thumbNew)
 		if err != nil {
-			log.Fatalf("Failed to rename directory: %s en %s : %v", thumbOld, thumbNew, err)
+			logs.Error("Failed to rename directory: %s en %s : %v", thumbOld, thumbNew, err)
 			return err
 		}
 	}
@@ -426,48 +527,52 @@ func (beeFile *BeeFile) Rename(newName string) error {
 
 	err := os.Rename(pathOld, pathNew)
 	if err != nil {
+		logs.Error(err)
 		return err
 	}
 	if !beeFile.IsUrl {
 		_, err = os.Stat(originalOld)
-		if os.IsExist(err) {
+		if !os.IsNotExist(err) {
 			err = os.Rename(originalOld, originalNew)
 			if err != nil {
+				logs.Error(err)
 				return err
 			}
 		}
-		err = os.Rename(thumbOld, thumbNew)
-		if err != nil {
-			return err
+		_, err = os.Stat(thumbOld)
+		if !os.IsNotExist(err) {
+			err = os.Rename(thumbOld, thumbNew)
+			if err != nil {
+				logs.Error(err)
+				return err
+			}
 		}
-		beeFile.UrlThumb = strings.Replace(beeFile.UrlThumb, beeFile.Base, newName, 1)
 	}
-	beeFile.UrlImage = strings.Replace(beeFile.UrlImage, beeFile.Base, newName, 1)
+	beeFile.ComputePaths(pathNew)
 	return nil
 }
 
-// création id si à blanc 01K8ZHD17V12CV5SA29K1DW6TM
-func (beeFile *BeeFile) GetNewId() string {
-	if len(beeFile.ID) != 26 {
-		// Use current time for the timestamp part
-		t := time.Now().UTC()
+// Calcul des chemins du fichier
+func (beeFile *BeeFile) ComputePaths(path string) {
+	beeFile.Path = path
+	beeFile.Dir = filepath.Dir(path)
+	beeFile.Base = filepath.Base(path)
+	beeFile.Ext = filepath.Ext(path)
+	beeFile.Name = strings.TrimSuffix(beeFile.Base, beeFile.Ext)
+	dirOriginal := Config.Original + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
+	beeFile.Original = dirOriginal + beeFile.Base
 
-		// Use crypto/rand or math/rand for the randomness part (entropy)
-		entropy := rand.New(rand.NewSource(t.UnixNano()))
+	beeFile.UrlImage = "/s/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
+	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
+	if beeFile.IsPdf || beeFile.IsVideo {
+		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
+		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
 
-		serialNumber := ulid.MustNew(ulid.Timestamp(t), entropy)
-
-		// e.g., 01AN4Z07BY79KA1307SR9X4MV3
-		beeFile.ID = serialNumber.String()
-		if beeFile.IsUrl {
-			beeFile.UpdateFileUrl()
-		} else {
-			// report des meta dans l'image
-			beeFile.UpdateMeta()
-		}
-		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
+	} else {
+		beeFile.Thumb = dirThumb + "th_" + beeFile.Base
+		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
 	}
-	return beeFile.ID
+
 }
 
 // Update du fichier.url
@@ -479,7 +584,8 @@ func (beeFile *BeeFile) UpdateFileUrl() error {
 	fileUrl.TimeOriginal = beeFile.TimeOriginal
 	fileUrl.Keywords = beeFile.Keywords
 	fileUrl.InternetShortcut.URL = beeFile.UrlImage
-	fileUrl.Id = beeFile.GetNewId()
+	fileUrl.Id = beeFile.ID
+	fileUrl.Title = beeFile.Title
 
 	updatedData, err := toml.Marshal(&fileUrl)
 	if err != nil {
@@ -626,4 +732,109 @@ func GetBeeFile(id string) *BeeFile {
 	} else {
 		return Config.BeeFiles[id]
 	}
+}
+
+// création id si à blanc aa-00-00-00
+func (beeFile *BeeFile) GetNewId() string {
+	if !VerifierFormat(beeFile.Name) {
+		// // Use current time for the timestamp part
+		// t := time.Now().UTC()
+		// // Use crypto/rand or math/rand for the randomness part (entropy)
+		// entropy := rand.New(rand.NewSource(t.UnixNano()))
+		// serialNumber := ulid.MustNew(ulid.Timestamp(t), entropy)
+		// // e.g., 01AN4Z07BY79KA1307SR9X4MV3
+		// beeFile.ID = serialNumber.String()
+
+		// key plus simple aa-00-00-00
+		beeFile.ID = GenerateKey()
+		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
+	} else {
+		beeFile.ID = beeFile.Name
+	}
+	return beeFile.ID
+}
+
+// eclaterNomDeFichierEnMots prend un chemin de fichier complet et le divise en mots,
+// en gérant les séparateurs courants (-, _, .) et le CamelCase.
+func EclaterNomDeFichierEnMots(cheminComplet string) []string {
+	// 1. Isoler le nom du fichier sans chemin ni extension
+	base := filepath.Base(cheminComplet)
+	ext := filepath.Ext(base)
+	baseName := strings.TrimSuffix(base, ext)
+
+	// 2. Remplacer les séparateurs courants par un espace unique
+	baseNameAvecEspaces := baseName
+	for _, sep := range []string{"_", "-", "."} {
+		baseNameAvecEspaces = strings.ReplaceAll(baseNameAvecEspaces, sep, " ")
+	}
+
+	// 3. Gérer le CamelCase en insérant un espace avant chaque majuscule
+	var result strings.Builder
+	for i, r := range baseNameAvecEspaces {
+		// Vérifie si le caractère actuel est une majuscule et n'est pas au début
+		if unicode.IsUpper(r) && i > 0 {
+			// Vérifie si le caractère précédent n'est pas un espace
+			// Cela évite d'ajouter des espaces avant les majuscules qui suivent déjà un séparateur converti en espace.
+			prevRune := rune(baseNameAvecEspaces[i-1])
+			if !unicode.IsSpace(prevRune) {
+				// Ajoute un espace seulement si le caractère précédent n'est pas déjà une majuscule (pour les acronymes comme 'HTML')
+				if !unicode.IsUpper(prevRune) || (i+1 < len(baseNameAvecEspaces) && unicode.IsLower(rune(baseNameAvecEspaces[i+1]))) {
+					result.WriteRune(' ')
+				}
+			}
+		}
+		result.WriteRune(r)
+	}
+
+	// 4. Éclater le résultat par les espaces blancs pour obtenir les mots finaux
+	// strings.Fields supprime les espaces multiples et les espaces en début/fin.
+	mots := strings.Fields(result.String())
+
+	// Optionnel : convertir tous les mots en minuscules pour la cohérence
+	for i, word := range mots {
+		mots[i] = strings.ToLower(word)
+	}
+
+	return mots
+}
+
+// generateKey génère une clé de 11 caractères au format XX-00-00-00
+func GenerateKey() string {
+	// Initialiser le générateur aléatoire
+	// rand.Seed(time.Now().UnixNano())
+	rand.New(rand.NewSource(1))
+
+	// 1. Générer les deux caractères alphanumériques (XX)
+	const letterBytes = "ABCDEFGHJKLMNPQRSTUVWXYZ"
+	b := make([]byte, 2)
+	for i := range b {
+		b[i] = letterBytes[rand.Intn(len(letterBytes))]
+	}
+	prefixe := string(b)
+
+	// 2. Générer les trois groupes de deux chiffres (00-00-00)
+	// On utilise rand.Intn(100) pour obtenir un nombre entre 0 et 99 inclus.
+	n1 := rand.Intn(100)
+	n2 := rand.Intn(100)
+	n3 := rand.Intn(100)
+
+	// 3. Formatter la clé
+	// Le format "%02d" garantit que le nombre est affiché sur 2 chiffres
+	// en le préfixant par un zéro si nécessaire (ex: 5 devient 05).
+	key := fmt.Sprintf("%s-%02d-%02d-%02d", prefixe, n1, n2, n3)
+
+	return key
+}
+
+// Expression régulière compilée une fois pour toute
+var RegCompiled = regexp.MustCompile(`^[a-zA-Z]{2}-\d{2}-\d{2}-\d{2}$`)
+
+// vérifie que la chaîne est du format xx-99-99-99
+func VerifierFormat(chaine string) bool {
+	// Compile l'expression régulière une seule fois.
+	// Pour un usage intensif, il est préférable de compiler la regex une fois au démarrage
+	// du programme et de réutiliser l'objet *regexp.Regexp.
+
+	// Utilise MatchString pour vérifier si la chaîne correspond au modèle.
+	return RegCompiled.MatchString(chaine)
 }

@@ -1,16 +1,20 @@
 # CHANGELOG
 
 ### À venir :
-> gif accepté
-> afficher liste des fichiers refusés
-> admin effacer les fichiers refusés
-
+> renommer les fichier systématiquement lors de l'indexation avec même extension
+> title = ancien nom du fichier en séparant les mots
+> meta: saisie du title
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.0.0 du 7 nov 2025
+- `added` fichiers renommés en aa-00-00-00
+- `added` titre de la photo saisissable
+- `changed` recherche sur titre, description, étiquettes, model de l'appareil photo, nom du ficher sans l'extension 
 
 2.2.3 du 4 nov 2025
 - `added` .gif traité

@@ -7,13 +7,10 @@ import (
 	"image/draw"
 	"image/png"
 	"io"
-	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/disintegration/imaging"
@@ -77,207 +74,110 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 	return err
 }
 
-// AddBeeFile
-// - création d'un beefile
-// - recup des metadata
-// - ajout du beefile dans beedir.beefiles
-// - report de tout les hashtags des beefiles dans beedir
-// - création du thumbnail
-func (beeDir *BeeDir) AddBeeFile(path string, newid bool) (*BeeFile, error) {
-	beeFile := &BeeFile{}
+// GetMetadata
+func (beeFile *BeeFile) GetMetadata() (err error) {
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)
 	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
-		return beeFile, err
+		return err
 	}
 	defer et.Close()
-
-	beeFile.Path = path
-	beeFile.DirID = beeDir.ID
-	// beeFile.ParentID = voir dans LoadBeeDirs
-	beeFile.Dir = filepath.Dir(path)
-	beeFile.Base = filepath.Base(path)
-	beeFile.Ext = filepath.Ext(path)
-	beeFile.UrlImage = "/s/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
-
-	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
-		beeFile.IsImage = true
-		if strings.Contains(beeFile.Base, "drawio") {
-			beeFile.IsDrawio = true
+	fileInfos := et.ExtractMetadata(beeFile.Path)
+	for _, fileInfo := range fileInfos {
+		if fileInfo.Err != nil {
+			fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
+			continue
 		}
-	} else if Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
-		beeFile.IsImage = true
-	} else if Contains([]string{".svg"}, strings.ToLower(beeFile.Ext)) {
-		beeFile.IsImage = true
-		beeFile.IsSvg = true
-		if strings.Contains(beeFile.Base, "drawio") {
-			beeFile.IsDrawio = true
-		}
-	} else if Contains([]string{".mov", ".m4v", ".mkv", ".mp4", ".webm"}, strings.ToLower(beeFile.Ext)) {
-		beeFile.IsVideo = true
-	} else if Contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
-		beeFile.IsPdf = true
-	} else if Contains([]string{".conf"}, beeFile.Ext) {
-		var content []byte
-		content, err = os.ReadFile(beeFile.Path)
-		if err != nil {
-			logs.Error(err)
-		}
-		beeFile.Content = content
-		beeFile.IsConf = true
-	} else if Contains([]string{".url"}, beeFile.Ext) {
-		content, err := os.ReadFile(beeFile.Path)
-		if err != nil {
-			logs.Error(err)
-		}
-		fileurl := FileUrl{}
-		err = toml.Unmarshal(content, &fileurl)
-		if err != nil {
-			logs.Error(err)
-		}
-		beeFile.Content = content
-		beeFile.IsUrl = true
-		beeFile.Description = fileurl.Description
-		beeFile.DateOriginal = fileurl.DateOriginal
-		beeFile.TimeOriginal = fileurl.TimeOriginal
-		beeFile.Keywords = fileurl.Keywords
-		beeFile.UrlImage = fileurl.InternetShortcut.URL
-		beeFile.ID = fileurl.Id
-	} else {
-		beeFile.IsSystem = true
-	}
-	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
-		fileInfos := et.ExtractMetadata(beeFile.Path)
-		for _, fileInfo := range fileInfos {
-			if fileInfo.Err != nil {
-				fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
-				continue
-			}
-			for k, v := range fileInfo.Fields {
-				switch k {
-				case "Title":
-					switch t := v.(type) {
-					case string:
-						beeFile.ID = v.(string)
-					default:
-						beeFile.ID = ""
-						logs.Error(beeFile.Base, t)
-					}
-				case "Model":
-					beeFile.Model = v.(string)
-				case "Make":
-					beeFile.Make = v.(string)
-				case "Keywords":
-					beeFile.Keywords = beeFile.Keywords[:0]
-					switch v := v.(type) {
-					case string:
-						kw := strings.Split(strings.ToLower(v), ",")
-						j := 0 // Index to write non-empty strings
-						for _, val := range kw {
-							if len(val) > 0 {
-								kw[j] = val
-								j++
-							}
+		for k, v := range fileInfo.Fields {
+			switch k {
+			case "Title":
+				switch t := v.(type) {
+				case string:
+					beeFile.Title = v.(string)
+				default:
+					beeFile.Title = ""
+					_ = t
+				}
+			case "Model":
+				beeFile.Model = v.(string)
+			case "Make":
+				beeFile.Make = v.(string)
+			case "Keywords":
+				beeFile.Keywords = beeFile.Keywords[:0]
+				switch v := v.(type) {
+				case string:
+					kw := strings.Split(strings.ToLower(v), ",")
+					j := 0 // Index to write non-empty strings
+					for _, val := range kw {
+						if len(val) > 0 {
+							kw[j] = val
+							j++
 						}
-						// Reslice to the new length
-						kw = kw[:j]
-						beeFile.Keywords = append(beeFile.Keywords, kw...)
-					case float64:
-						beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
-					default:
-						for _, vv := range v.([]any) {
-							switch t := vv.(type) {
-							case string:
-								kw := strings.Split(strings.ToLower(vv.(string)), ",")
-								j := 0 // Index to write non-empty strings
-								for _, val := range kw {
-									if len(val) > 0 {
-										kw[j] = val
-										j++
-									}
+					}
+					// Reslice to the new length
+					kw = kw[:j]
+					beeFile.Keywords = append(beeFile.Keywords, kw...)
+				case float64:
+					beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
+				default:
+					for _, vv := range v.([]any) {
+						switch t := vv.(type) {
+						case string:
+							kw := strings.Split(strings.ToLower(vv.(string)), ",")
+							j := 0 // Index to write non-empty strings
+							for _, val := range kw {
+								if len(val) > 0 {
+									kw[j] = val
+									j++
 								}
-								// Reslice to the new length
-								kw = kw[:j]
-								beeFile.Keywords = append(beeFile.Keywords, kw...)
-							case float64:
-								beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
-							default:
-								fmt.Printf("Type inconnu : %T pour %v", t, v)
 							}
+							// Reslice to the new length
+							kw = kw[:j]
+							beeFile.Keywords = append(beeFile.Keywords, kw...)
+						case float64:
+							beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
+						default:
+							fmt.Printf("Type inconnu : %T pour %v", t, v)
 						}
 					}
-				case "ISO":
-					beeFile.ISO = fmt.Sprintf("%v", v.(float64))
-				case "ImageWidth":
-					beeFile.ImageWidth = fmt.Sprintf("%v", v.(float64))
-				case "ImageHeight":
-					beeFile.ImageHeight = fmt.Sprintf("%v", v.(float64))
-				case "FocalLength":
-					beeFile.FocalLength = v.(string)
-				case "FileSize":
-					beeFile.FileSize = v.(string)
-				case "ExposureTime":
-					switch v := v.(type) {
-					case string:
-						beeFile.ExposureTime = v
-					case float64:
-						beeFile.ExposureTime = fmt.Sprintf("%v", v)
-					default:
-						beeFile.ExposureTime = fmt.Sprintf("%v", v)
-					}
-				case "Description":
-					beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
-				case "DateTimeOriginal":
-					if len(v.(string)) > 9 {
-						beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
-					} else {
-						beeFile.DateOriginal = ""
-					}
-					if len(v.(string)) > 15 {
-						beeFile.TimeOriginal = v.(string)[11:16]
-					} else {
-						beeFile.TimeOriginal = ""
-					}
+				}
+			case "ISO":
+				beeFile.ISO = fmt.Sprintf("%v", v.(float64))
+			case "ImageWidth":
+				beeFile.ImageWidth = fmt.Sprintf("%v", v.(float64))
+			case "ImageHeight":
+				beeFile.ImageHeight = fmt.Sprintf("%v", v.(float64))
+			case "FocalLength":
+				beeFile.FocalLength = v.(string)
+			case "FileSize":
+				beeFile.FileSize = v.(string)
+			case "ExposureTime":
+				switch v := v.(type) {
+				case string:
+					beeFile.ExposureTime = v
+				case float64:
+					beeFile.ExposureTime = fmt.Sprintf("%v", v)
+				default:
+					beeFile.ExposureTime = fmt.Sprintf("%v", v)
+				}
+			case "Description":
+				beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
+			case "DateTimeOriginal":
+				if len(v.(string)) > 9 {
+					beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
+				} else {
+					beeFile.DateOriginal = ""
+				}
+				if len(v.(string)) > 15 {
+					beeFile.TimeOriginal = v.(string)[11:16]
+				} else {
+					beeFile.TimeOriginal = ""
 				}
 			}
 		}
 	}
-	// Chemin Original et thumbnail
-	dirOriginal := Config.Original + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
-	beeFile.Original = dirOriginal + beeFile.Base
-	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
-	if beeFile.IsPdf || beeFile.IsVideo {
-		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
-		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
-
-	} else {
-		beeFile.Thumb = dirThumb + "th_" + beeFile.Base
-		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
-	}
-
-	// ajout dans BeeFiles
-	// reprise existant des document sans clé
-	if newid {
-		beeFile.ID = ""
-	}
-	beeFile.GetNewId()
-	beeDir.BeeFiles[beeFile.ID] = beeFile
-	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
-
-	// report des keywords dand beeDir
-	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
-
-	// création de la miniature dans Config.Thumbnail si n'existe pas
-	if !beeFile.existeThumbnail() {
-		beeFile.createThumbnail(Config.Width, Config.Height)
-	}
-
-	// Indexation du beefile
-	beeFile.Idx()
-	// logs.Info(beeDir.ID, beeFile.ID, beeFile.Path)
-
-	return beeFile, nil
+	return err
 }
 
 // updateMeta
@@ -295,9 +195,9 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	}
 	defer et.Close()
 	originals := et.ExtractMetadata(beeFile.Path)
-	// id
+	// title
 	if originals[0].Err == nil {
-		originals[0].SetString("Title", beeFile.GetNewId())
+		originals[0].SetString("Title", beeFile.Title)
 	} else {
 		logs.Error(originals[0].Err)
 	}
@@ -324,16 +224,10 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	} else {
 		logs.Error(originals[0].Err)
 	}
-	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
-		// attention certains types ne sont pas modifiables
-		// https://exiftool.org/exiftool_pod.html
-		logs.Warning("%s : metadata non modifiables", beeFile.Base)
+	if originals[0].Err == nil {
+		et.WriteMetadata(originals)
 	} else {
-		if originals[0].Err == nil {
-			et.WriteMetadata(originals)
-		} else {
-			logs.Error(originals[0].Err)
-		}
+		logs.Error(originals[0].Err)
 	}
 
 	return originals[0].Err
@@ -537,25 +431,25 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 	// 1. Charger l'image de base
 	baseImageFile, err := os.Open(pathImage)
 	if err != nil {
-		log.Fatalf("Failed to open base image: %v", err)
+		logs.Error("Failed to open base image: %v", err)
 	}
 	defer baseImageFile.Close()
 
 	baseImage, _, err := image.Decode(baseImageFile)
 	if err != nil {
-		log.Fatalf("Failed to decode base image: %v", err)
+		logs.Error("Failed to decode base image: %v", err)
 	}
 
 	// 2. Charger l'icône
 	iconFile, err := os.Open(pathIcon)
 	if err != nil {
-		log.Fatalf("Failed to open icon image: %v", err)
+		logs.Error("Failed to open icon image: %v", err)
 	}
 	defer iconFile.Close()
 
 	iconImage, _, err := image.Decode(iconFile)
 	if err != nil {
-		log.Fatalf("Failed to decode icon image: %v", err)
+		logs.Error("Failed to decode icon image: %v", err)
 	}
 
 	// 3. Créer une nouvelle image
@@ -585,15 +479,15 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 	// 6. Sauvegarder la nouvelle image
 	outputFile, err := os.Create(pathImage)
 	if err != nil {
-		log.Fatalf("Failed to create output file: %v", err)
+		logs.Error("Failed to create output file: %v", err)
 	}
 	defer outputFile.Close()
 
 	if err := png.Encode(outputFile, newImage); err != nil {
-		log.Fatalf("Failed to encode image: %v", err)
+		logs.Error("Failed to encode image: %v", err)
 	}
 
-	log.Println("Image with icon overlay saved as output_image.png")
+	// logs.Info("Image with icon overlay saved as output_image.png")
 
 	return err
 

@@ -63,14 +63,17 @@ type Access struct {
 
 // BeeFile propriétés d'un fichier dans le sous-dossier BeeDir
 type BeeFile struct {
-	ID           string // calculé par LoadBeeFiles
-	Action       string
-	Base         string
-	Categories   string
-	Content      []byte
-	Date         string
-	Dir          string
-	Ext          string // extension du fichier
+	ID string // calculé par LoadBeeFiles
+	// fichier
+	Name       string // = Base sans l'extension
+	Base       string
+	Ext        string // extension du fichier
+	Path       string // path de l'image calculé
+	Categories string
+	Content    []byte
+	Date       string
+	Dir        string
+	// type
 	IsAudio      bool
 	IsConf       bool
 	IsDir        bool
@@ -86,16 +89,15 @@ type BeeFile struct {
 	IsUrl        bool
 	IsVideo      bool
 	IsWord       bool
-	Path         string // path de l'image calculé
 	DirID        string // id du répertoire de l'image
 	ParentID     string // id du répertoire parent du répertoire de l'image
 	Original     string // path de l'original calculé
 	Tags         string
-	Title        string
 	Thumb        string // chemin de la vignette
 	UrlImage     string
 	UrlThumb     string
 	// metadata
+	Title        string
 	Model        string
 	Make         string
 	Keywords     []string
@@ -125,7 +127,8 @@ type Breadcrumb struct {
 
 type FileUrl struct {
 	Id               string `toml:"Id"`
-	Description      string `toml:"Description"`
+	Title            string
+	Description      string
 	DateOriginal     string
 	TimeOriginal     string
 	Keywords         []string

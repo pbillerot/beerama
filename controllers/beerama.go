@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -214,8 +213,6 @@ func (c *MainController) Meta() {
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
-	isRenamed := false
-
 	if c.Ctx.Input.Method() == "POST" {
 
 		// URL de url_return
@@ -235,6 +232,9 @@ func (c *MainController) Meta() {
 
 		// MAJ de beefile
 
+		// title
+		title := c.GetString("title")
+		beeFile.Title = title
 		// description
 		description := c.GetString("description")
 		beeFile.Description = description
@@ -274,21 +274,6 @@ func (c *MainController) Meta() {
 			}
 		}
 
-		// Renommage du fichier si changé
-		base := c.GetString("filename")
-		if base != beeFile.Base {
-			isRenamed = true
-			err := beeFile.Rename(base)
-			if err != nil {
-				logs.Error(err)
-				flash.Error("Beerama %s", err)
-				flash.Store(&c.Controller)
-				c.Ctx.Redirect(302, url_return)
-			}
-		}
-		if isRenamed {
-			beeDir.LoadBeeFiles()
-		}
 		beeDir.UpdateAlbum()
 		// réindexation des beefiles
 		models.Config.IndexAllBeefiles()
@@ -395,7 +380,7 @@ func (c *MainController) Image() {
 	// 3. Écrire les données de l'image dans la réponse
 	_, err = c.Ctx.ResponseWriter.Write(imageData)
 	if err != nil {
-		log.Println("Erreur lors de l'écriture de la réponse:", err)
+		logs.Error("Erreur lors de l'écriture de la réponse:", err)
 	}
 }
 
@@ -443,7 +428,7 @@ func (c *MainController) Upload() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFile, err := beeDir.AddBeeFile(path, true)
+		beeFile, err := beeDir.CreateBeeFile(path)
 		// ajout htag new
 		beeFile.Keywords = append(beeFile.Keywords, "new")
 		if err == nil {
@@ -684,7 +669,7 @@ func (c *MainController) Duplicate() {
 			flash.Store(&c.Controller)
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
-		beeFileDuplicate, err := beeDir.AddBeeFile(pathDest, true)
+		beeFileDuplicate, err := beeDir.CreateBeeFile(pathDest)
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama.Upload %s", err)
@@ -734,7 +719,7 @@ func (c *MainController) FileCopy() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, true)
+		beeFileDest, err := beeDirDest.CreateBeeFile(pathDest)
 		if err != nil {
 			goto Erreur
 		}
@@ -779,7 +764,7 @@ func (c *MainController) FileMove() {
 		if err != nil {
 			goto Erreur
 		}
-		beeFileDest, err := beeDirDest.AddBeeFile(pathDest, false)
+		beeFileDest, err := beeDirDest.CreateBeeFile(pathDest)
 		if err != nil {
 			goto Erreur
 		}
@@ -836,7 +821,7 @@ func (c *MainController) DragDrop() {
 		flash.Store(&c.Controller)
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
-	beeFileDest, err := beeDirDest.AddBeeFile(pathDest, false)
+	beeFileDest, err := beeDirDest.CreateBeeFile(pathDest)
 	if err != nil {
 		logs.Error(err)
 		flash.Error("drag drop %s", err)
