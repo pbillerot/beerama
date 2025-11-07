@@ -11,6 +11,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.0.1 du 7 nov 2025
+- `changed` labels sous l'image du diaporama
+
 3.0.0 du 7 nov 2025
 - `added` fichiers renommés en aa-00-00-00
 - `added` titre de la photo saisissable
