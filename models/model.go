@@ -439,7 +439,8 @@ func (beeDir *BeeDir) UpdateAlbum() {
 	// suppression des keywords en doublon
 	keyUniqueSorted := BeeUniqueString(keywords)
 	sort.Strings(keyUniqueSorted)
-	parent.Keywords = keywords
+	parent.Keywords = parent.Keywords[:0]
+	parent.Keywords = append(parent.Keywords, keyUniqueSorted...)
 
 	// calcul des countAlbum et keywordsAlbum des sous-dossiers
 	for _, bdir := range Config.BeeDirs {
@@ -453,13 +454,15 @@ func (beeDir *BeeDir) UpdateAlbum() {
 	// suppression des keywords en doublon
 	keyUniqueSorted = BeeUniqueString(keywords)
 	sort.Strings(keyUniqueSorted)
-	parent.KeywordsAlbum = keyUniqueSorted
+	parent.KeywordsAlbum = parent.KeywordsAlbum[:0]
+	parent.KeywordsAlbum = append(parent.KeywordsAlbum, keyUniqueSorted...)
 	parent.CountAlbum = count
 	// maj des countAlbum et keywordsAlbum des sous-dossiers
 	for _, bdir := range Config.BeeDirs {
 		if bdir.ParentID == parent.ID {
 			bdir.CountAlbum = count
-			bdir.KeywordsAlbum = keyUniqueSorted
+			bdir.KeywordsAlbum = bdir.KeywordsAlbum[:0]
+			bdir.KeywordsAlbum = append(bdir.KeywordsAlbum, keyUniqueSorted...)
 		}
 	}
 
