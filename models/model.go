@@ -225,7 +225,7 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 			continue
 		}
 		if !pi.Info.IsDir() {
-			err, _ := beeDir.CreateBeeFile(pi.Path)
+			err, _ := beeDir.CreateBeeFile(pi.Path, false)
 			if err != nil {
 				continue
 			}
@@ -259,7 +259,7 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 // - ajout du beefile dans beedir.beefiles
 // - report de tout les hashtags des beefiles dans beedir
 // - création du thumbnail
-func (beeDir *BeeDir) CreateBeeFile(path string) (*BeeFile, error) {
+func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 
 	beeFile.ComputePaths(path)
@@ -326,6 +326,9 @@ func (beeDir *BeeDir) CreateBeeFile(path string) (*BeeFile, error) {
 	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
 
 	// report des keywords dand beeDir
+	if isNew {
+		beeFile.Keywords = append(beeFile.Keywords, "new")
+	}
 	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
 
 	// création de la miniature dans Config.Thumbnail si n'existe pas
@@ -721,6 +724,8 @@ func Contains(s []string, str string) bool {
 
 	return false
 }
+
+// ajout du beefile dans l'index
 func (beeFile *BeeFile) Idx() {
 	if Config.BeeFiles[beeFile.ID] == nil {
 		Config.BeeFiles[beeFile.ID] = beeFile
@@ -737,19 +742,19 @@ func GetBeeFile(id string) *BeeFile {
 // création id si à blanc aa-00-00-00
 func (beeFile *BeeFile) GetNewId() string {
 	if !VerifierFormat(beeFile.Name) {
-		// // Use current time for the timestamp part
-		// t := time.Now().UTC()
-		// // Use crypto/rand or math/rand for the randomness part (entropy)
-		// entropy := rand.New(rand.NewSource(t.UnixNano()))
-		// serialNumber := ulid.MustNew(ulid.Timestamp(t), entropy)
-		// // e.g., 01AN4Z07BY79KA1307SR9X4MV3
-		// beeFile.ID = serialNumber.String()
-
 		// key plus simple aa-00-00-00
 		beeFile.ID = GenerateKey()
 		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
 	} else {
-		beeFile.ID = beeFile.Name
+		// est-ce que beefile existe déjà
+		if GetBeeFile(beeFile.Name).Name == beeFile.Name {
+			// il existe
+			// - genération d'une nouvelle clé pour éviter les doublons lors des uploads
+			beeFile.ID = GenerateKey()
+			logs.Info("new beeid:", beeFile.ID, beeFile.Path)
+		} else {
+			beeFile.ID = beeFile.Name
+		}
 	}
 	return beeFile.ID
 }

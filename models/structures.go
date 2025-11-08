@@ -10,12 +10,6 @@ type User struct {
 	IsEditor bool   `toml:"is_editor"`
 }
 
-// Index des beefiles
-type BeeFileId struct {
-	BeeFileid string
-	BeeFile   *BeeFile
-}
-
 // BeeConfig structure du fichier de configuration de l'application app.conf
 type BeeConfig struct {
 	AppName     string

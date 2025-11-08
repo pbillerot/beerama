@@ -11,6 +11,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.0.2 du 8 nov 2025
+- `fixged` lors des uploads, renommage du fichier systématique pour éviter doublons
+
 3.0.1 du 7 nov 2025
 - `changed` labels sous l'image du diaporama
 
