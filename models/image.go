@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 
 	"github.com/barasher/go-exiftool"
@@ -74,110 +75,90 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 	return err
 }
 
-// GetMetadata
+// valorisation de beefile avec les metadata de l'image
 func (beeFile *BeeFile) GetMetadata() (err error) {
-	// Exiftool
+	// 1. Initialiser ExifTool avec l'option de format de coordonnées décimales
 	buf := make([]byte, BUFFER_SIZE)
-	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
+	// Format décimal avec 6 décimales
+	et, err := exiftool.NewExiftool(exiftool.CoordFormant("%.6f"), exiftool.Buffer(buf, BUFFER_SIZE))
 	if err != nil {
-		return err
+		logs.Error("Erreur lors de l'initialisation de go-exiftool: %v", err)
 	}
 	defer et.Close()
-	fileInfos := et.ExtractMetadata(beeFile.Path)
-	for _, fileInfo := range fileInfos {
-		if fileInfo.Err != nil {
-			fmt.Printf("Error concerning %v: %v\n", fileInfo.File, fileInfo.Err)
-			continue
+
+	// 2. Extraire les métadonnées
+	fileMetadata := et.ExtractMetadata(beeFile.Path)
+
+	if len(fileMetadata) == 0 {
+		logs.Debug("Aucune métadonnée extraite pour le fichier : %s", beeFile.Path)
+	}
+
+	metadata := fileMetadata[0]
+
+	if value, err := metadata.GetString("GPSLatitude"); err == nil {
+		beeFile.Latitude = GetCleanedGPS(value)
+	}
+	if value, err := metadata.GetString("GPSLongitude"); err == nil {
+		beeFile.Longitude = GetCleanedGPS(value)
+		beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s", beeFile.Latitude, beeFile.Longitude, beeFile.Latitude, beeFile.Longitude)
+	}
+	if value, err := metadata.GetString("GPSAltitude"); err == nil {
+		beeFile.Altitude = GetCleanedGPS(value)
+	}
+	if value, err := metadata.GetString("Title"); err == nil {
+		beeFile.Title = value
+	}
+	if value, err := metadata.GetString("Description"); err == nil {
+		beeFile.Description = value
+	}
+	if value, err := metadata.GetString("ISO"); err == nil {
+		beeFile.ISO = value
+	}
+	if value, err := metadata.GetString("ImageWidth"); err == nil {
+		beeFile.ImageWidth = value
+	}
+	if value, err := metadata.GetString("ImageHeight"); err == nil {
+		beeFile.ImageHeight = value
+	}
+
+	if value, err := metadata.GetString("FocalLength"); err == nil {
+		beeFile.FocalLength = value
+	}
+	if value, err := metadata.GetString("FileSize"); err == nil {
+		beeFile.FileSize = value
+	}
+	if value, err := metadata.GetString("ExposureTime"); err == nil {
+		beeFile.ExposureTime = value
+	}
+	if value, err := metadata.GetString("DateTimeOriginal"); err == nil {
+		if len(value) > 9 {
+			beeFile.DateOriginal = strings.Replace(value, ":", "-", 2)[:10]
+		} else {
+			beeFile.DateOriginal = ""
 		}
-		for k, v := range fileInfo.Fields {
-			switch k {
-			case "Title":
-				switch t := v.(type) {
-				case string:
-					beeFile.Title = v.(string)
-				default:
-					beeFile.Title = ""
-					_ = t
-				}
-			case "Model":
-				beeFile.Model = v.(string)
-			case "Make":
-				beeFile.Make = v.(string)
-			case "Keywords":
-				beeFile.Keywords = beeFile.Keywords[:0]
-				switch v := v.(type) {
-				case string:
-					kw := strings.Split(strings.ToLower(v), ",")
-					j := 0 // Index to write non-empty strings
-					for _, val := range kw {
-						if len(val) > 0 {
-							kw[j] = val
-							j++
-						}
-					}
-					// Reslice to the new length
-					kw = kw[:j]
-					beeFile.Keywords = append(beeFile.Keywords, kw...)
-				case float64:
-					beeFile.Keywords = append(beeFile.Keywords, fmt.Sprintf("%v", v))
-				default:
-					for _, vv := range v.([]any) {
-						switch t := vv.(type) {
-						case string:
-							kw := strings.Split(strings.ToLower(vv.(string)), ",")
-							j := 0 // Index to write non-empty strings
-							for _, val := range kw {
-								if len(val) > 0 {
-									kw[j] = val
-									j++
-								}
-							}
-							// Reslice to the new length
-							kw = kw[:j]
-							beeFile.Keywords = append(beeFile.Keywords, kw...)
-						case float64:
-							beeFile.Keywords = append(beeFile.Keywords, strings.ToLower(fmt.Sprintf("%v", vv.(float64))))
-						default:
-							fmt.Printf("Type inconnu : %T pour %v", t, v)
-						}
-					}
-				}
-			case "ISO":
-				beeFile.ISO = fmt.Sprintf("%v", v.(float64))
-			case "ImageWidth":
-				beeFile.ImageWidth = fmt.Sprintf("%v", v.(float64))
-			case "ImageHeight":
-				beeFile.ImageHeight = fmt.Sprintf("%v", v.(float64))
-			case "FocalLength":
-				beeFile.FocalLength = v.(string)
-			case "FileSize":
-				beeFile.FileSize = v.(string)
-			case "ExposureTime":
-				switch v := v.(type) {
-				case string:
-					beeFile.ExposureTime = v
-				case float64:
-					beeFile.ExposureTime = fmt.Sprintf("%v", v)
-				default:
-					beeFile.ExposureTime = fmt.Sprintf("%v", v)
-				}
-			case "Description":
-				beeFile.Description = strings.ReplaceAll(v.(string), "¤", "\n")
-			case "DateTimeOriginal":
-				if len(v.(string)) > 9 {
-					beeFile.DateOriginal = strings.Replace(v.(string), ":", "-", 2)[:10]
-				} else {
-					beeFile.DateOriginal = ""
-				}
-				if len(v.(string)) > 15 {
-					beeFile.TimeOriginal = v.(string)[11:16]
-				} else {
-					beeFile.TimeOriginal = ""
-				}
-			}
+		if len(value) > 15 {
+			beeFile.TimeOriginal = value[11:16]
+		} else {
+			beeFile.TimeOriginal = ""
 		}
 	}
+	if value, err := metadata.GetString("Keywords"); err == nil {
+		beeFile.Keywords = beeFile.Keywords[:0]
+		beeFile.Keywords = append(beeFile.Keywords, strings.Split(value, ",")...)
+	}
+
 	return err
+}
+
+// Fonction utilitaire pour afficher la chaîne nettoyée dans l'exemple
+func GetCleanedGPS(s string) string {
+	if strings.HasSuffix(s, "W") {
+		// longitude négative
+		s = "-" + s
+	}
+	s = strings.ReplaceAll(s, ",", ".")
+	reg := regexp.MustCompile(`[\p{L}a-zA-Z ]`)
+	return reg.ReplaceAllString(s, "")
 }
 
 // updateMeta

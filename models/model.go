@@ -316,7 +316,9 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	}
 	// title avec le nom du fichier aseptisé
 	if !VerifierFormat(beeFile.Name) {
-		beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
+		if beeFile.Title == "" {
+			beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
+		}
 	}
 
 	// ajout dans BeeFiles

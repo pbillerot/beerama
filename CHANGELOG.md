@@ -11,6 +11,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.0 du 9 nov 2025
+- `added` prise en compt des données GPS et affichage de la prise de vue dans OmpenStreetMap
+
 3.0.3 du 8 nov 2025
 - `fixed` suppression des étiquettes en double
 

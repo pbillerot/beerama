@@ -90,6 +90,7 @@ type BeeFile struct {
 	Thumb        string // chemin de la vignette
 	UrlImage     string
 	UrlThumb     string
+	UrlOSM       string // https://www.openstreetmap.org/?mlat=[Latitude]&mlon=[Longitude]#map=15/[Latitude]/[Longitude]
 	// metadata
 	Title        string
 	Model        string
@@ -104,6 +105,9 @@ type BeeFile struct {
 	Description  string
 	DateOriginal string
 	TimeOriginal string
+	Altitude     string
+	Latitude     string
+	Longitude    string
 }
 
 // BeePathInfo as
