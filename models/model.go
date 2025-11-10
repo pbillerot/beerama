@@ -334,20 +334,18 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	if !beeFile.existeThumbnail() {
 		beeFile.createThumbnail(Config.Width, Config.Height)
 	}
-	beeFile.UpdateMeta()
-
-	// Indexation du beefile
-	beeFile.Idx()
-	// logs.Info(beeDir.ID, beeFile.ID, beeFile.Path)
 
 	// Renommage du fichier avec le ID
 	if beeFile.ID != beeFile.Name {
 		logs.Info("Renommage du fichier en %s de %s", beeFile.ID+beeFile.Ext, beeFile.Path)
 		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
 		if err == nil {
-			beeFile.UpdateMeta()
+			// beeFile.UpdateMeta()
 		}
 	}
+
+	// Indexation du beefile
+	beeFile.Idx()
 
 	return beeFile, nil
 }

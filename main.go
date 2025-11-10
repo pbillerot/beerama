@@ -27,6 +27,7 @@ func init() {
 	}
 	if val, ok := config.String("version"); ok == nil {
 		models.Config.Version = val
+		logs.Info("version", val)
 	}
 	if val, ok := config.String("appname"); ok == nil {
 		models.Config.AppName = val

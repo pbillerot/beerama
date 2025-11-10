@@ -164,6 +164,7 @@ func GetCleanedGPS(s string) string {
 
 // updateMeta
 func (beeFile *BeeFile) UpdateMeta() (err error) {
+	logs.Debug("UpdateMeta", beeFile.Path)
 	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		// attention certains types ne sont pas modifiables
 		// https://exiftool.org/exiftool_pod.html

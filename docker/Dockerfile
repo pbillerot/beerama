@@ -25,8 +25,8 @@ RUN apk add tzdata
 ENV TZ=Europe/Paris
 RUN cp /usr/share/zoneinfo/Europe/Paris /etc/localtime
 
-# ajout de exiftool pour lire et modifier les metadata des images
-RUN apk add exiftool
+# ajout de exiftool pour lire et modifier les metadata des images et extraire la vignette des vidéos
+RUN apk add exiftool ffmpeg
 
 # Installation de beerama...
 # seuls les répertoires conf et views ne seraient nécessaires
