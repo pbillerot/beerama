@@ -10,6 +10,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.2 du 10 nov 2025
+- `fixed` drawio: prise en compte du nom.drawio.png
+
 3.1.1 du 10 nov 2025
 - `changed` url: affichage du titre dans la vignette
 

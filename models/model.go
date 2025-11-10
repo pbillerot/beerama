@@ -310,8 +310,6 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.IsSystem = true
 	}
 
-	beeFile.ComputePaths(path)
-
 	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.GetMetadata()
 	}
@@ -833,7 +831,7 @@ func GenerateKey() string {
 }
 
 // Expression régulière compilée une fois pour toute
-var RegCompiled = regexp.MustCompile(`^[a-zA-Z]{2}-\d{2}-\d{2}-\d{2}$`)
+var RegCompiled = regexp.MustCompile(`^[a-zA-Z]{2}-\d{2}-\d{2}-\d{2}.*`)
 
 // vérifie que la chaîne est du format xx-99-99-99
 func VerifierFormat(chaine string) bool {
