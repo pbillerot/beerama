@@ -109,6 +109,7 @@ $(document).ready(function () {
     $form.submit();
     event.preventDefault();
   });
+
   // ACTION NEW
   $('.bee-modal-new').on('tap', function (event) {
     var $form = $('#bee-modal-new').find('form');
@@ -118,6 +119,27 @@ $(document).ready(function () {
     $input.attr('placeholder', $(this).data('placeholder'));
     $input.val($(this).data('placeholder'));
     $('#bee-modal-new')
+      .modal({
+        closable: false,
+        onDeny: function () {
+          return true;
+        },
+        onApprove: function () {
+          $form.submit();
+        }
+      }).modal('show');
+    event.preventDefault();
+  });
+
+  // ACTION NEW URL
+  $('.bee-modal-url').on('tap', function (event) {
+    var $modal = $('#bee-modal-url');
+    var $form = $modal.find('form');
+    $form.attr('action', $(this).data('action'));
+    $modal.find('.header').html($(this).attr('title'));
+    var $url = $form.find("input[name='url']");
+    $url.attr('value', $url.attr('placeholder'));
+    $modal
       .modal({
         closable: false,
         onDeny: function () {

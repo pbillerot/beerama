@@ -1,15 +1,17 @@
 # CHANGELOG
 
 ### À venir :
-> renommer les fichier systématiquement lors de l'indexation avec même extension
-> title = ancien nom du fichier en séparant les mots
-> meta: saisie du title
+> drawio demander le titre au lieu du nom
+> raz données gps dans meta/html
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.1 du 10 nov 2025
+- `changed` url: affichage du titre dans la vignette
 
 3.1.0 du 9 nov 2025
 - `added` prise en compt des données GPS et affichage de la prise de vue dans OmpenStreetMap

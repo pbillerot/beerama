@@ -297,14 +297,15 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		if err != nil {
 			logs.Error(err)
 		}
-		beeFile.Content = content
+		// beeFile.Content = content
 		beeFile.IsUrl = true
+		beeFile.ID = fileurl.Id
+		beeFile.Title = fileurl.Title
 		beeFile.Description = fileurl.Description
 		beeFile.DateOriginal = fileurl.DateOriginal
 		beeFile.TimeOriginal = fileurl.TimeOriginal
 		beeFile.Keywords = fileurl.Keywords
 		beeFile.UrlImage = fileurl.InternetShortcut.URL
-		beeFile.ID = fileurl.Id
 	} else {
 		beeFile.IsSystem = true
 	}
@@ -315,10 +316,8 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.GetMetadata()
 	}
 	// title avec le nom du fichier aseptisé
-	if !VerifierFormat(beeFile.Name) {
-		if beeFile.Title == "" {
-			beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
-		}
+	if beeFile.Title == "" {
+		beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
 	}
 
 	// ajout dans BeeFiles
@@ -337,6 +336,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	if !beeFile.existeThumbnail() {
 		beeFile.createThumbnail(Config.Width, Config.Height)
 	}
+	beeFile.UpdateMeta()
 
 	// Indexation du beefile
 	beeFile.Idx()
@@ -347,11 +347,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		logs.Info("Renommage du fichier en %s de %s", beeFile.ID+beeFile.Ext, beeFile.Path)
 		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
 		if err == nil {
-			if beeFile.IsUrl {
-				beeFile.UpdateFileUrl()
-			} else {
-				beeFile.UpdateMeta()
-			}
+			beeFile.UpdateMeta()
 		}
 	}
 
@@ -587,13 +583,13 @@ func (beeFile *BeeFile) ComputePaths(path string) {
 func (beeFile *BeeFile) UpdateFileUrl() error {
 
 	fileUrl := FileUrl{}
+	fileUrl.Id = beeFile.ID
+	fileUrl.Title = beeFile.Title
 	fileUrl.Description = beeFile.Description
 	fileUrl.DateOriginal = beeFile.DateOriginal
 	fileUrl.TimeOriginal = beeFile.TimeOriginal
 	fileUrl.Keywords = beeFile.Keywords
 	fileUrl.InternetShortcut.URL = beeFile.UrlImage
-	fileUrl.Id = beeFile.ID
-	fileUrl.Title = beeFile.Title
 
 	updatedData, err := toml.Marshal(&fileUrl)
 	if err != nil {

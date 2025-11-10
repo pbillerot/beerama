@@ -81,11 +81,11 @@
             <div class="ui dropdown item bee-press-hidden-mobile">
                 <i class="ellipsis vertical icon"></i>
                 <div class="menu">
-                    <div class="ui icon item bee-modal-new" title="Créer un document lié..." data-placeholder="???.url"
+                    <div class="ui icon item bee-modal-url" title="Créer un document lié..." 
                         data-action="/e/newurl/{{$beedir.ID}}">
                         <i class="draw polygon icon"></i>Créer un document lié...
                     </div>
-                    <div class="ui icon item bee-modal-new" title="Créer un dessin..." data-placeholder="???.drawio.png"
+                    <div class="ui icon item bee-modal-new" title="Créer un dessin..." data-placeholder="Titre du dessin"
                         data-action="/e/newdraw/{{$beedir.ID}}">
                         <i class="draw polygon icon"></i>Créer un dessin...
                     </div>
@@ -208,6 +208,23 @@
                 {{ .xsrfdata }}
                 <div class="required field">
                     <input type="text" name="new_name" placeholder="" value="">
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Valider</div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal Nouveau Liens -->
+    <div id="bee-modal-url" class="ui tiny modal">
+        <div class="header bee-modal-title"></div>
+        <div class="content">
+            <form class="ui form" method="POST" action="/mkdir">
+                {{ .xsrfdata }}
+                <div class="required field">
+                    <label for="bee-modal-url_url">Lien http</label>
+                    <input type="text" name="url" id="bee-modal-url_url" placeholder="http://" value="">
                 </div>
                 <div class="actions">
                     <div class="ui cancel button">Annuler</div>

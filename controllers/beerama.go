@@ -527,12 +527,12 @@ func (c *MainController) FolderRename() {
 // NewDraw
 func (c *MainController) NewDraw() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
-	newName := c.GetString("new_name")
+	title := c.GetString("new_name")
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
 	pathSrc := "./static/modeles/modele.drawio.png"
-	pathDest := beeDir.Path + "/" + newName
+	pathDest := beeDir.Path + "/" + models.GenerateKey() + ".drawio.png"
 	// copy du fichier source dans la destination
 	err := shutil.CopyFile(pathSrc, pathDest, false)
 	if err != nil {
@@ -541,8 +541,18 @@ func (c *MainController) NewDraw() {
 		flash.Store(&c.Controller)
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
+	beeFile, err := beeDir.CreateBeeFile(pathDest, true)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama CreateBeeFile %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	beeFile.Title = title
+	beeFile.UpdateMeta()
+
 	// Rechargement de l'album
-	beeDir.LoadBeeFiles()
+	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -553,12 +563,12 @@ func (c *MainController) NewDraw() {
 // NewUrl
 func (c *MainController) NewUrl() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
-	newName := c.GetString("new_name")
+	url := c.GetString("url")
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
 	pathSrc := "./static/modeles/modele.url"
-	pathDest := beeDir.Path + "/" + newName
+	pathDest := beeDir.Path + "/" + models.GenerateKey() + ".url"
 	// copy du fichier source dans la destination
 	err := shutil.CopyFile(pathSrc, pathDest, false)
 	if err != nil {
@@ -567,8 +577,17 @@ func (c *MainController) NewUrl() {
 		flash.Store(&c.Controller)
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
+	beeFile, err := beeDir.CreateBeeFile(pathDest, true)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama CreateBeeFile %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	beeFile.UrlImage = url
+	beeFile.UpdateMeta()
+
 	// Rechargement de l'album
-	beeDir.LoadBeeFiles()
 	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles

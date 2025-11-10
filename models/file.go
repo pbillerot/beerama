@@ -12,6 +12,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/disintegration/imaging"
@@ -167,6 +168,25 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		// attention certains types ne sont pas modifiables
 		// https://exiftool.org/exiftool_pod.html
 		return fmt.Errorf("extension non modifiable: %s", beeFile.Base)
+	}
+	if beeFile.IsUrl {
+		fileUrl := FileUrl{}
+		fileUrl.Id = beeFile.ID
+		fileUrl.Title = beeFile.Title
+		fileUrl.Description = beeFile.Description
+		fileUrl.DateOriginal = beeFile.DateOriginal
+		fileUrl.TimeOriginal = beeFile.TimeOriginal
+		fileUrl.Keywords = beeFile.Keywords
+		fileUrl.InternetShortcut.URL = beeFile.UrlImage
+
+		updatedData, err := toml.Marshal(&fileUrl)
+		if err != nil {
+			return err
+		}
+		if err := os.WriteFile(beeFile.Path, updatedData, 0644); err != nil {
+			return err
+		}
+		return nil
 	}
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)

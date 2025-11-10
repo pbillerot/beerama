@@ -1,9 +1,10 @@
-
-Description="Lien vers le moteur de recherche de Google"
-DateOriginal="2025-26-10"
-TimeOriginal="14:06"
-Keywords=["new"]
+Id=""
+Title="titre"
+Description=""
+DateOriginal=""
+TimeOriginal=""
+Keywords=[]
 
 [InternetShortcut]
-URL="https://www.google.com/"
+URL=""
 

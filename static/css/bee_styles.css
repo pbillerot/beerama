@@ -10,6 +10,18 @@ body {
     background-color: whitesmoke;
 }
 
+.ui.card>.bee-meta-edit:hover {
+    cursor: pointer;
+    background: rgba(0, 0, 0, .06);
+    color: rgba(0, 0, 0, .95);
+}
+
+.ui.card>.bee-meta-edit {
+    background-color: white;
+    padding: 0.3em 0 0 0;
+    min-height: 1.5em;
+}
+
 .ui.menu.item.active {
     background-color: orange;
 }
@@ -176,6 +188,7 @@ bee-press,
     .bee-mobile-show {
         display: none !important;
     }
+
     .bee-container {
         margin-left: 210px;
         z-index: -1;
