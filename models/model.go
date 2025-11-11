@@ -840,8 +840,8 @@ func GenerateKey() string {
 	return key
 }
 
-// Expression régulière compilée une fois pour toute
-var RegCompiled = regexp.MustCompile(`^[a-zA-Z]{2}-\d{2}-\d{2}-\d{2}.*`)
+// Expression régulière compilée du nom de fichier sans extension une fois pour toute
+var RegNameCompiled = regexp.MustCompile(`^[a-zA-Z]{2}-\d{2}-\d{2}-\d{2}.*`)
 
 // vérifie que la chaîne est du format xx-99-99-99
 func VerifierFormat(chaine string) bool {
@@ -850,5 +850,23 @@ func VerifierFormat(chaine string) bool {
 	// du programme et de réutiliser l'objet *regexp.Regexp.
 
 	// Utilise MatchString pour vérifier si la chaîne correspond au modèle.
-	return RegCompiled.MatchString(chaine)
+	return RegNameCompiled.MatchString(chaine)
+}
+
+// Expression régulière compilée de l'url openstreetmap une fois pour toute
+var RegOSMCompiled = regexp.MustCompile(`#map=\d+/([^/]+)/([^/&]+)`)
+
+func GetLatitudeLongitude(urlOSM string) (latitude, longitude string) {
+	matches := RegOSMCompiled.FindStringSubmatch(urlOSM)
+	if len(matches) >= 3 {
+		// Le premier élément (index 0) est la correspondance complète.
+		// L'index 1 est le premier groupe de capture (p1).
+		p1 := matches[1]
+		// L'index 2 est le deuxième groupe de capture (p2).
+		p2 := matches[2]
+		return p1, p2
+	} else {
+		logs.Error("Latitude longitude non trouveés dans %s", urlOSM)
+	}
+	return "48.866669", "2.33333" // mairie de Paris
 }

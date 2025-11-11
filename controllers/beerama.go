@@ -258,6 +258,11 @@ func (c *MainController) Meta() {
 			// raz seulement de latitude. logittude et altitude seront traitées par updateMeta
 			beeFile.Latitude = ""
 		}
+		// urlosm
+		beeFile.UrlOSM = c.GetString("urlosm")
+		// latitude, longitude := models.GetLatitudeLongitude(c.GetString("urlosm"))
+		// beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=N", latitude, longitude, latitude, longitude)
+
 		// cas particulier isUrl
 		if beeFile.IsUrl {
 			url := c.GetString("url")

@@ -8,6 +8,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.6 du 11 nov 2025
+- `added` saisie directe de l'url openstreetmap pour localiser le lieu de la prise de vue
+
 3.1.5 du 11 nov 2025
 - `fixed` suppression étiquettes en doublon après un uplaod
 

@@ -60,6 +60,17 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 	return err
 }
 
+// Fonction utilitaire pour afficher la chaîne nettoyée dans l'exemple
+func GetCleanedGPS(s string) string {
+	if strings.HasSuffix(s, "W") {
+		// longitude négative
+		s = "-" + s
+	}
+	s = strings.ReplaceAll(s, ",", ".")
+	reg := regexp.MustCompile(`[\p{L}a-zA-Z ]`)
+	return reg.ReplaceAllString(s, "")
+}
+
 // valorisation de beefile avec les metadata de l'image
 func (beeFile *BeeFile) GetMetadata() (err error) {
 	// 1. Initialiser ExifTool avec l'option de format de coordonnées décimales
@@ -80,6 +91,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 
 	metadata := fileMetadata[0]
 
+	// GPS
 	if value, err := metadata.GetString("GPSLatitude"); err == nil {
 		beeFile.Latitude = GetCleanedGPS(value)
 	}
@@ -90,12 +102,19 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	if value, err := metadata.GetString("GPSAltitude"); err == nil {
 		beeFile.Altitude = GetCleanedGPS(value)
 	}
+	if value, err := metadata.GetString("Comment"); err == nil {
+		if beeFile.UrlOSM == "" && strings.HasSuffix(value, "https") {
+			beeFile.UrlOSM = value
+		}
+	}
+	// titre et description
 	if value, err := metadata.GetString("Title"); err == nil {
 		beeFile.Title = value
 	}
 	if value, err := metadata.GetString("Description"); err == nil {
 		beeFile.Description = value
 	}
+	// image
 	if value, err := metadata.GetString("ISO"); err == nil {
 		beeFile.ISO = value
 	}
@@ -105,12 +124,8 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	if value, err := metadata.GetString("ImageHeight"); err == nil {
 		beeFile.ImageHeight = value
 	}
-
 	if value, err := metadata.GetString("FocalLength"); err == nil {
 		beeFile.FocalLength = value
-	}
-	if value, err := metadata.GetString("FileSize"); err == nil {
-		beeFile.FileSize = value
 	}
 	if value, err := metadata.GetString("ExposureTime"); err == nil {
 		beeFile.ExposureTime = value
@@ -127,23 +142,17 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 			beeFile.TimeOriginal = ""
 		}
 	}
+	// fichier
+	if value, err := metadata.GetString("FileSize"); err == nil {
+		beeFile.FileSize = value
+	}
+	// étiquettes
 	if value, err := metadata.GetString("Keywords"); err == nil {
 		beeFile.Keywords = beeFile.Keywords[:0]
 		beeFile.Keywords = append(beeFile.Keywords, strings.Split(value, ",")...)
 	}
 
 	return err
-}
-
-// Fonction utilitaire pour afficher la chaîne nettoyée dans l'exemple
-func GetCleanedGPS(s string) string {
-	if strings.HasSuffix(s, "W") {
-		// longitude négative
-		s = "-" + s
-	}
-	s = strings.ReplaceAll(s, ",", ".")
-	reg := regexp.MustCompile(`[\p{L}a-zA-Z ]`)
-	return reg.ReplaceAllString(s, "")
 }
 
 // updateMeta
@@ -195,6 +204,9 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	}
 	// GPS
 	if originals[0].Err == nil {
+		if beeFile.UrlOSM != "" {
+			originals[0].SetString("Comment", beeFile.UrlOSM)
+		}
 		if beeFile.Latitude == "" && beeFile.Longitude != "" {
 			// ras gps demandé
 			originals[0].SetString("Altitude", "")
