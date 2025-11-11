@@ -252,6 +252,12 @@ func (c *MainController) Meta() {
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}
+		// raz des données GPS
+		razgps := c.GetString("razgps")
+		if razgps == "on" {
+			// raz seulement de latitude. logittude et altitude seront traitées par updateMeta
+			beeFile.Latitude = ""
+		}
 		// cas particulier isUrl
 		if beeFile.IsUrl {
 			url := c.GetString("url")

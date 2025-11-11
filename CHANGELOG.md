@@ -1,14 +1,17 @@
 # CHANGELOG
 
 ### À venir :
-> drawio demander le titre au lieu du nom
-> raz données gps dans meta/html
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.4 du 11 nov 2025
+- `fixed` relecture des metadata après restauration
+- `fixed` correction chemin des vignettes des vidéos
+- `changed` meta: raz des données gps
 
 3.1.3 du 10 nov 2025
 - `fixed` correction update meta systématique

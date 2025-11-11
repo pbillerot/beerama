@@ -55,23 +55,7 @@ func (beeFile *BeeFile) RestoreOriginal() (err error) {
 	// mise à jour de la vignette
 	err = beeFile.createThumbnail(Config.Width, Config.Height)
 
-	// ENREGISTREMENT DES METADATA
-	// Exiftool
-	buf := make([]byte, BUFFER_SIZE)
-	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
-	if err != nil {
-		return
-	}
-	defer et.Close()
-	originals := et.ExtractMetadata(beeFile.Path)
-	originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
-	// Date Time Original
-	originals[0].SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
-	// keywords
-	keywords := beeFile.Keywords
-	originals[0].SetStrings("Keywords", keywords)
-
-	et.WriteMetadata(originals)
+	beeFile.GetMetadata()
 
 	return err
 }
@@ -206,6 +190,18 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	// description
 	if originals[0].Err == nil {
 		originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
+	} else {
+		logs.Error(originals[0].Err)
+	}
+	// GPS
+	if originals[0].Err == nil {
+		if beeFile.Latitude == "" && beeFile.Longitude != "" {
+			// ras gps demandé
+			originals[0].SetString("Altitude", "")
+			originals[0].SetString("Latitude", "")
+			originals[0].SetString("Longitude", "")
+			beeFile.UrlOSM = ""
+		}
 	} else {
 		logs.Error(originals[0].Err)
 	}

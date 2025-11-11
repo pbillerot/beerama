@@ -18,8 +18,11 @@ body {
 
 .ui.card>.bee-meta-edit {
     background-color: white;
-    padding: 0.3em 0 0 0;
+    padding: 0.3em;
     min-height: 1.5em;
+}
+.ui.card > .bee-meta-edit > .header + .description {
+    margin-top: 0;
 }
 
 .ui.menu.item.active {

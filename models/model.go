@@ -262,6 +262,7 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 
+	// calcul des chemins pour calculer le type de fichier ci-après
 	beeFile.ComputePaths(path)
 	beeFile.DirID = beeDir.ID
 
@@ -309,6 +310,9 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	} else {
 		beeFile.IsSystem = true
 	}
+
+	// recalcul des chemins en fonctions du type de fichier (en particulier chemin Thumb)
+	beeFile.ComputePaths(path)
 
 	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.GetMetadata()
@@ -517,13 +521,12 @@ func (beeDir *BeeDir) RenameBeeDir(newName string) error {
 func (beeFile *BeeFile) Rename(newName string) error {
 
 	// rename du fichier, original et thumbnail
-	var pathOld, pathNew, originalOld, originalNew, thumbOld, thumbNew string
-	pathOld = beeFile.Path
-	pathNew = strings.Replace(beeFile.Path, beeFile.Base, newName, 1)
-	originalOld = beeFile.Original
-	originalNew = strings.Replace(beeFile.Original, beeFile.Base, newName, 1)
-	thumbOld = beeFile.Thumb
-	thumbNew = strings.Replace(beeFile.Thumb, beeFile.Base, newName, 1)
+	pathOld := beeFile.Path
+	thumbOld := beeFile.Thumb
+	originalOld := beeFile.Original
+
+	pathNew := strings.Replace(beeFile.Path, beeFile.Base, newName, 1)
+	beeFile.ComputePaths(pathNew)
 
 	err := os.Rename(pathOld, pathNew)
 	if err != nil {
@@ -533,7 +536,7 @@ func (beeFile *BeeFile) Rename(newName string) error {
 	if !beeFile.IsUrl {
 		_, err = os.Stat(originalOld)
 		if !os.IsNotExist(err) {
-			err = os.Rename(originalOld, originalNew)
+			err = os.Rename(originalOld, beeFile.Original)
 			if err != nil {
 				logs.Error(err)
 				return err
@@ -541,14 +544,13 @@ func (beeFile *BeeFile) Rename(newName string) error {
 		}
 		_, err = os.Stat(thumbOld)
 		if !os.IsNotExist(err) {
-			err = os.Rename(thumbOld, thumbNew)
+			err = os.Rename(thumbOld, beeFile.Thumb)
 			if err != nil {
 				logs.Error(err)
 				return err
 			}
 		}
 	}
-	beeFile.ComputePaths(pathNew)
 	return nil
 }
 
