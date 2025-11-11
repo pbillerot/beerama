@@ -8,6 +8,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.5 du 11 nov 2025
+- `fixed` suppression étiquettes en doublon après un uplaod
+
 3.1.4 du 11 nov 2025
 - `fixed` relecture des metadata après restauration
 - `fixed` correction chemin des vignettes des vidéos

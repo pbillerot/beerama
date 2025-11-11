@@ -347,6 +347,13 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 			// beeFile.UpdateMeta()
 		}
 	}
+	if isNew {
+		// suppression des étiquettes en doublons
+		keyUniqueSorted := BeeUniqueString(beeFile.Keywords)
+		sort.Strings(keyUniqueSorted)
+		beeFile.Keywords = beeFile.Keywords[:0]
+		beeFile.Keywords = append(beeFile.Keywords, keyUniqueSorted...)
+	}
 
 	// Indexation du beefile
 	beeFile.Idx()
@@ -743,6 +750,9 @@ func (beeFile *BeeFile) GetNewId() string {
 	if !VerifierFormat(beeFile.Name) {
 		// key plus simple aa-00-00-00
 		beeFile.ID = GenerateKey()
+		if strings.Contains(beeFile.Name, ".drawio") {
+			beeFile.ID += ".drawio"
+		}
 		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
 	} else {
 		// est-ce que beefile existe déjà
