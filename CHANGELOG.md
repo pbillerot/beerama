@@ -1,12 +1,16 @@
 # CHANGELOG
 
 ### À venir :
+> Exif.Comment à remplacer par Exif.Subject car Comment non traité dans pdf
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.8 du 12 nov 2025
+- `changed` url openstreetmap dans exif.Subject au lieu de exif.Comment (car Comment non traité dans pdf)
 
 3.1.7 du 12 nov 2025
 - `fixed` url openstreetmap mieux contrôlée

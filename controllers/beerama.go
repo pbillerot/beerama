@@ -258,7 +258,7 @@ func (c *MainController) Meta() {
 			// raz seulement de latitude. logittude et altitude seront traitées par updateMeta
 			beeFile.Latitude = ""
 		}
-		// urlosm qui sera mémorisé dans exif.Comment
+		// urlosm qui sera mémorisé dans exif.Subject
 		urlOSM := c.GetString("urlosm")
 		if strings.Contains(urlOSM, "openstreetmap") {
 			latitude, longitude := models.GetLatitudeLongitude(urlOSM)
