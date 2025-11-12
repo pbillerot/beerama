@@ -9,6 +9,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.9 du 12 nov 2025
+- `removed` raz des données GPS non prise en compte par exif (ou alors c'est plus compliqué)
+
 3.1.8 du 12 nov 2025
 - `changed` url openstreetmap dans exif.Subject au lieu de exif.Comment (car Comment non traité dans pdf)
 

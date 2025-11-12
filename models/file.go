@@ -97,7 +97,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	}
 	if value, err := metadata.GetString("GPSLongitude"); err == nil {
 		beeFile.Longitude = GetCleanedGPS(value)
-		beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s", beeFile.Latitude, beeFile.Longitude, beeFile.Latitude, beeFile.Longitude)
+		beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", beeFile.Latitude, beeFile.Longitude, beeFile.Latitude, beeFile.Longitude)
 	}
 	if value, err := metadata.GetString("GPSAltitude"); err == nil {
 		beeFile.Altitude = GetCleanedGPS(value)
@@ -106,16 +106,6 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 		if strings.Contains(value, "openstreetmap") {
 			latitude, longitude := GetLatitudeLongitude(value)
 			beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
-		} else {
-			// migration du .Comment dans Subject
-			// TODO: à supprimer après mise en prod
-			if value, err := metadata.GetString("Comment"); err == nil {
-				if strings.Contains(value, "openstreetmap") {
-					latitude, longitude := GetLatitudeLongitude(value)
-					beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
-					beeFile.UpdateMeta()
-				}
-			}
 		}
 	}
 
@@ -218,15 +208,6 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	if originals[0].Err == nil {
 		if beeFile.UrlOSM != "" {
 			originals[0].SetString("Subject", beeFile.UrlOSM)
-			// migration Comment -> Subject TODO: à effacer après mise en prod
-			originals[0].SetString("Comment", "")
-		}
-		if beeFile.Latitude == "" && beeFile.Longitude != "" {
-			// ras gps demandé
-			originals[0].SetString("Altitude", "")
-			originals[0].SetString("Latitude", "")
-			originals[0].SetString("Longitude", "")
-			beeFile.UrlOSM = ""
 		}
 	} else {
 		logs.Error(originals[0].Err)

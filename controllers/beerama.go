@@ -252,23 +252,11 @@ func (c *MainController) Meta() {
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}
-		// raz des données GPS
-		razgps := c.GetString("razgps")
-		if razgps == "on" {
-			// raz seulement de latitude. logittude et altitude seront traitées par updateMeta
-			beeFile.Latitude = ""
-		}
 		// urlosm qui sera mémorisé dans exif.Subject
 		urlOSM := c.GetString("urlosm")
 		if strings.Contains(urlOSM, "openstreetmap") {
 			latitude, longitude := models.GetLatitudeLongitude(urlOSM)
 			beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
-		} else {
-			if strings.HasSuffix(urlOSM, "https:://") {
-				beeFile.UrlOSM = urlOSM
-			} else {
-				beeFile.UrlOSM = ""
-			}
 		}
 
 		// cas particulier isUrl
