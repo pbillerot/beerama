@@ -258,11 +258,18 @@ func (c *MainController) Meta() {
 			// raz seulement de latitude. logittude et altitude seront traitées par updateMeta
 			beeFile.Latitude = ""
 		}
-		// urlosm
-		// beeFile.UrlOSM = c.GetString("urlosm")
-		latitude, longitude := models.GetLatitudeLongitude(c.GetString("urlosm"))
-		// url osm modifié avec la carte topo de tracetrack
-		beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=PN", latitude, longitude, latitude, longitude)
+		// urlosm qui sera mémorisé dans exif.Comment
+		urlOSM := c.GetString("urlosm")
+		if strings.Contains(urlOSM, "openstreetmap") {
+			latitude, longitude := models.GetLatitudeLongitude(urlOSM)
+			beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
+		} else {
+			if strings.HasSuffix(urlOSM, "https:://") {
+				beeFile.UrlOSM = urlOSM
+			} else {
+				beeFile.UrlOSM = ""
+			}
+		}
 
 		// cas particulier isUrl
 		if beeFile.IsUrl {

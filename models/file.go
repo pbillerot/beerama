@@ -103,8 +103,15 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 		beeFile.Altitude = GetCleanedGPS(value)
 	}
 	if value, err := metadata.GetString("Comment"); err == nil {
-		if beeFile.UrlOSM == "" && strings.HasSuffix(value, "https") {
-			beeFile.UrlOSM = value
+		if strings.Contains(value, "openstreetmap") {
+			latitude, longitude := GetLatitudeLongitude(value)
+			beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
+		} else {
+			if strings.HasSuffix(value, "https:://") {
+				beeFile.UrlOSM = value
+			} else {
+				beeFile.UrlOSM = ""
+			}
 		}
 	}
 	// titre et description
