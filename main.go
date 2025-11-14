@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/beego/beego/v2/core/config"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
@@ -85,5 +83,5 @@ func init() {
 	web.SetStaticPath("/s/album", models.Config.Racine)
 	web.SetStaticPath("/s/thumb", models.Config.Thumbnail)
 
-	fmt.Println("Main init. Proceeding.")
+	logs.Info("Main init. Proceeding.")
 }

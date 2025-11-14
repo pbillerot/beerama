@@ -1,13 +1,16 @@
 # CHANGELOG
 
 ### À venir :
-> Exif.Comment à remplacer par Exif.Subject car Comment non traité dans pdf
+>
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.10 du 14 nov 2025
+- `fixed` correction renommage systématique des fichiers lors du rechargement d'un dossier
 
 3.1.9 du 12 nov 2025
 - `removed` raz des données GPS non prise en compte par exif (ou alors c'est plus compliqué)

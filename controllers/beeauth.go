@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/base64"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -85,19 +84,19 @@ var EditorRoleProfile = func(ctx *context.Context) {
 	}
 
 	if ctx.Input.Session("role") != "admin" && !beeDir.IsUserEditor(user_id) {
-		fmt.Println("Filter: User is not Editor. Blocking.")
+		logs.Info("Filter: User is not Editor. Blocking.")
 		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
 		ctx.Output.Body([]byte("403 Forbidden - Editor required"))
 		// panic("Stop")
 	}
 
-	// fmt.Println("Filter: User is Editor. Proceeding.")
+	// logs.Info("Filter: User is Editor. Proceeding.")
 }
 
 // AdminRoleProfile : Vérifie si l'utilisateur a le rôle d'administrateur
 var AdminRoleProfile = func(ctx *context.Context) {
 	if ctx.Input.Session("role") != "admin" {
-		fmt.Println("Filter: User is not Admin. Blocking.")
+		logs.Info("Filter: User is not Admin. Blocking.")
 		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
 		ctx.Output.Body([]byte("403 Forbidden - Admin required"))
 		// panic("Stop")
@@ -119,7 +118,7 @@ var AuthRequiredProfile = func(ctx *context.Context) {
 		}
 
 	}
-	// fmt.Println("Filter: User authenticated. Proceeding.")
+	// logs.Info("Filter: User authenticated. Proceeding.")
 }
 
 // AuthRequiredProfile : Vérifie si l'utilisateur est authentifié
@@ -132,7 +131,7 @@ var ReaderRoleProfile = func(ctx *context.Context) {
 	}
 
 	if ctx.Input.Session("role") != "admin" && !beeDir.IsUserReader(user_id) {
-		fmt.Println("Filter: User is not Reader. Blocking.")
+		logs.Info("Filter: User is not Reader. Blocking.")
 		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
 		ctx.Output.Body([]byte("403 Forbidden - Reader required"))
 		// panic("Stop")

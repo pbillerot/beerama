@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"fmt"
 	"slices"
 	"strings"
 
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 )
 
@@ -19,7 +19,7 @@ func init() {
 	web.AddFuncMap("BeeReplace", BeeReplace)
 	web.AddFuncMap("BeeSplit", BeeSplit)
 	web.AddFuncMap("BeeToString", BeeToString)
-	fmt.Println("Template.init. Proceeding.")
+	logs.Info("Template.init. Proceeding.")
 }
 
 // beeSubstr

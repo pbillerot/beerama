@@ -1,8 +1,7 @@
 package routers
 
 import (
-	"fmt"
-
+	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
 	"github.com/pbillerot/beerama/controllers"
 )
@@ -73,5 +72,5 @@ func init() {
 	// Ajouter les Namespaces au routeur Beego
 	web.AddNamespace(nsStatic, nsReader, nsReaderFolder, nsEditor, nsAdmin)
 
-	fmt.Println("Routes init. Proceeding.")
+	logs.Info("Routes init. Proceeding.")
 }

@@ -23,7 +23,7 @@ func LoadUsers() (err error) {
 		logs.Error("Unmarshal", msg)
 		return err
 	}
-	fmt.Println("LoadUsers. Proceeding.")
+	logs.Info("LoadUsers. Proceeding.")
 	return err
 }
 

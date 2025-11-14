@@ -84,7 +84,7 @@ func LoadBeeDirs() error {
 		bdir.UpdateAlbum()
 	}
 	err = Config.IndexAllBeefiles()
-	fmt.Println("LoadBeeDirs. Proceeding.")
+	logs.Info("LoadBeeDirs. Proceeding.")
 	return err
 }
 
@@ -131,7 +131,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 		logs.Error(err)
 		return err
 	}
-	logs.Info("Images", "indexées")
+	logs.Debug("Images", "indexées")
 	return err
 }
 
@@ -252,18 +252,11 @@ func (beeDir *BeeDir) LoadBeeFiles() error {
 }
 
 // CreateBeeFile
-// - renommage du fichier
-// - création d'un beefile
-// - recup des metadata
-// - recopie de l'ancien nom title
-// - ajout du beefile dans beedir.beefiles
-// - report de tout les hashtags des beefiles dans beedir
-// - création du thumbnail
 func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	beeFile := &BeeFile{}
 
 	// calcul des chemins pour calculer le type de fichier ci-après
-	beeFile.ComputePaths(path)
+	beeFile.ComputePathsId(path)
 	beeFile.DirID = beeDir.ID
 
 	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
@@ -312,7 +305,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	}
 
 	// recalcul des chemins en fonctions du type de fichier (en particulier chemin Thumb)
-	beeFile.ComputePaths(path)
+	beeFile.ComputePathsId(path)
 
 	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.GetMetadata()
@@ -533,7 +526,7 @@ func (beeFile *BeeFile) Rename(newName string) error {
 	originalOld := beeFile.Original
 
 	pathNew := strings.Replace(beeFile.Path, beeFile.Base, newName, 1)
-	beeFile.ComputePaths(pathNew)
+	beeFile.ComputePathsId(pathNew)
 
 	err := os.Rename(pathOld, pathNew)
 	if err != nil {
@@ -562,7 +555,7 @@ func (beeFile *BeeFile) Rename(newName string) error {
 }
 
 // Calcul des chemins du fichier
-func (beeFile *BeeFile) ComputePaths(path string) {
+func (beeFile *BeeFile) ComputePathsId(path string) {
 	beeFile.Path = path
 	beeFile.Dir = filepath.Dir(path)
 	beeFile.Base = filepath.Base(path)
@@ -570,7 +563,10 @@ func (beeFile *BeeFile) ComputePaths(path string) {
 	beeFile.Name = strings.TrimSuffix(beeFile.Base, beeFile.Ext)
 	dirOriginal := Config.Original + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	beeFile.Original = dirOriginal + beeFile.Base
-
+	// Name dans le bon format ?
+	if VerifierFormat(beeFile.Name) {
+		beeFile.ID = beeFile.Name
+	}
 	beeFile.UrlImage = "/s/album" + beeFile.Dir[len(Config.Racine):] + "/" + beeFile.Base
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	if beeFile.IsPdf || beeFile.IsVideo {
@@ -756,14 +752,15 @@ func (beeFile *BeeFile) GetNewId() string {
 		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
 	} else {
 		// est-ce que beefile existe déjà
-		if GetBeeFile(beeFile.Name).Name == beeFile.Name {
-			// il existe
-			// - genération d'une nouvelle clé pour éviter les doublons lors des uploads
-			beeFile.ID = GenerateKey()
-			logs.Info("new beeid:", beeFile.ID, beeFile.Path)
-		} else {
-			beeFile.ID = beeFile.Name
-		}
+		// if GetBeeFile(beeFile.Name).Name == beeFile.Name {
+		// 	// il existe
+		// 	// - genération d'une nouvelle clé pour éviter les doublons lors des uploads
+		// 	beeFile.ID = GenerateKey()
+		// 	logs.Info("new beeid:", beeFile.ID, beeFile.Path)
+		// } else {
+		// 	beeFile.ID = beeFile.Name
+		// }
+		beeFile.ID = beeFile.Name
 	}
 	return beeFile.ID
 }
