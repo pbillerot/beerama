@@ -69,7 +69,19 @@ func init() {
 	if val, ok := config.Int("height"); ok == nil {
 		models.Config.Height = int(val)
 	}
-
+	if val, ok := config.Bool("debug"); ok == nil {
+		if val {
+			logs.SetLevel(logs.LevelDebug)
+		} else {
+			logs.SetLevel(logs.LevelInfo)
+		}
+	}
+	logs.Critical("1 critical")
+	logs.Error("2 error")
+	logs.Warning("3 warning")
+	logs.Debug("4 debug")
+	logs.Info("5 info")
+	logs.Trace("6 trace")
 	// chargement des users
 	models.LoadUsers()
 

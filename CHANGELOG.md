@@ -9,6 +9,9 @@ Plus tard
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
 
+3.1.11 du 14 nov 2025
+- `fixed` mode info en production
+
 3.1.10 du 14 nov 2025
 - `fixed` correction renommage systématique des fichiers lors du rechargement d'un dossier
 
