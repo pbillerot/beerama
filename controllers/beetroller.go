@@ -38,7 +38,7 @@ func (c *MainController) Prepare() {
 
 	// folder en cours
 	if _, ok := c.GetSession("folder").(string); ok {
-		// logs.Debug("folder:", param)
+		// logs.Trace("folder:", param)
 	} else {
 		c.SetSession("folder", "/")
 	}

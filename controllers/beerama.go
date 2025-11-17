@@ -522,9 +522,7 @@ func (c *MainController) FolderRename() {
 		flash.Error("FolderRename %s", err)
 		flash.Store(&c.Controller)
 	}
-	// Rechargement de l'album
-	beeDir.LoadBeeFiles()
-
+	beeDir.UpdateAlbum()
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
 

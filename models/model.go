@@ -131,7 +131,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 		logs.Error(err)
 		return err
 	}
-	logs.Debug("Images", "indexées")
+	logs.Trace("Images", "indexées")
 	return err
 }
 
@@ -467,53 +467,70 @@ func (beeDir *BeeDir) UpdateAlbum() {
 }
 
 // RenameBeeDir - beeDir.Name Path Dir Original Thumb UrlImage UrlThumb
-// - repertoire album et sous-dossiers, originals et thumbs
 func (beeDir *BeeDir) RenameBeeDir(newName string) error {
-	// rename des répertoire album, original et thumbnail
-	var pathOld, pathNew, originalOld, originalNew, thumbOld, thumbNew string
-	if beeDir.ParentID == "" {
-		pathOld = Config.Racine + "/" + beeDir.Name
-		pathNew = Config.Racine + "/" + newName
-		originalOld = Config.Original + "/" + beeDir.Name
-		originalNew = Config.Original + "/" + newName
-		thumbOld = Config.Thumbnail + "/" + beeDir.Name
-		thumbNew = Config.Thumbnail + "/" + newName
-	} else {
-		parent := Config.BeeDirs[beeDir.ParentID]
-		pathOld = Config.Racine + "/" + parent.Name + "/" + beeDir.Name
-		pathNew = Config.Racine + "/" + parent.Name + "/" + newName
-		originalOld = Config.Original + "/" + parent.Name + "/" + beeDir.Name
-		originalNew = Config.Original + "/" + parent.Name + "/" + newName
-		thumbOld = Config.Thumbnail + "/" + parent.Name + "/" + beeDir.Name
-		thumbNew = Config.Thumbnail + "/" + parent.Name + "/" + newName
-	}
-	// le répertoire de l'image
-	err := os.Rename(pathOld, pathNew)
-	if err != nil {
-		logs.Error("Failed to rename directory: %s en %s : %v", pathOld, pathNew, err)
-		return err
-	}
-	// le répertoire de l'original
-	_, err = os.Stat(originalOld)
-	if !os.IsNotExist(err) {
-		err = os.Rename(originalOld, originalNew)
-		if err != nil {
-			logs.Error("Failed to rename directory: %s en %s : %v", originalOld, originalNew, err)
-			return err
+	// renommage du dossier de l'album et des sous-dossiers
+	for _, bDir := range Config.BeeDirs {
+		var pathOld, pathNew, originalOld, originalNew, thumbOld, thumbNew string
+		if bDir.ID == beeDir.ID {
+			if beeDir.ParentID == "" {
+				// album à renommer
+				pathOld = Config.Racine + "/" + bDir.Name
+				pathNew = Config.Racine + "/" + newName
+				originalOld = Config.Original + "/" + bDir.Name
+				originalNew = Config.Original + "/" + newName
+				thumbOld = Config.Thumbnail + "/" + bDir.Name
+				thumbNew = Config.Thumbnail + "/" + newName
+			} else {
+				// sous-dossier à renommer seulement
+				parent := Config.BeeDirs[bDir.ParentID]
+				pathOld = Config.Racine + "/" + parent.Name + "/" + bDir.Name
+				pathNew = Config.Racine + "/" + parent.Name + "/" + newName
+				originalOld = Config.Original + "/" + parent.Name + "/" + bDir.Name
+				originalNew = Config.Original + "/" + parent.Name + "/" + newName
+				thumbOld = Config.Thumbnail + "/" + parent.Name + "/" + bDir.Name
+				thumbNew = Config.Thumbnail + "/" + parent.Name + "/" + newName
+			}
+			// le répertoire du dossier
+			logs.Info("Rename directory: %s to %s", pathOld, pathNew)
+			err := os.Rename(pathOld, pathNew)
+			if err != nil {
+				logs.Error("Failed to rename directory: %s en %s : %v", pathOld, pathNew, err)
+				return err
+			}
+			// le répertoire de l'original
+			_, err = os.Stat(originalOld)
+			if !os.IsNotExist(err) {
+				logs.Info("Rename directory: %s to %s", originalOld, originalNew)
+				err = os.Rename(originalOld, originalNew)
+				if err != nil {
+					logs.Error("Failed to rename directory: %s en %s : %v", originalOld, originalNew, err)
+					return err
+				}
+			}
+			// le répertoire de la vignette
+			_, err = os.Stat(thumbOld)
+			if !os.IsNotExist(err) {
+				logs.Info("Rename directory: %s to %s", thumbOld, thumbNew)
+				err = os.Rename(thumbOld, thumbNew)
+				if err != nil {
+					logs.Error("Failed to rename directory: %s en %s : %v", thumbOld, thumbNew, err)
+					return err
+				}
+			}
+			// rename de beeDir
+			bDir.Name = newName
+			bDir.Path = pathNew
+			// Rechargement des beefiles par relecture du répertoire
+			bDir.LoadBeeFiles()
+		} else if bDir.ParentID == beeDir.ID {
+			// seul le répertoire du parent à changé
+			parent := Config.BeeDirs[bDir.ParentID]
+			pathNew = Config.Racine + "/" + parent.Name + "/" + bDir.Name
+			bDir.Path = pathNew
+			// Rechargement des beefiles par relecture du répertoire
+			bDir.LoadBeeFiles()
 		}
 	}
-	// le répertoire de la vignette
-	_, err = os.Stat(thumbOld)
-	if !os.IsNotExist(err) {
-		err = os.Rename(thumbOld, thumbNew)
-		if err != nil {
-			logs.Error("Failed to rename directory: %s en %s : %v", thumbOld, thumbNew, err)
-			return err
-		}
-	}
-	// rename de beeDir
-	beeDir.Name = newName
-	beeDir.Path = pathNew
 	return nil
 }
 

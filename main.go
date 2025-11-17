@@ -79,7 +79,7 @@ func init() {
 	logs.Critical("1 critical")
 	logs.Error("2 error")
 	logs.Warning("3 warning")
-	logs.Debug("4 debug")
+	logs.Trace("4 debug")
 	logs.Info("5 info")
 	logs.Trace("6 trace")
 	// chargement des users

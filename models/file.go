@@ -86,7 +86,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	fileMetadata := et.ExtractMetadata(beeFile.Path)
 
 	if len(fileMetadata) == 0 {
-		logs.Debug("Aucune métadonnée extraite pour le fichier : %s", beeFile.Path)
+		logs.Trace("Aucune métadonnée extraite pour le fichier : %s", beeFile.Path)
 	}
 
 	metadata := fileMetadata[0]
@@ -159,7 +159,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 
 // updateMeta
 func (beeFile *BeeFile) UpdateMeta() (err error) {
-	logs.Debug("UpdateMeta", beeFile.Path)
+	logs.Trace("UpdateMeta", beeFile.Path)
 	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		// attention certains types ne sont pas modifiables
 		// https://exiftool.org/exiftool_pod.html

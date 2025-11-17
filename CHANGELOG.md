@@ -1,5 +1,5 @@
 # CHANGELOG
-
+> 
 ### À venir :
 >
 Plus tard
@@ -8,6 +8,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.12 du 17 nov 2025
+- `fixed` bug renommage d'un album
 
 3.1.11 du 14 nov 2025
 - `fixed` mode info en production
