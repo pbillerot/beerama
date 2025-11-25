@@ -1,6 +1,5 @@
 # CHANGELOG
-> bug renommage album, les pdf ne sont plus affichés
-> urlexterne à garder pour tout type de fichiers
+> bug renommage album, les pdf ne sont plus affichés - à instruire
 ### À venir :
 >
 Plus tard
