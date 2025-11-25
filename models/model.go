@@ -299,7 +299,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.DateOriginal = fileurl.DateOriginal
 		beeFile.TimeOriginal = fileurl.TimeOriginal
 		beeFile.Keywords = fileurl.Keywords
-		beeFile.UrlImage = fileurl.InternetShortcut.URL
+		beeFile.UrlExterne = fileurl.InternetShortcut.URL
 	} else {
 		beeFile.IsSystem = true
 	}
@@ -870,8 +870,8 @@ func VerifierFormat(chaine string) bool {
 // Expression régulière compilée de l'url openstreetmap une fois pour toute
 var RegOSMCompiled = regexp.MustCompile(`#map=\d+/([^/]+)/([^/&]+)`)
 
-func GetLatitudeLongitude(urlOSM string) (latitude, longitude string) {
-	matches := RegOSMCompiled.FindStringSubmatch(urlOSM)
+func GetLatitudeLongitude(urlExterne string) (latitude, longitude string) {
+	matches := RegOSMCompiled.FindStringSubmatch(urlExterne)
 	if len(matches) >= 3 {
 		// Le premier élément (index 0) est la correspondance complète.
 		// L'index 1 est le premier groupe de capture (p1).
@@ -880,7 +880,7 @@ func GetLatitudeLongitude(urlOSM string) (latitude, longitude string) {
 		p2 := matches[2]
 		return p1, p2
 	} else {
-		logs.Error("Latitude longitude non trouveés dans %s", urlOSM)
+		logs.Error("Latitude longitude non trouveés dans %s", urlExterne)
 	}
 	return "48.866669", "2.33333" // mairie de Paris
 }

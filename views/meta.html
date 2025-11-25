@@ -56,9 +56,9 @@
 				<div class="ten wide column">
 					<div class="ui attached small message">
 						<div class="ui right floated header">
-							{{if $beefile.UrlOSM}}
+							{{if $beefile.UrlExterne}}
 							<a class="ui right floated basic label" title="Localiser la prise de vue..." target="popup"
-								href="{{$beefile.UrlOSM}}">
+								href="{{$beefile.UrlExterne}}">
 								<i class="map icon"></i></a>
 							{{end}}
 						</div>
@@ -119,15 +119,6 @@
 									id="title" value="{{$beefile.Title}}">
 							</div>
 						</div>
-						{{if $beefile.IsUrl}}
-						<div class="field">
-							<label for="url">URL</label>
-							<div class="header">
-								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlImage}}" name="url"
-									id="url" value="{{$beefile.UrlImage}}">
-							</div>
-						</div>
-						{{end}}
 						<div class="field">
 							<label for="description">Légende</label>
 							<div class="header">
@@ -184,10 +175,10 @@
 							</div>
 						</div>
 						<div class="field">
-							<label for="urlosm">Lien vers la carte OpensStreetMap</label>
+							<label for="urlexterne">Lien vers un site externe</label>
 							<div class="header">
-								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlOSM}}" name="urlosm"
-									id="urlosm" value="{{$beefile.UrlOSM}}">
+								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlExterne}}" name="urlexterne"
+									id="urlexterne" value="{{$beefile.UrlExterne}}">
 							</div>
 						</div>
 					</div>

@@ -252,17 +252,20 @@ func (c *MainController) Meta() {
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}
-		// urlosm qui sera mémorisé dans exif.Subject
-		urlOSM := c.GetString("urlosm")
-		if strings.Contains(urlOSM, "openstreetmap") {
-			latitude, longitude := models.GetLatitudeLongitude(urlOSM)
-			beeFile.UrlOSM = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
+		// urlexterne qui sera mémorisé dans exif.Subject
+		urlExterne := c.GetString("urlexterne")
+		if urlExterne != "" {
+			if strings.Contains(urlExterne, "openstreetmap") {
+				latitude, longitude := models.GetLatitudeLongitude(urlExterne)
+				beeFile.UrlExterne = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
+			} else {
+				beeFile.UrlExterne = urlExterne
+			}
 		}
 
 		// cas particulier isUrl
 		if beeFile.IsUrl {
-			url := c.GetString("url")
-			beeFile.UrlImage = url
+			beeFile.UrlImage = urlExterne
 			err := beeFile.UpdateFileUrl()
 			if err != nil {
 				logs.Error(err)

@@ -1,5 +1,6 @@
 # CHANGELOG
-> 
+> bug renommage album, les pdf ne sont plus affichés
+> urlexterne à garder pour tout type de fichiers
 ### À venir :
 >
 Plus tard
@@ -8,6 +9,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.13 du 25 nov 2025
+- `changed` rename de urlOSM en urlExterne pour fusionner avec les fichiers url
 
 3.1.12 du 17 nov 2025
 - `fixed` bug renommage d'un album

@@ -19,6 +19,7 @@ func init() {
 	web.AddFuncMap("BeeReplace", BeeReplace)
 	web.AddFuncMap("BeeSplit", BeeSplit)
 	web.AddFuncMap("BeeToString", BeeToString)
+	web.AddFuncMap("BeeContains", BeeContains)
 	logs.Info("Template.init. Proceeding.")
 }
 
@@ -33,6 +34,11 @@ func BeeSubstr(in string, start, end int) (out string) {
 // BeeToString as
 func BeeToString(list []string) (out string) {
 	return strings.Join(list, " ")
+}
+
+// BeeContains as
+func BeeContains(buf string, in string) bool {
+	return strings.Contains(buf, in)
 }
 
 // BeeIN as

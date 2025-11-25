@@ -71,7 +71,7 @@
                     </div>
                 </div>
                 {{else if $beefile.IsUrl}}
-                <a class="ui button" href="{{$beefile.UrlImage}}" title="{{$beefile.Base}}" target="_blank">
+                <a class="ui button" href="{{$beefile.UrlExterne}}" title="{{$beefile.Base}}" target="_blank">
                     <i class="linkify big icon"></i>{{$beefile.Title}}
                 </a>
                 {{else if $beefile.IsVideo}}
@@ -125,10 +125,15 @@
                 </a>
                 <!-- lien openstreetmap -->
                 <div class="meta">
-                    {{if $beefile.UrlOSM}}
-                    <a class="ui right floated basic label" title="Localiser la prise de vue..." 
-                        target="popup" href="{{$beefile.UrlOSM}}">
-                        <i class="map icon"></i></a>
+                    {{if $beefile.UrlExterne}}
+                    <a class="ui right floated basic label" title="Localiser la prise de vue..." target="popup"
+                        href="{{$beefile.UrlExterne}}">
+                        {{if BeeContains $beefile.UrlExterne "openstreetmap"}}
+                        <i class="map icon"></i>
+                        {{else}}
+                        <i class="linkify icon"></i>
+                        {{end}}
+                    </a>
                     {{end}}
                     <!-- étiquettes hashtags -->
                     {{if $beefile.Keywords}}
