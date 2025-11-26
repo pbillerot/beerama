@@ -35,6 +35,23 @@ $(document).ready(function () {
       })
   });
 
+  $('.bee-clipboard').on('tap', async function (event) {
+    if (!navigator.clipboard) {
+      alert("Votre navigateur ne supporte pas la copie automatique.");
+      return;
+    }
+    var $txt = $(this).data('clipboard');
+    var $origin = document.location.origin;
+    $txt = $origin + $txt
+    await navigator.clipboard.writeText($txt)
+      .then(() => {
+        console.info("Copié : " + $txt);
+      })
+      .catch(err => {
+        console.error("Erreur de copie : ", $txt, err);
+      });
+  });
+
   // mémorisation anchor on clic sur vignette
   $('.glightbox').on('tap', function (event) {
     var $card = $(this).closest('.card');

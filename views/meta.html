@@ -55,12 +55,25 @@
 			<div class="ui stackable grid" style="margin: 1em;">
 				<div class="ten wide column">
 					<div class="ui attached small message">
-						<div class="ui right floated header">
+						<div class="ui right floated header bee-clipboard" data-clipboard="/s/document/{{$beefile.ID}}">
+							<a class="ui right floated basic label"
+								title="Copier l'adresse du fichier dans le presse-papier">
+								<i class="clipboard outline icon"></i>
+							</a>
 							{{if $beefile.UrlExterne}}
-							<a class="ui right floated basic label" title="Localiser la prise de vue..." target="popup"
-								href="{{$beefile.UrlExterne}}">
-								<i class="map icon"></i></a>
+							{{$title := "Lien vers un document externe..."}}
+							{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
+							{{$title = "Localiser la prise de vue..."}}
 							{{end}}
+							<a class="ui right floated basic label" title="{{$title}}" target="popup"
+								href="{{$beefile.UrlExterne}}">
+								{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
+								<i class="map icon"></i>
+								{{else}}
+								<i class="linkify icon"></i>
+								{{end}}
+								{{end}}
+							</a>
 						</div>
 						<div class="header">
 							Album : {{if $parent.ID}}{{$parent.Name}} /{{end}} {{$beefile.Base}}
@@ -177,8 +190,8 @@
 						<div class="field">
 							<label for="urlexterne">Lien vers un site externe</label>
 							<div class="header">
-								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlExterne}}" name="urlexterne"
-									id="urlexterne" value="{{$beefile.UrlExterne}}">
+								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlExterne}}"
+									name="urlexterne" id="urlexterne" value="{{$beefile.UrlExterne}}">
 							</div>
 						</div>
 					</div>

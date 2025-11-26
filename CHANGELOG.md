@@ -1,5 +1,5 @@
 # CHANGELOG
-> bug renommage album, les pdf ne sont plus affichés - à instruire
+>
 ### À venir :
 >
 Plus tard
@@ -8,6 +8,10 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.14 du 26 nov 2025
+- `added` bouton lien vers copier le lien complet du document
+- `fixed` liste nulle des albums cibles d'un déplacement
 
 3.1.13 du 25 nov 2025
 - `changed` rename de urlOSM en urlExterne pour fusionner avec les fichiers url

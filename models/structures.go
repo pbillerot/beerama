@@ -88,8 +88,9 @@ type BeeFile struct {
 	Original     string // path de l'original calculé
 	Tags         string
 	Thumb        string // chemin de la vignette
-	UrlImage     string
-	UrlThumb     string
+	UrlDocument  string // url complete http
+	UrlImage     string // uri de l'image
+	UrlThumb     string // uri de la vignette
 	UrlExterne   string // https://www.openstreetmap.org/?mlat=[Latitude]&mlon=[Longitude]#map=15/[Latitude]/[Longitude]
 	// metadata
 	Title        string

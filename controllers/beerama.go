@@ -65,8 +65,18 @@ func (c *MainController) Folder() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
 
-	// Sélection des bdirs des sous-dossiers du parent courant
-	beeDirs := parent.GetParentBeedirs()
+	// liste des albums autorisés pour un déplacement éventuel
+	user_id := c.GetSession("user_id").(string)
+	var beeDirs []models.BeeDir
+	for _, bdir := range models.Config.BeeDirs {
+		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
+			beeDirs = append(beeDirs, *bdir)
+		}
+	}
+	// tri des albums
+	sort.Slice(beeDirs, func(i, j int) bool {
+		return beeDirs[i].Name < beeDirs[j].Name
+	})
 
 	// Construction de la liste des beefiles
 	beeFiles := []models.BeeFile{}
@@ -354,7 +364,7 @@ func (c *MainController) Tag() {
 }
 
 // Retourne l'image
-func (c *MainController) Image() {
+func (c *MainController) Document() {
 	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
 	// réponse directe
 	// http.ServeFile(c.Ctx.ResponseWriter, c.Ctx.Request, beeFile.Path)
