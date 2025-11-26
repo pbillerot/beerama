@@ -1,5 +1,6 @@
 # CHANGELOG
->
+x bug liste des sous-dossiers absents dans album
+> urlDocument <> si drawio et url
 ### À venir :
 >
 Plus tard
@@ -8,6 +9,10 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.15 du 26 nov 2025
+- `fixed` liste des sous-dossiers absents dans album
+- `fixed` url clipboard
 
 3.1.14 du 26 nov 2025
 - `added` bouton lien vers copier le lien complet du document

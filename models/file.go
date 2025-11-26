@@ -175,7 +175,7 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		fileUrl.DateOriginal = beeFile.DateOriginal
 		fileUrl.TimeOriginal = beeFile.TimeOriginal
 		fileUrl.Keywords = beeFile.Keywords
-		fileUrl.InternetShortcut.URL = beeFile.UrlImage
+		fileUrl.InternetShortcut.URL = beeFile.UrlExterne
 
 		updatedData, err := toml.Marshal(&fileUrl)
 		if err != nil {

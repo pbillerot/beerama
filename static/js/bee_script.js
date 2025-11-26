@@ -41,11 +41,12 @@ $(document).ready(function () {
       return;
     }
     var $txt = $(this).data('clipboard');
-    var $origin = document.location.origin;
-    $txt = $origin + $txt
+    if ( ! $txt.startsWith("http")) {
+      $txt = document.location.origin + $txt
+    }
     await navigator.clipboard.writeText($txt)
       .then(() => {
-        console.info("Copié : " + $txt);
+        // console.info("Copié : " + $txt);
       })
       .catch(err => {
         console.error("Erreur de copie : ", $txt, err);

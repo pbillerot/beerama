@@ -65,17 +65,19 @@ func (c *MainController) Folder() {
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
 
-	// liste des albums autorisés pour un déplacement éventuel
+	// Sélection des bdirs des sous-dossiers du parent courant
+	beeDirs := parent.GetParentBeedirs() // liste des albums autorisés pour un déplacement éventuel
+	// liste des albums du user
 	user_id := c.GetSession("user_id").(string)
-	var beeDirs []models.BeeDir
+	var beeAlbums []models.BeeDir
 	for _, bdir := range models.Config.BeeDirs {
 		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
-			beeDirs = append(beeDirs, *bdir)
+			beeAlbums = append(beeAlbums, *bdir)
 		}
 	}
 	// tri des albums
-	sort.Slice(beeDirs, func(i, j int) bool {
-		return beeDirs[i].Name < beeDirs[j].Name
+	sort.Slice(beeAlbums, func(i, j int) bool {
+		return beeAlbums[i].Name < beeAlbums[j].Name
 	})
 
 	// Construction de la liste des beefiles
@@ -87,6 +89,7 @@ func (c *MainController) Folder() {
 	sort.Slice(beeFiles, func(i, j int) bool {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
+	c.Data["albums"] = &beeAlbums
 	c.Data["parent"] = &parent
 	c.Data["beedirs"] = &beeDirs
 	c.Data["beedir"] = &beeDir
@@ -271,6 +274,8 @@ func (c *MainController) Meta() {
 			} else {
 				beeFile.UrlExterne = urlExterne
 			}
+		} else {
+			beeFile.UrlExterne = beeFile.UrlImage
 		}
 
 		// cas particulier isUrl

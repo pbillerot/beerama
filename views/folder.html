@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html>
 {{template "_head.html" .}}
+{{$albums := .albums}}
 {{$beedirs := .beedirs}}
 {{$parent := .parent}}
 {{$beedir := .beedir}}
@@ -281,7 +282,7 @@
                     <label for="destid">Vers</label>
                     <select class="ui dropdown bee-onchange" name="destid" id="destid">
                         <option value="">Sélectionner un album...</option>
-                        {{ range $i, $bdir := $beedirs }}
+                        {{ range $i, $bdir := $albums }}
                         {{ if and (ne $bdir.ID $beedir.ID) (eq $bdir.ParentID "")}}
                         <option value="{{$bdir.ID}}">
                             {{$bdir.Name}}

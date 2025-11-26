@@ -55,13 +55,15 @@
 			<div class="ui stackable grid" style="margin: 1em;">
 				<div class="ten wide column">
 					<div class="ui attached small message">
-						<div class="ui right floated header bee-clipboard" data-clipboard="/s/document/{{$beefile.ID}}">
+						{{$clip := printf "/s/document/%s" $beefile.ID}}
+						{{if $beefile.IsUrl}}{{$clip = $beefile.UrlExterne}}{{end}}
+						<div class="ui right floated header bee-clipboard" data-clipboard="{{$clip}}">
 							<a class="ui right floated basic label"
 								title="Copier l'adresse du fichier dans le presse-papier">
 								<i class="clipboard outline icon"></i>
 							</a>
 							{{if $beefile.UrlExterne}}
-							{{$title := "Lien vers un document externe..."}}
+							{{$title := "Lien vers le document..."}}
 							{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
 							{{$title = "Localiser la prise de vue..."}}
 							{{end}}
@@ -72,8 +74,8 @@
 								{{else}}
 								<i class="linkify icon"></i>
 								{{end}}
-								{{end}}
 							</a>
+							{{end}}
 						</div>
 						<div class="header">
 							Album : {{if $parent.ID}}{{$parent.Name}} /{{end}} {{$beefile.Base}}
@@ -92,7 +94,7 @@
 							</iframe>
 						</div>
 						{{else if $beefile.IsUrl}}
-						<a class="ui centered bordered fluid image" href="{{$beefile.UrlImage}}" target="_blank">
+						<a class="ui centered bordered fluid image" href="{{$beefile.UrlExterne}}" target="_blank">
 							<img src="/static/img/beerama2.png"></img>
 						</a>
 						{{else if $beefile.IsVideo}}

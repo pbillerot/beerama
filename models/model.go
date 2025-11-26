@@ -258,6 +258,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	// calcul des chemins pour calculer le type de fichier ci-après
 	beeFile.ComputePathsId(path)
 	beeFile.DirID = beeDir.ID
+	beeFile.UrlExterne = beeFile.UrlImage
 
 	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
@@ -589,7 +590,6 @@ func (beeFile *BeeFile) ComputePathsId(path string) {
 	if beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.Thumb = dirThumb + "th_" + beeFile.Base + ".jpg"
 		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base + ".jpg"
-
 	} else {
 		beeFile.Thumb = dirThumb + "th_" + beeFile.Base
 		beeFile.UrlThumb = "/s/thumb" + dirThumb[len(Config.Thumbnail):] + "th_" + beeFile.Base
