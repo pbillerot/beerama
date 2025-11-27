@@ -126,7 +126,11 @@
                 <!-- lien openstreetmap -->
                 <div class="meta">
                     {{if $beefile.UrlExterne}}
-                    <a class="ui right floated basic label" title="Localiser la prise de vue..." target="popup"
+                    {{$title := "Lien vers le document..."}}
+                    {{if BeeContains $beefile.UrlExterne "openstreetmap"}}
+                    {{$title = "Localiser la prise de vue..."}}
+                    {{end}}
+                    <a class="ui right floated basic label" title="{{$title}}" target="popup"
                         href="{{$beefile.UrlExterne}}">
                         {{if BeeContains $beefile.UrlExterne "openstreetmap"}}
                         <i class="map icon"></i>

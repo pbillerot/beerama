@@ -35,22 +35,22 @@ $(document).ready(function () {
       })
   });
 
-  $('.bee-clipboard').on('tap', async function (event) {
+  $('.bee-open-document').on('tap', async function (event) {
     if (!navigator.clipboard) {
       alert("Votre navigateur ne supporte pas la copie automatique.");
-      return;
     }
-    var $txt = $(this).data('clipboard');
-    if ( ! $txt.startsWith("http")) {
-      $txt = document.location.origin + $txt
+    var $url = $(this).data('clipboard');
+    if ( ! $url.startsWith("http")) {
+      $url = document.location.origin + $url
     }
-    await navigator.clipboard.writeText($txt)
+    await navigator.clipboard.writeText($url)
       .then(() => {
         // console.info("Copié : " + $txt);
       })
       .catch(err => {
-        console.error("Erreur de copie : ", $txt, err);
+        console.error("Erreur de copie : ", $url, err);
       });
+    window.open($url, '_blank');
   });
 
   // mémorisation anchor on clic sur vignette
@@ -433,6 +433,7 @@ $(document).ready(function () {
         // remplissage du imput pour le submit
         $input.val(dataurl);
         $(".bee-submit-meta").removeClass('disabled');
+        $(".bee-submit-meta-retour").removeClass('disabled');
         return false;
       },
       onComplete: (props) => {

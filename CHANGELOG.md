@@ -1,14 +1,17 @@
 # CHANGELOG
-x bug liste des sous-dossiers absents dans album
-> urlDocument <> si drawio et url
+x bug url externe new pdf
+x bug suite edition image le bouton enregistrer fermer n'est pas actif
 ### À venir :
->
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.16 du 27 nov 2025
+- `fixed` icone acces à l'url du document pour le partager éventuellemnt (l'url est copieée aussi dans le presse-papier)
+- `fixed` suite édition d'une image le bonton "enregistrer et fermer" n'était pas actif
 
 3.1.15 du 26 nov 2025
 - `fixed` liste des sous-dossiers absents dans album

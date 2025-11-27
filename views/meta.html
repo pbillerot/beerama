@@ -57,13 +57,13 @@
 					<div class="ui attached small message">
 						{{$clip := printf "/s/document/%s" $beefile.ID}}
 						{{if $beefile.IsUrl}}{{$clip = $beefile.UrlExterne}}{{end}}
-						<div class="ui right floated header bee-clipboard" data-clipboard="{{$clip}}">
+						<div class="ui right floated header bee-open-document" data-clipboard="{{$clip}}">
 							<a class="ui right floated basic label"
-								title="Copier l'adresse du fichier dans le presse-papier">
+								title="Ouvrir le document... (pour un partage éventuel)">
 								<i class="clipboard outline icon"></i>
 							</a>
 							{{if $beefile.UrlExterne}}
-							{{$title := "Lien vers le document..."}}
+							{{$title := "Lien vers un site externe..."}}
 							{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
 							{{$title = "Localiser la prise de vue..."}}
 							{{end}}

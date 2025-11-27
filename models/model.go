@@ -258,7 +258,6 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	// calcul des chemins pour calculer le type de fichier ci-après
 	beeFile.ComputePathsId(path)
 	beeFile.DirID = beeDir.ID
-	beeFile.UrlExterne = beeFile.UrlImage
 
 	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
@@ -305,9 +304,6 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.IsSystem = true
 	}
 
-	// recalcul des chemins en fonctions du type de fichier (en particulier chemin Thumb)
-	beeFile.ComputePathsId(path)
-
 	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
 		beeFile.GetMetadata()
 	}
@@ -316,11 +312,13 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.Title = strings.Join(EclaterNomDeFichierEnMots(beeFile.Path), " ")
 	}
 
-	// ajout dans BeeFiles
 	// calcul de la clé du fichier dans ID
 	beeFile.GetNewId()
+	// recalcul des chemins en fonctions du type de fichier et de l'ID qui à remplacé le name
+	beeFile.ComputePathsId(path)
+
+	// ajout dans BeeFiles
 	beeDir.BeeFiles[beeFile.ID] = beeFile
-	// beeDir.BeeFiles = append(beeDir.BeeFiles, beeFile)
 
 	// report des keywords dand beeDir
 	if isNew {
