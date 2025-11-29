@@ -109,6 +109,7 @@ type BeeFile struct {
 	Altitude     string
 	Latitude     string
 	Longitude    string
+	Comment      []byte // commentaire markdown dans exif.UserComment
 }
 
 // BeePathInfo as

@@ -1,6 +1,7 @@
 # CHANGELOG
-x bug url externe new pdf
-x bug suite edition image le bouton enregistrer fermer n'est pas actif
+> bug rename album image dans sous-dossier 
+x bug image url externe toujours valorisée
+> nouveau document bloc notes markdown
 ### À venir :
 Plus tard
 - sur recherche recalculer les compteurs
@@ -8,6 +9,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.17 du 29 nov 2025
+- `fixed` bug image url externe toujours valorisée
 
 3.1.16 du 27 nov 2025
 - `fixed` icone acces à l'url du document pour le partager éventuellemnt (l'url est copieée aussi dans le presse-papier)
