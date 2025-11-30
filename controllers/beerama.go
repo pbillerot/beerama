@@ -274,8 +274,8 @@ func (c *MainController) Meta() {
 			} else {
 				beeFile.UrlExterne = urlExterne
 			}
-			// } else {
-			// 	beeFile.UrlExterne = beeFile.UrlImage
+		} else {
+			beeFile.UrlExterne = ""
 		}
 
 		// cas particulier isUrl

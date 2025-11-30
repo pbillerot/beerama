@@ -1,4 +1,5 @@
 # CHANGELOG
+> bug meta map url erronée
 > bug rename album image dans sous-dossier 
 > nouveau document bloc notes markdown
 ### À venir :
@@ -8,6 +9,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.18 du 30 nov 2025
+- `buged` Subject à blanc si Urlexterne non renseignée
 
 3.1.18 du 30 nov 2025
 - `added` notice log avec n°ip
