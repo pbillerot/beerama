@@ -1,6 +1,5 @@
 # CHANGELOG
 > bug rename album image dans sous-dossier 
-x bug image url externe toujours valorisée
 > nouveau document bloc notes markdown
 ### À venir :
 Plus tard
@@ -9,6 +8,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 - echap sur l'éditeur faire <- Retour
+
+3.1.18 du 30 nov 2025
+- `added` notice log avec n°ip
 
 3.1.17 du 29 nov 2025
 - `fixed` bug image url externe toujours valorisée

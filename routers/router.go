@@ -8,6 +8,12 @@ import (
 
 func init() {
 
+	// Filter 1: BeforeRouter - Record the request start time
+	web.InsertFilter("*", web.BeforeRouter, controllers.BeforeRouter)
+
+	// Filter 2: FinishRouter - Log the access details after the request is processed
+	web.InsertFilter("*", web.FinishRouter, controllers.LogAccessFilter, web.WithReturnOnOutput(false))
+
 	// Authentification obligatoire pour toutes les routes
 	// filter := auth.NewBasicAuthenticator(controllers.SecretAuth, "Basic Authentification")
 	// web.InsertFilter("*", web.BeforeRouter, filter)
