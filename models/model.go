@@ -748,9 +748,10 @@ func Contains(s []string, str string) bool {
 
 // ajout du beefile dans l'index
 func (beeFile *BeeFile) Idx() {
-	if Config.BeeFiles[beeFile.ID] == nil {
-		Config.BeeFiles[beeFile.ID] = beeFile
-	}
+	// if Config.BeeFiles[beeFile.ID] == nil {
+	// 	Config.BeeFiles[beeFile.ID] = beeFile
+	// }
+	Config.BeeFiles[beeFile.ID] = beeFile
 }
 func GetBeeFile(id string) *BeeFile {
 	if Config.BeeFiles[id] == nil {

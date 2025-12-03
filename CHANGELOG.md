@@ -13,6 +13,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 
+3.2.1 du 3 déc 2025
+- `fixed` lien index non actualisé suite drag & drop
+
 3.2.0 du 3 déc 2025
 - `fixed` retour home après connexion refusée lien actif sur forbidden
 - `fixed` erreurs dans logs

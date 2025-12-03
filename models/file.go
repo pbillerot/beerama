@@ -93,7 +93,7 @@ func GetMetaData(path string, param string) (data string, err error) {
 	if value, err := metadata.GetString(param); err == nil {
 		return value, err
 	} else {
-		logs.Notice("exif: %s %s %w", path, param, err)
+		logs.Warning("exif: %s %s %w", path, param, err)
 	}
 
 	return "", err
