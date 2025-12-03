@@ -108,6 +108,7 @@ var AuthRequiredProfile = func(ctx *context.Context) {
 	user_id, _, ok := ctx.Request.BasicAuth()
 	if !ok {
 		logs.Error("BasiAuth not retrieve")
+		ctx.Redirect(403, "/")
 		return
 	}
 	if ctx.Input.Session("user_id") == nil {

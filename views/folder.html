@@ -84,11 +84,15 @@
                 <div class="menu">
                     <div class="ui icon item bee-modal-url" title="Créer un document lié..." 
                         data-action="/e/newurl/{{$beedir.ID}}">
-                        <i class="draw polygon icon"></i>Créer un document lié...
+                        <i class="linkify icon"></i>Créer un document lié...
                     </div>
                     <div class="ui icon item bee-modal-new" title="Créer un dessin..." data-placeholder="Titre du dessin"
                         data-action="/e/newdraw/{{$beedir.ID}}">
                         <i class="draw polygon icon"></i>Créer un dessin...
+                    </div>
+                    <div class="ui icon item bee-modal-new" title="Créer un document..." data-placeholder="Titre du document"
+                        data-action="/e/newdoc/{{$beedir.ID}}">
+                        <i class="file word outline icon"></i>Créer un document...
                     </div>
                     {{ if eq $beedir.ParentID ""}}
                     <div class="ui icon item bee-modal-new" title="Créer un sous-dossier"
@@ -129,7 +133,7 @@
                     {{end}}
                     {{end}}
                     <a class="ui icon item bee-nag" href="/e/reload/{{$beedir.ID}}">
-                        <i class="refresh icon"></i>Recharger les images de l'album
+                        <i class="refresh icon"></i>Recharger les documents de l'album
                     </a>
                 </div>
             </div>

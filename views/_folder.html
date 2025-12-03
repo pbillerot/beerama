@@ -79,7 +79,14 @@
                 <div class="ui link centered image" title="{{$beefile.Base}}">
                     <a class="glightbox" href="{{$beefile.UrlImage}}?{{$composter}}" data-gallery="gallery"
                         data-description="{{if ne (len $beefile.DateOriginal) 0 }}{{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}}{{end}} {{$beefile.TimeOriginal}} <b>{{$beefile.Title}}</b> {{$beefile.Description}}"><img
-                            src="{{if $beefile.IsSvg }}{{$beefile.UrlImage}}{{else}}{{$beefile.UrlThumb}}{{end}}?{{$composter}}">
+                            src="{{$beefile.UrlThumb}}?{{$composter}}">
+                    </a>
+                </div>
+                {{else if $beefile.IsDoc}}
+                {{$url := printf "/s/doc/%s" $beefile.ID}}
+                <div class="ui link centered image" title="{{$beefile.Base}}">
+                    <a href="{{$url}}">
+                        <img src="{{$beefile.UrlImage}}?{{$composter}}">
                     </a>
                 </div>
                 {{else if $beefile.IsImage}}
@@ -170,18 +177,6 @@
     </div>
 </div>
 <div id="bee-modal-pdf" class="ui fullscreen modal">
-    <div class="left actions" style="padding: 0.5em">
-        <div class="ui cancel button">Fermer</div>
-        <div class="ui button bee-modal-title {{if $is_editor}}bee-meta{{end}}" title="Modifier les propriétés...">
-        </div>
-    </div>
-    <div class="ui centered bordered fluid image">
-        <iframe src="" width="100%" height="100%">
-            <p>Your browser does not support iframes.</p>
-        </iframe>
-    </div>
-</div>
-<div id="bee-modal-doc" class="ui overlay fullscreen modal">
     <div class="left actions" style="padding: 0.5em">
         <div class="ui cancel button">Fermer</div>
         <div class="ui button bee-modal-title {{if $is_editor}}bee-meta{{end}}" title="Modifier les propriétés...">

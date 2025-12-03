@@ -40,7 +40,7 @@ $(document).ready(function () {
       alert("Votre navigateur ne supporte pas la copie automatique.");
     }
     var $url = $(this).data('clipboard');
-    if ( ! $url.startsWith("http")) {
+    if (!$url.startsWith("http")) {
       $url = document.location.origin + $url
     }
     await navigator.clipboard.writeText($url)
@@ -251,31 +251,6 @@ $(document).ready(function () {
       }).modal('show');
     event.preventDefault();
   });
-  // ACTION EDIT DOC
-  $('.bee-modal-doc').on('tap', function (event) {
-    var $card = $(this).closest('.card');
-    var $anchorid = $card.attr('id');
-    Cookies.set($bee_view, $anchorid)
-    $('.bee-card-anchor').removeClass('bee-card-anchor');
-    $card.addClass('bee-card-anchor');
-    var $meta_url = $card.find('.bee-meta').data('url')
-    var $modal = $('#bee-modal-doc');
-    $modal.find('.bee-meta').data('url', $meta_url);
-    $modal.find('.bee-modal-title').html($(this).data('title'));
-    $modal.find('iframe').attr('src', $(this).data('src'));
-    $modal.find('.image').attr('style', "padding: 0.5em;height: " + (window.innerHeight - 50) + "px");
-    $modal
-      .modal({
-        closable: true,
-        onDeny: function () {
-          return true;
-        },
-        onApprove: function () {
-          return true;
-        }
-      }).modal('show');
-    event.preventDefault();
-  });
   // ACTION UPLOAD
   // affichage de la fenêtre modal
   $('.bee-modal-upload').on('tap', function (event) {
@@ -389,18 +364,62 @@ $(document).ready(function () {
   });
 
   // META EDITOR
+  function captureElement(selector) {
+    return new Promise(function (resolve, reject) {
+      html2canvas(document.querySelector(selector)).then(function (canvas) {
+        resolve(canvas);
+      }).catch(function (error) {
+        reject(error);
+      });
+    });
+  }
   $('.bee-submit-meta').on('tap', function (event) {
     var $return = $(this).data('return');
     var $form = $('#form_meta_id');
     $form.find("input[name='return']").val($return)
-    $form.submit();
+    if (quillInitilized) {
+      var $comment = quill.root.innerHTML;
+      $form.find("input[name='doc']").val($comment);
+      if (quillModified) {
+        captureElement('.ql-editor')
+          .then(function (canvas) {
+            // $('#canvas').replaceWith(canvas);
+            var dataUrl = canvas.toDataURL('image/png');
+            $form.find("input[name='canvas']").val(dataUrl);
+            $form.submit();
+          })
+          .catch(function (error) {
+            console.error('Error capturing element:', error);
+          });
+      }
+    } else {
+      $form.submit();
+    }
     event.preventDefault();
   });
   $('.bee-submit-meta-retour').on('tap', function (event) {
     var $return = $(this).data('return');
     var $form = $('#form_meta_id');
     $form.find("input[name='return']").val($return)
-    $form.submit();
+    if (quillInitilized) {
+      var $comment = quill.root.innerHTML;
+      $form.find("input[name='doc']").val($comment);
+      if (quillModified) {
+        captureElement('.ql-editor')
+          .then(function (canvas) {
+            // $('#canvas').replaceWith(canvas);
+            var dataUrl = canvas.toDataURL('image/png');
+            // var json = JSON.stringify({ image: dataUrl })
+            $form.find("input[name='canvas']").val(dataUrl);
+            $form.submit();
+          })
+          .catch(function (error) {
+            console.error('Error capturing element:', error);
+          });
+      }
+    } else {
+      $form.submit();
+    }
     event.preventDefault();
   });
 
@@ -480,6 +499,19 @@ $(document).ready(function () {
       window.open($(this).data('url'), target, computeWindow(posx, posy, width, height, false));
     } else {
       window.opener.open($(this).data('url'), target, computeWindow(posx, posy, width, height, false));
+    }
+    event.preventDefault();
+  });
+
+  /**
+   * Bouton retour
+   */
+  $(document).on('tap', '.bee-return', function (event) {
+    var $url = $(this).data('url')
+    if ($url) {
+      window.open($url, '_self');
+    } else {
+      window.close();
     }
     event.preventDefault();
   });
@@ -682,6 +714,57 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
+  // VIEWER QUILL
+  if ($("#bee-doc-viewer").length) {
+    const options = {
+      readOnly: true,
+      modules: {
+        toolbar: null
+      },
+      theme: 'snow'
+    };
+    const quill = new Quill('#bee-doc-viewer', options);
+  }
+
+  // EDITEUR QUILL
+  var quill;
+  var quillInitilized = false;
+  var quillModified = false;
+  if ($("input[name='doc']").length) {
+    quillInitilized = true
+    quill = new Quill('#bee-doc-editor', {
+      modules: {
+        toolbar: [
+          [{ 'header': 1 }, { 'header': 2 }],               // custom button values
+          ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+          [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults from theme
+          [{ 'align': [] }],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
+          // [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
+          [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
+          ['blockquote', 'code-block'],
+          ['link', 'image', 'video'], // formula
+          // [{ 'font': [] }],
+          // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
+          // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+
+          ['clean']                                         // remove formatting button
+        ],
+      },
+      placeholder: 'Rédige le document...',
+      theme: 'snow', // or 'bubble'
+    });
+    quill.on('text-change', (delta, oldDelta, source) => {
+      if (source == 'api') {
+        console.log('An API call triggered this change.');
+      } else if (source == 'user') {
+        quillModified = true;
+        $(".bee-submit-meta").removeClass('disabled');
+        $(".bee-submit-meta-retour").removeClass('disabled');
+        // console.log('A user action triggered this change.');
+      }
+    });
+  }
 });
 
 /**

@@ -1,17 +1,26 @@
 # CHANGELOG
-> bug meta map url erronée
 > bug rename album image dans sous-dossier 
-> nouveau document bloc notes markdown
+x nouvel éditeur Quill dans exif.CaptionWriter
+x doc toolbar complet
+x ajouter watermark sur doc
+x pas de thumbnail pour doc
+> supprimer le type url car remplacé par doc
+x retour home après forbidden
 ### À venir :
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
-- echap sur l'éditeur faire <- Retour
+
+3.2.0 du 3 déc 2025
+- `fixed` retour home après connexion refusée lien actif sur forbidden
+- `fixed` erreurs dans logs
+- `added` nouveau type de document "doc" via l'éditeur javascript Quill
+- `added` doc Quill mémorisé dans exif.CaptionWriter
 
 3.1.18 du 30 nov 2025
-- `buged` Subject à blanc si Urlexterne non renseignée
+- `fixed` Subject à blanc si Urlexterne non renseignée
 
 3.1.18 du 30 nov 2025
 - `added` notice log avec n°ip
@@ -21,7 +30,7 @@ Plus tard
 
 3.1.16 du 27 nov 2025
 - `fixed` icone acces à l'url du document pour le partager éventuellemnt (l'url est copieée aussi dans le presse-papier)
-- `fixed` suite édition d'une image le bonton "enregistrer et fermer" n'était pas actif
+- `fixed` suite édition d'une image le bouton "enregistrer et fermer" n'était pas actif
 
 3.1.15 du 26 nov 2025
 - `fixed` liste des sous-dossiers absents dans album

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+{{template "_head.html" .}}
+{{$beefile := .beefile}}
+{{$beedir := .beedir}}
+{{$is_admin := .is_admin}}
+{{$is_editor := .is_editor}}
+
+<body>
+    <!-- NAVBAR -->
+    <div class="ui container">
+        <div class="ui large fixed grey inverted menu borderless bee-bar-light">
+            <div class="item">
+                <button class="ui labeled icon button bee-return" data-url="/return">
+                    <i class="left arrow icon"></i>
+                    Retour
+                </button>
+            </div>
+            <h3 class="header item"><i class="wordpress large icon"></i>
+                {{$beefile.Name}} : {{$beefile.Title}} {{$beefile.Keywords}}
+            </h3>
+            <!-- RIGHT MENU -->
+             {{if $is_editor}}
+            <div class="right menu">
+                <div class="item">
+                    <button id="button_validate" class="ui edit button bee-meta"
+                        data-url="/e/meta/{{$beedir.ID}}/{{$beefile.ID}}"
+                        title="Modifier">
+                        <i class="edit icon"></i>
+                    </button>
+                </div>
+            </div>
+            {{end}}
+            <!-- end right menu -->
+        </div>
+    </div>
+    <!-- MAIN -->
+    <main>
+        <p>&nbsp;</p>
+        <div class="ui container" style="height: 100%">
+            {{template "_flash.html" .}}
+            <div class="ui card" style="width: 99%;">
+                <div class="content">
+                    <div id="bee-doc-viewer">{{str2html .content}}</div>
+                </div>
+            </div>
+        </div>
+        </div> <!-- /container -->
+    </main>
+
+    <!-- CONTEXTE -->
+    {{template "_foot.html" .}}
+</body>
+
+</html>

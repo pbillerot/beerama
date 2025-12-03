@@ -68,30 +68,27 @@ type BeeFile struct {
 	Date       string
 	Dir        string
 	// type
-	IsAudio      bool
-	IsConf       bool
-	IsDir        bool
-	IsDrawio     bool
-	IsExcel      bool
-	IsImage      bool
-	IsMarkdown   bool
-	IsPdf        bool
-	IsPowerpoint bool
-	IsSvg        bool
-	IsSystem     bool
-	IsText       bool
-	IsUrl        bool
-	IsVideo      bool
-	IsWord       bool
-	DirID        string // id du répertoire de l'image
-	ParentID     string // id du répertoire parent du répertoire de l'image
-	Original     string // path de l'original calculé
-	Tags         string
-	Thumb        string // chemin de la vignette
-	UrlDocument  string // url complete http
-	UrlImage     string // uri de l'image
-	UrlThumb     string // uri de la vignette
-	UrlExterne   string // https://www.openstreetmap.org/?mlat=[Latitude]&mlon=[Longitude]#map=15/[Latitude]/[Longitude]
+	IsAudio     bool
+	IsConf      bool
+	IsDir       bool
+	IsDrawio    bool
+	IsDoc       bool
+	IsImage     bool
+	IsPdf       bool
+	IsSvg       bool
+	IsSystem    bool
+	IsText      bool
+	IsUrl       bool
+	IsVideo     bool
+	DirID       string // id du répertoire de l'image
+	ParentID    string // id du répertoire parent du répertoire de l'image
+	Original    string // path de l'original calculé
+	Tags        string
+	Thumb       string // chemin de la vignette
+	UrlDocument string // url complete http
+	UrlImage    string // uri de l'image
+	UrlThumb    string // uri de la vignette
+	UrlExterne  string // https://www.openstreetmap.org/?mlat=[Latitude]&mlon=[Longitude]#map=15/[Latitude]/[Longitude]
 	// metadata
 	Title        string
 	Model        string
@@ -109,7 +106,6 @@ type BeeFile struct {
 	Altitude     string
 	Latitude     string
 	Longitude    string
-	Comment      []byte // commentaire markdown dans exif.UserComment
 }
 
 // BeePathInfo as
@@ -135,4 +131,9 @@ type FileUrl struct {
 	InternetShortcut struct {
 		URL string
 	}
+}
+
+// Metadata xml dans une image file.doc.png
+type QuillXml struct {
+	Html string `xml:"html"`
 }

@@ -261,8 +261,11 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 
 	if Contains([]string{".jpeg", ".jpg", ".png"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
-		if strings.Contains(beeFile.Base, "drawio") {
+		if strings.Contains(beeFile.Base, ".drawio.") {
 			beeFile.IsDrawio = true
+		}
+		if strings.Contains(beeFile.Base, ".doc.") {
+			beeFile.IsDoc = true
 		}
 	} else if Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsImage = true
@@ -327,6 +330,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
 
 	// création de la miniature dans Config.Thumbnail si n'existe pas
+	// et si <> pdf doc
 	if !beeFile.existeThumbnail() {
 		beeFile.createThumbnail(Config.Width, Config.Height)
 	}

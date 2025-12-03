@@ -237,10 +237,21 @@ func (c *MainController) Meta() {
 			err := beeFile.UpdateImage(simage)
 			if err != nil {
 				logs.Error(err)
-				flash.Error("Beerama.Upload %s", err)
+				flash.Error("Beerama.UpdateImage %s", err)
 				flash.Store(&c.Controller)
 				c.Ctx.Redirect(302, url_return)
 			}
+		}
+
+		// ENREGISTREMENT DU DOCUMENT
+		texte := c.GetString("doc")
+		if len(texte) > 0 {
+			// maj de l'image avec canvas et du texte xml
+			canvas := c.GetString("canvas")
+			if len(canvas) > 0 {
+				beeFile.CreateDocThumbnail(models.Config.Width, texte, canvas)
+			}
+
 		}
 
 		// MAJ de beefile
@@ -278,25 +289,13 @@ func (c *MainController) Meta() {
 			beeFile.UrlExterne = ""
 		}
 
-		// cas particulier isUrl
-		if beeFile.IsUrl {
-			beeFile.UrlImage = urlExterne
-			err := beeFile.UpdateFileUrl()
-			if err != nil {
-				logs.Error(err)
-				flash.Error("Beerama %s", err)
-				flash.Store(&c.Controller)
-				c.Ctx.Redirect(302, url_return)
-			}
-		} else {
-			// report des meta dans l'image
-			err := beeFile.UpdateMeta()
-			if err != nil {
-				logs.Error(err)
-				flash.Error("Beerama %s", err)
-				flash.Store(&c.Controller)
-				c.Ctx.Redirect(302, url_return)
-			}
+		// report des meta dans l'image
+		err := beeFile.UpdateMeta()
+		if err != nil {
+			logs.Error(err)
+			flash.Error("Beerama %s", err)
+			flash.Store(&c.Controller)
+			c.Ctx.Redirect(302, url_return)
 		}
 
 		beeDir.UpdateAlbum()
@@ -335,6 +334,14 @@ func (c *MainController) Meta() {
 		// png vide
 		// template.URL("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=")
 	}
+	if beeFile.IsDoc {
+		html, err := models.GetMetaData(beeFile.Path, "CaptionWriter")
+		if err != nil {
+			c.Data["content"] = ""
+		} else {
+			c.Data["content"] = html
+		}
+	}
 
 	// Mémorisation du dernier appel si folder
 	if strings.Contains(c.Ctx.Request.RequestURI, "/folder/") {
@@ -368,6 +375,29 @@ func (c *MainController) Tag() {
 	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
+// Viewer document de type doc quill
+func (c *MainController) Doc() {
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
+	beeDir := models.GetBeeDir(beeFile.DirID)
+
+	html, err := models.GetMetaData(beeFile.Path, "CaptionWriter")
+	if err != nil {
+		flash.Error("%v", err)
+		flash.Store(&c.Controller)
+	}
+
+	// Remplissage du contexte pour le template
+	c.Data["content"] = &html
+	c.Data["beedir"] = &beeDir
+	c.Data["beefile"] = &beeFile
+	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+
+	c.TplName = "doc.html"
+}
+
 // Retourne l'image
 func (c *MainController) Document() {
 	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
@@ -375,37 +405,47 @@ func (c *MainController) Document() {
 	// http.ServeFile(c.Ctx.ResponseWriter, c.Ctx.Request, beeFile.Path)
 
 	w := c.Ctx.ResponseWriter
-	// 1. Lire le contenu du fichier
-	imageData, err := os.ReadFile(beeFile.Path)
-	if err != nil {
-		http.Error(c.Ctx.ResponseWriter, "Impossible de lire l'image", http.StatusInternalServerError)
-		return
-	}
-
-	// 2. Définir l'entête Content-Type
-	// L'entête doit correspondre au format de l'image
-	if beeFile.IsImage {
-		if models.Contains([]string{".jpeg", ".jpg"}, strings.ToLower(beeFile.Ext)) {
-			w.Header().Set("Content-Type", "image/jpg")
-		} else if models.Contains([]string{".png"}, strings.ToLower(beeFile.Ext)) {
-			w.Header().Set("Content-Type", "image/png")
-		} else if models.Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
-			w.Header().Set("Content-Type", "image/gif")
-		} else if models.Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
-			w.Header().Set("Content-Type", "video/mp4")
-		} else {
-			w.Header().Set("Content-Type", "application/octet-stream")
-			// http.Error(c.Ctx.ResponseWriter, "Not Image or vidéo", http.StatusInternalServerError)
+	if beeFile.IsDoc {
+		if html, err := models.GetMetaData(beeFile.Path, "CaptionWriter"); err == nil {
+			w.Header().Set("Content-Length", strconv.Itoa(len(html)))
+			_, err = c.Ctx.ResponseWriter.Write([]byte(html))
+			if err != nil {
+				logs.Error("Erreur lors de l'écriture de la réponse:", err)
+			}
 		}
-	}
+	} else {
+		// 1. Lire le contenu du fichier
+		imageData, err := os.ReadFile(beeFile.Path)
+		if err != nil {
+			http.Error(c.Ctx.ResponseWriter, "Impossible de lire l'image", http.StatusInternalServerError)
+			return
+		}
 
-	// Vous pouvez également définir Content-Length si vous connaissez la taille
-	w.Header().Set("Content-Length", strconv.Itoa(len(imageData)))
+		// 2. Définir l'entête Content-Type
+		// L'entête doit correspondre au format de l'image
+		if beeFile.IsImage {
+			if models.Contains([]string{".jpeg", ".jpg"}, strings.ToLower(beeFile.Ext)) {
+				w.Header().Set("Content-Type", "image/jpg")
+			} else if models.Contains([]string{".png"}, strings.ToLower(beeFile.Ext)) {
+				w.Header().Set("Content-Type", "image/png")
+			} else if models.Contains([]string{".gif"}, strings.ToLower(beeFile.Ext)) {
+				w.Header().Set("Content-Type", "image/gif")
+			} else if models.Contains([]string{".mp4"}, strings.ToLower(beeFile.Ext)) {
+				w.Header().Set("Content-Type", "video/mp4")
+			} else {
+				w.Header().Set("Content-Type", "application/octet-stream")
+				// http.Error(c.Ctx.ResponseWriter, "Not Image or vidéo", http.StatusInternalServerError)
+			}
+		}
 
-	// 3. Écrire les données de l'image dans la réponse
-	_, err = c.Ctx.ResponseWriter.Write(imageData)
-	if err != nil {
-		logs.Error("Erreur lors de l'écriture de la réponse:", err)
+		// Vous pouvez également définir Content-Length si vous connaissez la taille
+		w.Header().Set("Content-Length", strconv.Itoa(len(imageData)))
+
+		// 3. Écrire les données de l'image dans la réponse
+		_, err = c.Ctx.ResponseWriter.Write(imageData)
+		if err != nil {
+			logs.Error("Erreur lors de l'écriture de la réponse:", err)
+		}
 	}
 }
 
@@ -541,6 +581,42 @@ func (c *MainController) FolderRename() {
 		flash.Store(&c.Controller)
 	}
 	beeDir.UpdateAlbum()
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
+}
+
+// Document
+func (c *MainController) NewDoc() {
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	title := c.GetString("new_name")
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	pathSrc := "./static/modeles/quill.png"
+	pathDest := beeDir.Path + "/" + models.GenerateKey() + ".doc.png"
+	// copy du fichier source dans la destination
+	err := shutil.CopyFile(pathSrc, pathDest, false)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama Mkdir %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	beeFile, err := beeDir.CreateBeeFile(pathDest, true)
+	if err != nil {
+		logs.Error(err)
+		flash.Error("Beerama CreateBeeFile %s", err)
+		flash.Store(&c.Controller)
+		c.Ctx.Redirect(302, c.GetSession("folder").(string))
+	}
+	beeFile.Title = title
+	beeFile.UpdateMeta()
+
+	// Rechargement de l'album
+	beeDir.UpdateAlbum()
+
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
 

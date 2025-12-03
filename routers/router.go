@@ -27,6 +27,7 @@ func init() {
 	nsStatic := web.NewNamespace("/s",
 		web.NSBefore(controllers.AuthRequiredProfile),
 		web.NSRouter("/document/:beefileid", &controllers.MainController{}, "get:Document"),
+		web.NSRouter("/doc/:beefileid", &controllers.MainController{}, "get:Doc"),
 	)
 
 	// Routes avec rôle reader
@@ -59,6 +60,7 @@ func init() {
 		web.NSRouter("/mkdir/:beedirid", &controllers.MainController{}, "post:MkSubFolder"),
 		web.NSRouter("/rmdir/:beedirid", &controllers.MainController{}, "post:Rmdir"),
 		web.NSRouter("/dragdrop/:beedirid", &controllers.MainController{}, "post:DragDrop"),
+		web.NSRouter("/newdoc/:beedirid", &controllers.MainController{}, "post:NewDoc"),
 		web.NSRouter("/newdraw/:beedirid", &controllers.MainController{}, "post:NewDraw"),
 		web.NSRouter("/newurl/:beedirid", &controllers.MainController{}, "post:NewUrl"),
 		web.NSRouter("/restore/:beedirid/:beefileid", &controllers.MainController{}, "post:Restore"),

@@ -14,7 +14,7 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/barasher/go-exiftool"
-	"github.com/beego/beego/v2/core/logs"
+	"github.com/beego/beego/v2/core/logs" // External package for chunk manipulation
 	"github.com/disintegration/imaging"
 	"github.com/pbillerot/beerama/shutil"
 )
@@ -69,6 +69,70 @@ func GetCleanedGPS(s string) string {
 	s = strings.ReplaceAll(s, ",", ".")
 	reg := regexp.MustCompile(`[\p{L}a-zA-Z ]`)
 	return reg.ReplaceAllString(s, "")
+}
+
+func GetMetaData(path string, param string) (data string, err error) {
+	// 1. Initialiser ExifTool avec l'option de format de coordonnées décimales
+	buf := make([]byte, BUFFER_SIZE)
+	// Format décimal avec 6 décimales
+	et, err := exiftool.NewExiftool(exiftool.CoordFormant("%.6f"), exiftool.Buffer(buf, BUFFER_SIZE))
+	if err != nil {
+		logs.Error("Erreur lors de l'initialisation de go-exiftool: %v", err)
+	}
+	defer et.Close()
+
+	// 2. Extraire les métadonnées
+	fileMetadata := et.ExtractMetadata(path)
+
+	if len(fileMetadata) == 0 {
+		logs.Trace("Aucune métadonnée extraite pour le fichier : %s", path)
+		return "", nil
+	}
+
+	metadata := fileMetadata[0]
+	if value, err := metadata.GetString(param); err == nil {
+		return value, err
+	} else {
+		logs.Notice("exif: %s %s %w", path, param, err)
+	}
+
+	return "", err
+}
+
+func SetMetaData(path string, param string, value string) (err error) {
+	// 1. Initialiser ExifTool avec l'option de format de coordonnées décimales
+	buf := make([]byte, BUFFER_SIZE)
+	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
+	if err != nil {
+		logs.Error("Erreur lors de l'initialisation de go-exiftool: %v", err)
+	}
+	defer et.Close()
+
+	// 2. Extraire les métadonnées
+	fileMetadata := et.ExtractMetadata(path)
+
+	if len(fileMetadata) == 0 {
+		logs.Trace("Aucune métadonnée extraite pour le fichier : %s", path)
+		return nil
+	}
+
+	metadata := fileMetadata[0]
+	if metadata.Err == nil {
+		metadata.SetString(param, value)
+	} else {
+		logs.Error("error exif: %s %w", path, metadata.Err)
+	}
+	if metadata.Err == nil {
+		et.WriteMetadata(fileMetadata)
+	} else {
+		logs.Error("exif set : %s %s %w", path, param, metadata.Err)
+	}
+
+	if metadata.Err != nil {
+		logs.Error("error set string: %s %w", path, metadata.Err)
+		return metadata.Err
+	}
+	return nil
 }
 
 // valorisation de beefile avec les metadata de l'image
@@ -193,51 +257,52 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		return err
 	}
 	defer et.Close()
-	originals := et.ExtractMetadata(beeFile.Path)
+	fileMetadata := et.ExtractMetadata(beeFile.Path)
+	metadata := fileMetadata[0]
 	// title
-	if originals[0].Err == nil {
-		originals[0].SetString("Title", beeFile.Title)
+	if metadata.Err == nil {
+		metadata.SetString("Title", beeFile.Title)
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
 	// description
-	if originals[0].Err == nil {
-		originals[0].SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
+	if metadata.Err == nil {
+		metadata.SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
 	// GPS
-	if originals[0].Err == nil {
+	if metadata.Err == nil {
 		if beeFile.UrlExterne != "" {
-			originals[0].SetString("Subject", beeFile.UrlExterne)
+			metadata.SetString("Subject", beeFile.UrlExterne)
 		}
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
 	// Date Time Original
-	if originals[0].Err == nil {
-		originals[0].SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
+	if metadata.Err == nil {
+		metadata.SetString("DateTimeOriginal", beeFile.DateOriginal+" "+beeFile.TimeOriginal)
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
 	// keywords
-	if originals[0].Err == nil {
+	if metadata.Err == nil {
 		if beeFile.IsPdf {
-			originals[0].SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+			metadata.SetString("Keywords", strings.Join(beeFile.Keywords, ","))
 		} else {
 			// originals[0].SetStrings("Keywords", beeFile.Keywords)
-			originals[0].SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+			metadata.SetString("Keywords", strings.Join(beeFile.Keywords, ","))
 		}
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
-	if originals[0].Err == nil {
-		et.WriteMetadata(originals)
+	if metadata.Err == nil {
+		et.WriteMetadata(fileMetadata)
 	} else {
-		logs.Error(originals[0].Err)
+		logs.Error(metadata.Err)
 	}
 
-	return originals[0].Err
+	return metadata.Err
 }
 
 // DeleteImage
@@ -390,15 +455,17 @@ func (beeFile *BeeFile) existeThumbnail() bool {
 	return !os.IsNotExist(err)
 }
 
-// createThumbnail création de la vignette sous config.vignette
 func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
-
+	if beeFile.IsPdf || beeFile.IsDoc || beeFile.IsUrl {
+		return nil
+	}
 	// 0. calcul et création des répertoires parents de la vignette
 	dirThumb := Config.Thumbnail + beeFile.Path[len(Config.Racine):len(beeFile.Path)-len(beeFile.Base)]
 	perm := os.FileMode(0755)
 	err = os.MkdirAll(dirThumb, perm)
 	if err != nil {
-		return fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
+		logs.Error("error opening image: %s %w", dirThumb, err)
+		return err
 	}
 	if beeFile.IsVideo {
 		cmd := exec.Command("ffmpeg", "-i", beeFile.Path, "-ss", "00:00:01", "-vframes", "1", beeFile.Thumb)
@@ -406,7 +473,7 @@ func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 		// output, err := cmd.CombinedOutput()
 		err = cmd.Run()
 		if err != nil {
-			err = fmt.Errorf("failed to save thumbnail: %s %v", beeFile.Thumb, err)
+			logs.Error("error ffmpeg: %s %w", beeFile.Path, err)
 			return err
 		}
 		StampOnImage(beeFile.Thumb, "./static/img/video-256.png")
@@ -414,13 +481,13 @@ func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 		// 1. Open the original image
 		img, err := imaging.Open(beeFile.Path, imaging.AutoOrientation(true))
 		if err != nil {
-			err = fmt.Errorf("error opening image: %s %w", beeFile.Path, err)
+			logs.Error("error image open: %s %w", beeFile.Path, err)
 			return err
 		}
 		// 2. Create the thumbnail
 		// imaging.Thumbnail resizes the image to fit the specified dimensions
 		// and crops the image to the exact size without distorting the aspect ratio.
-		thumbnail := imaging.Resize(img, width, 0, imaging.CatmullRom)
+		thumbnail := imaging.Resize(img, width, 0, imaging.Lanczos)
 
 		// 3. Save the thumbnail image to a file
 		err = imaging.Save(thumbnail, beeFile.Thumb)
@@ -428,35 +495,101 @@ func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 			err = fmt.Errorf("failed to save image: %s %v", beeFile.Path, err)
 			return err
 		}
+		if beeFile.IsDoc {
+			StampOnImage(beeFile.Thumb, "./static/img/doc.png")
+		}
 	}
 
 	logs.Info("Thumbnail créé %s ", beeFile.Thumb)
 	return
 }
 
+func decodeAndSavePNG(base64Str string, filename string) error {
+	// 1. Clean the string if it contains a data URI header (e.g., "data:image/png;base64,")
+	parts := strings.Split(base64Str, ",")
+	encodedData := base64Str
+	if len(parts) > 1 {
+		encodedData = parts[1]
+	}
+
+	// 2. Decode the base64 string into a byte slice
+	pngBytes, err := base64.StdEncoding.DecodeString(encodedData)
+	if err != nil {
+		logs.Error("error base64 encoding: %s %w", filename, err)
+		return err
+	}
+
+	// 3. Write the raw byte slice to a file
+	err = os.WriteFile(filename, pngBytes, 0644)
+	if err != nil {
+		logs.Error("error write: %s %w", filename, err)
+		return err
+	}
+
+	// 4 réduction de la taille
+	// par relecture puis cropping
+	img, err := imaging.Open(filename)
+	if err != nil {
+		logs.Error("error image open: %s %w", filename, err)
+		return err
+	}
+	// 2. Create the thumbnail
+	// imaging.Thumbnail resizes the image to fit the specified dimensions
+	// and crops the image to the exact size without distorting the aspect ratio.
+	thumbnail := imaging.Crop(img, image.Rect(0, 0, Config.Width, Config.Height))
+	// thumbnail := imaging.Resize(img, width, 0, imaging.Lanczos)
+
+	// 3. Save the thumbnail image to a file
+	err = imaging.Save(thumbnail, filename)
+	if err != nil {
+		err = fmt.Errorf("failed to save image: %s %v", filename, err)
+		return err
+	}
+	StampOnImageRight(filename, "./static/img/doc.png")
+
+	// fmt.Printf("Successfully decoded and saved PNG to: %s\n", filename)
+	return nil
+}
+
+// createDocThumbnail création d'une nouvelle image, vignette et html dans exif.CaptionWriter
+func (beeFile *BeeFile) CreateDocThumbnail(width int, html, capture string) (err error) {
+	// remplacement de l'image par la capture
+	if err := decodeAndSavePNG(capture, beeFile.Path); err != nil {
+		return err
+	}
+	// enregistrement des données html dans les metadata
+	err = SetMetaData(beeFile.Path, "CaptionWriter", html)
+	return err
+}
+
+// StampOnImageLeft en position 10 10
 func StampOnImage(pathImage, pathIcon string) (err error) {
 	// 1. Charger l'image de base
 	baseImageFile, err := os.Open(pathImage)
 	if err != nil {
 		logs.Error("Failed to open base image: %v", err)
+		return err
 	}
 	defer baseImageFile.Close()
 
 	baseImage, _, err := image.Decode(baseImageFile)
 	if err != nil {
 		logs.Error("Failed to decode base image: %v", err)
+		return err
 	}
 
 	// 2. Charger l'icône
 	iconFile, err := os.Open(pathIcon)
 	if err != nil {
 		logs.Error("Failed to open icon image: %v", err)
+		return err
 	}
 	defer iconFile.Close()
 
 	iconImage, _, err := image.Decode(iconFile)
 	if err != nil {
 		logs.Error("Failed to decode icon image: %v", err)
+		return err
 	}
 
 	// 3. Créer une nouvelle image
@@ -477,7 +610,11 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 
 	// Calculer le rectangle de destination pour l'icône sur la nouvelle image
 	iconBounds := iconImage.Bounds()
-	iconDestRect := image.Rect(iconX, iconY, iconX+iconBounds.Dx(), iconY+iconBounds.Dy())
+	iconDestRect := image.Rect(iconX,
+		iconY,
+		iconX+iconBounds.Dx(),
+		iconY+iconBounds.Dy(),
+	)
 
 	// Dessiner l'icône. draw.Over est généralement utilisé pour superposer avec transparence.
 	// Si l'icône n'a pas de transparence, draw.Src fonctionnera aussi.
@@ -487,6 +624,7 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 	outputFile, err := os.Create(pathImage)
 	if err != nil {
 		logs.Error("Failed to create output file: %v", err)
+		return err
 	}
 	defer outputFile.Close()
 
@@ -494,7 +632,80 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 		logs.Error("Failed to encode image: %v", err)
 	}
 
-	// logs.Info("Image with icon overlay saved as output_image.png")
+	return err
+
+}
+
+// StampOnImageLeft en position 10 à droite
+func StampOnImageRight(pathImage, pathIcon string) (err error) {
+	// 1. Charger l'image de base
+	baseImageFile, err := os.Open(pathImage)
+	if err != nil {
+		logs.Error("Failed to open base image: %v", err)
+		return err
+	}
+	defer baseImageFile.Close()
+
+	baseImage, _, err := image.Decode(baseImageFile)
+	if err != nil {
+		logs.Error("Failed to decode base image: %v", err)
+		return err
+	}
+
+	// 2. Charger l'icône
+	iconFile, err := os.Open(pathIcon)
+	if err != nil {
+		logs.Error("Failed to open icon image: %v", err)
+		return err
+	}
+	defer iconFile.Close()
+
+	iconImage, _, err := image.Decode(iconFile)
+	if err != nil {
+		logs.Error("Failed to decode icon image: %v", err)
+		return err
+	}
+
+	// 3. Créer une nouvelle image
+	// La nouvelle image aura la même taille que l'image de base.
+	// Nous utilisons un image.RGBA pour supporter la transparence si nécessaire.
+	bounds := baseImage.Bounds()
+	newImage := image.NewRGBA(bounds)
+
+	// 4. Dessiner l'image de base sur la nouvelle image
+	// Copie l'image de base sur la nouvelle image, en utilisant un opérateur de source pour copier simplement les pixels.
+	draw.Draw(newImage, bounds, baseImage, image.Point{}, draw.Src)
+
+	// 5. Dessiner l'icône sur la nouvelle image
+	// Définissez la position de l'icône. Ici, nous la plaçons dans le coin supérieur gauche.
+	// Vous pouvez ajuster iconX et iconY pour placer l'icône où vous le souhaitez.
+	iconX := 10 // Décalage X depuis le coin supérieur gauche de l'image de base
+	iconY := 10 // Décalage Y depuis le coin supérieur gauche de l'image de base
+
+	// Calculer le rectangle de destination pour l'icône sur la nouvelle image
+	iconBounds := iconImage.Bounds()
+	iconDestRect := image.Rect(
+		bounds.Dx()-iconBounds.Dx()-iconX,
+		iconY,
+		bounds.Dx()-iconX,
+		iconY+iconBounds.Dy(),
+	)
+
+	// Dessiner l'icône. draw.Over est généralement utilisé pour superposer avec transparence.
+	// Si l'icône n'a pas de transparence, draw.Src fonctionnera aussi.
+	draw.Draw(newImage, iconDestRect, iconImage, image.Point{}, draw.Over)
+
+	// 6. Sauvegarder la nouvelle image
+	outputFile, err := os.Create(pathImage)
+	if err != nil {
+		logs.Error("Failed to create output file: %v", err)
+		return err
+	}
+	defer outputFile.Close()
+
+	if err := png.Encode(outputFile, newImage); err != nil {
+		logs.Error("Failed to encode image: %v", err)
+	}
 
 	return err
 
