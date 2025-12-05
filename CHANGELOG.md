@@ -1,17 +1,15 @@
 # CHANGELOG
-> bug rename album image dans sous-dossier 
-x nouvel éditeur Quill dans exif.CaptionWriter
-x doc toolbar complet
-x ajouter watermark sur doc
-x pas de thumbnail pour doc
 > supprimer le type url car remplacé par doc
-x retour home après forbidden
 ### À venir :
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.2.2 du 5 déc 2025
+- `fixed` opération de copie qui recréait le même identifiant
+- `fixed` sous-dossiers non visualisés suite rename d'un sous-dossier
 
 3.2.1 du 3 déc 2025
 - `fixed` lien index non actualisé suite drag & drop

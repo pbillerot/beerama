@@ -373,7 +373,7 @@ $(document).ready(function () {
       });
     });
   }
-  $('.bee-submit-meta').on('tap', function (event) {
+  $('.bee-submit-meta, .bee-submit-meta-retour').on('tap', function (event) {
     var $return = $(this).data('return');
     var $form = $('#form_meta_id');
     $form.find("input[name='return']").val($return)
@@ -385,31 +385,6 @@ $(document).ready(function () {
           .then(function (canvas) {
             // $('#canvas').replaceWith(canvas);
             var dataUrl = canvas.toDataURL('image/png');
-            $form.find("input[name='canvas']").val(dataUrl);
-            $form.submit();
-          })
-          .catch(function (error) {
-            console.error('Error capturing element:', error);
-          });
-      }
-    } else {
-      $form.submit();
-    }
-    event.preventDefault();
-  });
-  $('.bee-submit-meta-retour').on('tap', function (event) {
-    var $return = $(this).data('return');
-    var $form = $('#form_meta_id');
-    $form.find("input[name='return']").val($return)
-    if (quillInitilized) {
-      var $comment = quill.root.innerHTML;
-      $form.find("input[name='doc']").val($comment);
-      if (quillModified) {
-        captureElement('.ql-editor')
-          .then(function (canvas) {
-            // $('#canvas').replaceWith(canvas);
-            var dataUrl = canvas.toDataURL('image/png');
-            // var json = JSON.stringify({ image: dataUrl })
             $form.find("input[name='canvas']").val(dataUrl);
             $form.submit();
           })

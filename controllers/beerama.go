@@ -827,12 +827,7 @@ func (c *MainController) FileCopy() {
 	// Traitement unitaire des fichiers
 	for _, path := range paths {
 		beeFile := models.GetBeeFilePath(beeDir, path)
-		var pathDest string
-		if beeDir.ID == beeDirDest.ID {
-			pathDest = beeDirDest.Path + "/cp_" + beeFile.Base
-		} else {
-			pathDest = beeDirDest.Path + "/" + beeFile.Base
-		}
+		pathDest := beeDirDest.Path + "/cp_" + beeFile.Base
 		// copy du fichier source dans la destination
 		err = shutil.CopyFile(beeFile.Path, pathDest, false)
 		if err != nil {
