@@ -45,8 +45,8 @@
         {{range $ibeefile, $beefile := $beefiles }}
         {{$beedirid := $beefile.DirID}}
         <div class="grey grid-item" style="margin: 0.5em">
-            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press draggable{{end}}"
-                data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" data-path="{{$beefile.Path}}"
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press{{end}}"
+                data-path="{{$beefile.Path}}"
                 data-base="{{$beefile.Base}}" style="padding: 0.5em;">
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
@@ -70,10 +70,6 @@
                             data-pdf-thumbnail-heightX="400">
                     </div>
                 </div>
-                {{else if $beefile.IsUrl}}
-                <a class="ui button" href="{{$beefile.UrlExterne}}" title="{{$beefile.Base}}" target="_blank">
-                    <i class="linkify big icon"></i>{{$beefile.Title}}
-                </a>
                 {{else if $beefile.IsVideo}}
                 <!-- isimage isvideo-->
                 <div class="ui link centered image" title="{{$beefile.Base}}">
@@ -104,15 +100,14 @@
                 </div>
                 {{end}} <!-- /if image-->
                 <!-- METADATA -->
-                <a class="content {{if $is_editor}}bee-meta{{end}} bee-meta-edit"
+                <a class="content {{if $is_editor}}bee-press draggable bee-meta{{end}} bee-meta-edit"
+                    data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" 
                     title="Clic pour modifier légende et étiquettes" data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <!-- title -->
                     {{if $beefile.Title}}
-                    {{if not $beefile.IsUrl}}
                     <div class="ui center aligned sub header"
                         style="font-size: 1em;text-transform: none;white-space:pre-line">{{$beefile.Title}}
                     </div>
-                    {{end}}
                     {{end}}
                     <div class="description">
                         <!-- description -->

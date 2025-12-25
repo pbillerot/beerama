@@ -284,27 +284,10 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		}
 		beeFile.Content = content
 		beeFile.IsConf = true
-	} else if Contains([]string{".url"}, beeFile.Ext) {
-		content, err := os.ReadFile(beeFile.Path)
-		if err != nil {
-			logs.Error(err)
-		}
-		fileurl := FileUrl{}
-		err = toml.Unmarshal(content, &fileurl)
-		if err != nil {
-			logs.Error(err)
-		}
-		// beeFile.Content = content
-		beeFile.IsUrl = true
-		beeFile.ID = fileurl.Id
-		beeFile.Title = fileurl.Title
-		beeFile.Description = fileurl.Description
-		beeFile.DateOriginal = fileurl.DateOriginal
-		beeFile.TimeOriginal = fileurl.TimeOriginal
-		beeFile.Keywords = fileurl.Keywords
-		beeFile.UrlExterne = fileurl.InternetShortcut.URL
 	} else {
-		beeFile.IsSystem = true
+		err := fmt.Errorf("Extension fichier inconnue: %s", beeFile.Path)
+		logs.Error(err)
+		return beeFile, err
 	}
 
 	if beeFile.IsImage || beeFile.IsPdf || beeFile.IsVideo {
@@ -320,29 +303,12 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	// recalcul des chemins en fonctions du type de fichier et de l'ID qui à remplacé le name
 	beeFile.ComputePathsId(path)
 
-	// ajout dans BeeFiles
-	beeDir.BeeFiles[beeFile.ID] = beeFile
-
 	// report des keywords dand beeDir
 	if isNew {
 		beeFile.Keywords = append(beeFile.Keywords, "new")
 	}
 	beeDir.Keywords = append(beeDir.Keywords, beeFile.Keywords...)
 
-	// création de la miniature dans Config.Thumbnail si n'existe pas
-	// et si <> pdf doc
-	if !beeFile.existeThumbnail() {
-		beeFile.createThumbnail(Config.Width, Config.Height)
-	}
-
-	// Renommage du fichier avec le ID
-	if beeFile.ID != beeFile.Name {
-		logs.Info("Renommage du fichier en %s de %s", beeFile.ID+beeFile.Ext, beeFile.Path)
-		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
-		if err == nil {
-			// beeFile.UpdateMeta()
-		}
-	}
 	if isNew {
 		// suppression des étiquettes en doublons
 		keyUniqueSorted := BeeUniqueString(beeFile.Keywords)
@@ -350,6 +316,25 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.Keywords = beeFile.Keywords[:0]
 		beeFile.Keywords = append(beeFile.Keywords, keyUniqueSorted...)
 	}
+
+	// Renommage du fichier avec le ID
+	if beeFile.ID != beeFile.Name {
+		logs.Info("Renommage du fichier en %s de %s", beeFile.ID+beeFile.Ext, beeFile.Path)
+		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
+		if err == nil {
+			// titre en particulier
+			beeFile.UpdateMeta()
+		}
+	}
+
+	// création de la miniature dans Config.Thumbnail si n'existe pas
+	// et si <> pdf doc
+	if !beeFile.existeThumbnail() {
+		beeFile.createThumbnail(Config.Width, Config.Height)
+	}
+
+	// ajout dans BeeFiles
+	beeDir.BeeFiles[beeFile.ID] = beeFile
 
 	// Indexation du beefile
 	beeFile.Idx()
@@ -542,8 +527,6 @@ func (beeFile *BeeFile) Rename(newName string) error {
 
 	// rename du fichier, original et thumbnail
 	pathOld := beeFile.Path
-	thumbOld := beeFile.Thumb
-	originalOld := beeFile.Original
 
 	pathNew := strings.Replace(beeFile.Path, beeFile.Base, newName, 1)
 	beeFile.ComputePathsId(pathNew)
@@ -552,24 +535,6 @@ func (beeFile *BeeFile) Rename(newName string) error {
 	if err != nil {
 		logs.Error(err)
 		return err
-	}
-	if !beeFile.IsUrl {
-		_, err = os.Stat(originalOld)
-		if !os.IsNotExist(err) {
-			err = os.Rename(originalOld, beeFile.Original)
-			if err != nil {
-				logs.Error(err)
-				return err
-			}
-		}
-		_, err = os.Stat(thumbOld)
-		if !os.IsNotExist(err) {
-			err = os.Rename(thumbOld, beeFile.Thumb)
-			if err != nil {
-				logs.Error(err)
-				return err
-			}
-		}
 	}
 	return nil
 }
@@ -769,6 +734,7 @@ func (beeFile *BeeFile) GetNewId() string {
 		if strings.Contains(beeFile.Name, ".drawio") {
 			beeFile.ID += ".drawio"
 		}
+		// beeFile.Name = beeFile.ID
 		logs.Info("new beeid:", beeFile.ID, beeFile.Path)
 	} else {
 		// est-ce que beefile existe déjà

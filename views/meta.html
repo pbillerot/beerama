@@ -58,7 +58,6 @@
 				<div class="ten wide column">
 					<div class="ui attached small message">
 						{{$clip := printf "/s/document/%s" $beefile.ID}}
-						{{if $beefile.IsUrl}}{{$clip = $beefile.UrlExterne}}{{end}}
 						<div class="ui right floated header bee-open-document" data-clipboard="{{$clip}}">
 							<a class="ui right floated basic label"
 								title="Ouvrir le document... (pour un partage éventuel)">
@@ -100,10 +99,6 @@
 								<p>Your browser does not support iframes.</p>
 							</iframe>
 						</div>
-						{{else if $beefile.IsUrl}}
-						<a class="ui centered bordered fluid image" href="{{$beefile.UrlExterne}}" target="_blank">
-							<img src="/static/img/beerama2.png"></img>
-						</a>
 						{{else if $beefile.IsVideo}}
 						<a class="ui centered bordered fluid image glightbox" href="{{$beefile.UrlImage}}"
 							data-gallery="gallery"

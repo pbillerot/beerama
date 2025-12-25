@@ -12,7 +12,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/BurntSushi/toml"
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs" // External package for chunk manipulation
 	"github.com/disintegration/imaging"
@@ -231,25 +230,6 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		// https://exiftool.org/exiftool_pod.html
 		return fmt.Errorf("extension non modifiable: %s", beeFile.Base)
 	}
-	if beeFile.IsUrl {
-		fileUrl := FileUrl{}
-		fileUrl.Id = beeFile.ID
-		fileUrl.Title = beeFile.Title
-		fileUrl.Description = beeFile.Description
-		fileUrl.DateOriginal = beeFile.DateOriginal
-		fileUrl.TimeOriginal = beeFile.TimeOriginal
-		fileUrl.Keywords = beeFile.Keywords
-		fileUrl.InternetShortcut.URL = beeFile.UrlExterne
-
-		updatedData, err := toml.Marshal(&fileUrl)
-		if err != nil {
-			return err
-		}
-		if err := os.WriteFile(beeFile.Path, updatedData, 0644); err != nil {
-			return err
-		}
-		return nil
-	}
 	// Exiftool
 	buf := make([]byte, BUFFER_SIZE)
 	et, err := exiftool.NewExiftool(exiftool.Buffer(buf, BUFFER_SIZE))
@@ -456,7 +436,7 @@ func (beeFile *BeeFile) existeThumbnail() bool {
 }
 
 func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
-	if beeFile.IsPdf || beeFile.IsDoc || beeFile.IsUrl {
+	if beeFile.IsPdf || beeFile.IsDoc {
 		return nil
 	}
 	// 0. calcul et création des répertoires parents de la vignette

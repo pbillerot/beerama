@@ -78,7 +78,6 @@ type BeeFile struct {
 	IsSvg       bool
 	IsSystem    bool
 	IsText      bool
-	IsUrl       bool
 	IsVideo     bool
 	DirID       string // id du répertoire de l'image
 	ParentID    string // id du répertoire parent du répertoire de l'image
