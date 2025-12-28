@@ -117,12 +117,11 @@
 					{{if and $beefile.IsImage (not $beefile.IsDrawio) (not $beefile.IsDoc) }}
 					<div class="ui attached message">
 						<div class="sub header">
-							<span>{{$beefile.Make}} {{$beefile.Model}} / {{$beefile.ImageWidth}} x
-								{{$beefile.ImageHeight}} px
-								/ {{$beefile.FileSize}}</span>
+							<span>{{$beefile.ImageWidth}} x {{$beefile.ImageHeight}} px / {{$beefile.FileSize}}</span>
 						</div>
 						<div class="sub header">
-							<span>{{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec.</span>
+							<!-- <span>{{$beefile.ISO}} iso {{$beefile.FocalLength}} {{$beefile.ExposureTime}} sec.</span> -->
+							<span>{{$beefile.ISO}} iso {{$beefile.LensModel}} </span>
 						</div>
 					</div>
 					{{end}}

@@ -1,15 +1,16 @@
 # CHANGELOG
 > liste des documents en liste table
-x fixed clic sur image non pris en compte sur tablette - conflit avec draganddrop
-> bug création doublon suit modi map par exemple
-> bug import label = nom de l'image original puis le nouveau nom qui ne veut rien dire
-> supprimer le type url car remplacé par doc
+x exif.Photo.LensModel
 ### À venir :
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.3.1 du 28 déc 2025
+- `changed` menu gauche toujousr fixe même sur smartphone
+- `added` metadata exif.LensModel
 
 3.3.0 du 25 déc 2025
 - `fixed` clic sur image non pris en compte sur tablette - conflit avec darg & drop

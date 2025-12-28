@@ -182,6 +182,9 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 		beeFile.Description = value
 	}
 	// image
+	if value, err := metadata.GetString("LensModel"); err == nil {
+		beeFile.LensModel = value
+	}
 	if value, err := metadata.GetString("ISO"); err == nil {
 		beeFile.ISO = value
 	}

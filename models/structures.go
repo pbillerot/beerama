@@ -105,6 +105,7 @@ type BeeFile struct {
 	Altitude     string
 	Latitude     string
 	Longitude    string
+	LensModel    string
 }
 
 // BeePathInfo as

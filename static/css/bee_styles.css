@@ -190,7 +190,7 @@ bee-press,
 }
 
 /* desktop ou tablette */
-@media only screen and (min-width: 768px) {
+/* @media only screen and (min-width: 768px) {
     .bee-mobile-show {
         display: none !important;
     }
@@ -199,4 +199,9 @@ bee-press,
         margin-left: 210px;
         z-index: -1;
     }
+} */
+
+.bee-container {
+    margin-left: 210px;
+    z-index: -1;
 }
