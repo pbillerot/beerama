@@ -383,7 +383,6 @@ $(document).ready(function () {
       if (quillModified) {
         captureElement('.ql-editor')
           .then(function (canvas) {
-            // $('#canvas').replaceWith(canvas);
             var dataUrl = canvas.toDataURL('image/png');
             $form.find("input[name='canvas']").val(dataUrl);
             $form.submit();

@@ -364,7 +364,8 @@ func (c *MainController) Tag() {
 		// maj
 		parent := beeDir.GetParent()
 		parent.KeywordsAlbum = append(parent.Keywords, keyword)
-		beeDir.KeywordsAlbum = parent.KeywordsAlbum
+		beeDir.Keywords = append(beeDir.Keywords, keyword)
+		beeDir.KeywordsAlbum = append(beeDir.KeywordsAlbum, keyword)
 	}
 
 	// actualisation

@@ -432,7 +432,7 @@ func (beeDir *BeeDir) UpdateAlbum() {
 	for _, bdir := range Config.BeeDirs {
 		if bdir.ParentID == parent.ID {
 			parent.WithChildren = true
-			bdir.UpdateBeeDir()
+			bdir.UpdateBeeDir() // recup keywords des beefiles
 			keywords = append(keywords, bdir.Keywords...)
 			count += bdir.Count
 		}

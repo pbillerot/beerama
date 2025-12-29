@@ -8,7 +8,11 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 
-3.3.2 du 29 déc 2025
+3.3.4 du 29 déc 2025
+- `fixed` gestion erreur maj metadata
+- `fixed` ajout nouvelle étiquette faisait perdre les autres
+
+3.3.3 du 29 déc 2025
 - `fixed` bee-press en double qui créé un fichier undefined
 
 3.3.2 du 29 déc 2025

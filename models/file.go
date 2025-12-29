@@ -285,7 +285,7 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		logs.Error(metadata.Err)
 	}
 
-	return metadata.Err
+	return fileMetadata[0].Err
 }
 
 // DeleteImage
