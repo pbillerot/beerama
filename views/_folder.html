@@ -46,7 +46,7 @@
         {{$beedirid := $beefile.DirID}}
         <div class="grey grid-item" style="margin: 0.5em">
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press{{end}}"
-                data-path="{{$beefile.Path}}"
+                data-path="{{$beefile.Path}}" data-fsrc="{{$beefile.ID}}"
                 data-base="{{$beefile.Base}}" style="padding: 0.5em;">
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
