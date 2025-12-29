@@ -8,6 +8,9 @@ Plus tard
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 
+3.3.2 du 29 déc 2025
+- `fixed` bee-press en double qui créé un fichier undefined
+
 3.3.1 du 28 déc 2025
 - `changed` menu gauche toujousr fixe même sur smartphone
 - `added` metadata exif.LensModel
