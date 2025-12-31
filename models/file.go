@@ -200,6 +200,9 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	if value, err := metadata.GetString("ExposureTime"); err == nil {
 		beeFile.ExposureTime = value
 	}
+	if value, err := metadata.GetString("Credit"); err == nil {
+		beeFile.Year = value
+	}
 	if value, err := metadata.GetString("DateTimeOriginal"); err == nil {
 		if len(value) > 9 {
 			beeFile.DateOriginal = strings.Replace(value, ":", "-", 2)[:10]
@@ -259,6 +262,12 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 		if beeFile.UrlExterne != "" {
 			metadata.SetString("Subject", beeFile.UrlExterne)
 		}
+	} else {
+		logs.Error(metadata.Err)
+	}
+	// Year
+	if metadata.Err == nil {
+		metadata.SetString("Credit", beeFile.Year)
 	} else {
 		logs.Error(metadata.Err)
 	}

@@ -1,12 +1,19 @@
 # CHANGELOG
-> liste des documents en liste table
-x exif.Photo.LensModel
+> gestion des tags en global pour ajouter des tags pour la session seulement
+- saisie année seule ou complete
+- bouton copier / coller 
+> partage d'un album par un lien en lecture seulement
+> recherche en minuscule sans accent
 ### À venir :
 Plus tard
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.4.0 du 31 déc 2025
+- `added` copier coller dans et du presse-papier
+- `added` année seule ou complete
 
 3.3.4 du 29 déc 2025
 - `fixed` gestion erreur maj metadata

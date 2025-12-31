@@ -89,19 +89,20 @@ type BeeFile struct {
 	UrlThumb    string // uri de la vignette
 	UrlExterne  string // https://www.openstreetmap.org/?mlat=[Latitude]&mlon=[Longitude]#map=15/[Latitude]/[Longitude]
 	// metadata
-	Title        string
+	Title        string // exif.Title
 	Model        string
 	Make         string
-	Keywords     []string
+	Keywords     []string // exif.Kewords
 	ISO          string
 	ImageWidth   string
 	ImageHeight  string
 	FocalLength  string
 	FileSize     string
 	ExposureTime string
-	Description  string
-	DateOriginal string
-	TimeOriginal string
+	Description  string // exif.Description
+	Year         string // exif.Credit
+	DateOriginal string // exif.DateOriginal
+	TimeOriginal string // exif.TimeOriginal
 	Altitude     string
 	Latitude     string
 	Longitude    string

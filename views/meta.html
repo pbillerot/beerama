@@ -21,6 +21,15 @@
 			<div class="right menu">
 				<a class="item">
 					<div class="ui buttons">
+						<div id="bee-meta-clip" data-return="/return"
+							class="ui icon orange small button"
+							title="Copier les métadonnées dans le presse-papier">
+							<i class="copy outline icon"></i> Copier
+						</div>
+					</div>
+				</a>
+				<a class="item">
+					<div class="ui buttons">
 						<div id="button_validate" data-return="/return"
 							class="ui icon red small button bee-submit-meta-retour disabled">
 							<i class="save icon"></i> Enregistrer et Retour
@@ -129,14 +138,14 @@
 				<div class="six wide column">
 					<div class="ui message">
 						<div class="field">
-							<label for="title">Titre</label>
+							<label for="title">Titre <i class="clipboard outline icon bee-meta-clip" title=""></i></label>
 							<div class="header">
 								<input class="bee-onchange" type="text" placeholder="{{$beefile.Title}}" name="title"
 									id="title" value="{{$beefile.Title}}">
 							</div>
 						</div>
 						<div class="field">
-							<label for="description">Légende</label>
+							<label for="description">Légende <i class="clipboard outline icon bee-meta-clip"></i></label>
 							<div class="header">
 								<textarea class="bee-onchange" name="description" id="description"
 									placeholder="Légende">{{$beefile.Description}}</textarea>
@@ -167,15 +176,22 @@
 							</div>
 						</div>
 						<div class="fields">
-							<div class="field" styles="width: 200px">
-								<label for="dateoriginal">Date de la photo</label>
+							<div class="four wide field">
+								<label for="dateoriginal">Année <i class="clipboard outline icon bee-meta-clip"></i></label>
+								<div class="header">
+									<input class="bee-onchange" type="number" placeholder="Année" name="year"
+										id="year" value="{{$beefile.Year}}">
+								</div>
+							</div>
+							<div class="seven wide field">
+								<label for="dateoriginal">Date de la photo <i class="clipboard outline icon bee-meta-clip"></i></label>
 								<div class="header">
 									<input class="bee-onchange" type="date" placeholder="Date" name="dateoriginal"
 										id="dateoriginal" value="{{$beefile.DateOriginal}}">
 								</div>
 							</div>
-							<div class="field" styles="width: 200px">
-								<label for="timeoriginal">Heure de la photo</label>
+							<div class="four wide field">
+								<label for="timeoriginal">Heure <i class="clipboard outline icon bee-meta-clip"></i></label>
 								<div class="header">
 									<input class="bee-onchange" type="time" placeholder="Heure" name="timeoriginal"
 										id="timeoriginal" value="{{$beefile.TimeOriginal}}">
@@ -191,7 +207,7 @@
 							</div>
 						</div>
 						<div class="field">
-							<label for="urlexterne">Lien vers un site externe</label>
+							<label for="urlexterne">Lien vers un site externe <i class="clipboard outline icon bee-meta-clip"></i></label>
 							<div class="header">
 								<input class="bee-onchange" type="text" placeholder="{{$beefile.UrlExterne}}"
 									name="urlexterne" id="urlexterne" value="{{$beefile.UrlExterne}}">

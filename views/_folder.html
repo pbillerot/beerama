@@ -119,8 +119,9 @@
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
                             {{if ne (len $beefile.DateOriginal) 0 }}
-                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr
-                            $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}&nbsp;
+                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}&nbsp;
+                            {{else}}
+                            {{$beefile.Year}}
                             {{end}}
                         </span>
                     </div>

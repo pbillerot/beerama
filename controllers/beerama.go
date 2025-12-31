@@ -87,7 +87,15 @@ func (c *MainController) Folder() {
 	}
 	// tri des beefiles
 	sort.Slice(beeFiles, func(i, j int) bool {
-		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
+		var dateI = beeFiles[i].DateOriginal
+		var dateJ = beeFiles[j].DateOriginal
+		if beeFiles[i].Year != "" {
+			dateI = beeFiles[i].Year + ":01:01"
+		}
+		if beeFiles[j].Year != "" {
+			dateJ = beeFiles[j].Year + ":01:01"
+		}
+		return dateI < dateJ
 	})
 	c.Data["albums"] = &beeAlbums
 	c.Data["parent"] = &parent
@@ -267,12 +275,20 @@ func (c *MainController) Meta() {
 		beeFile.DateOriginal = dateoriginal
 		timeoriginal := c.GetString("timeoriginal")
 		beeFile.TimeOriginal = timeoriginal
+		// Year
+		year := c.GetString("year")
+		beeFile.Year = year
+		if year != "" {
+			beeFile.DateOriginal = ""
+			beeFile.TimeOriginal = ""
+		}
 		// keywords
 		keywords := c.GetStrings("keywords")
 		beeFile.Keywords = keywords
 		// raz de la date
 		razdate := c.GetString("razdate")
 		if razdate == "on" {
+			beeFile.Year = ""
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}

@@ -739,6 +739,49 @@ $(document).ready(function () {
       }
     });
   }
+
+  // clipboard dans chmaps meta dans localStorage
+  $('#bee-meta-clip').on('tap', function (event) {
+    var $form = $('#form_meta_id');
+    localStorage.setItem("urlexterne", urlexterne);
+    var title = $('#title').val();
+    localStorage.setItem("title", title);
+    var description = $('#description').val();
+    localStorage.setItem("description", description);
+    // var keywords = $('#keywords').val();
+    // localStorage.setItem("keywords", keywords);
+    var year = $('#year').val();
+    localStorage.setItem("year", year);
+    var dateoriginal = $('#dateoriginal').val();
+    localStorage.setItem("dateoriginal", dateoriginal);
+    var timeoriginal = $('#timeoriginal').val();
+    localStorage.setItem("timeoriginal", timeoriginal);
+    var urlexterne = $('#urlexterne').val();
+    localStorage.setItem("urlexterne", urlexterne);
+    event.preventDefault();
+  });
+  $('.bee-meta-clip').on('tap', function (event) {
+    var $field = $(this).closest('.field');
+    var $input = $field.find(".bee-onchange");
+    var $id = $input.attr('id');
+    var $valLocal = localStorage.getItem($id);
+    $input.val($valLocal);
+    event.preventDefault();
+  });
+  // initilisation des metadata
+  $('.bee-meta-clip').each(function () {
+    var $field = $(this).closest('.field');
+    var $input = $field.find(".bee-onchange");
+    var $id = $input.attr('id');
+    var $valLocal = localStorage.getItem($id);
+    if ($valLocal == "") {
+      $(this).addClass('grey');
+    } else {
+      $(this).addClass('orange');
+      $(this).attr('title', $valLocal);
+    }
+  });
+
 });
 
 /**
