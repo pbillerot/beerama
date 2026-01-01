@@ -10,6 +10,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 
+3.6.2 du 1er janv 2026
+- `fixed` date et urlexterne non maj par lot
+
 3.6.1 du 1er janv 2026
 - `fixed` onchange sur checkbox non pris en compte
 - `fixed` si annee valorisée raz date et heure

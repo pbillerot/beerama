@@ -810,7 +810,7 @@ func (c *MainController) Lot() {
 	yearok := c.GetString("year_ok")
 	if year != "" {
 		dateoriginal = ""
-		dateoriginalok = "ok"
+		dateoriginalok = "yes"
 		timeoriginal = ""
 		timeoriginalok = "yes"
 	}
