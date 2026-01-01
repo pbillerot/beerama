@@ -10,6 +10,10 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
 
+3.6.1 du 1er janv 2026
+- `fixed` onchange sur checkbox non pris en compte
+- `fixed` si annee valorisée raz date et heure
+
 3.6.0 du 1er janv 2026
 - `added` mises à jour de métadonnées par lot
 - `fixed` correction liens map et document dans meta.html

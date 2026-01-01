@@ -287,7 +287,7 @@ func (c *MainController) Meta() {
 		beeFile.Keywords = keywords
 		// raz de la date
 		razdate := c.GetString("razdate")
-		if razdate == "on" {
+		if razdate == "yes" {
 			beeFile.Year = ""
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
@@ -810,7 +810,9 @@ func (c *MainController) Lot() {
 	yearok := c.GetString("year_ok")
 	if year != "" {
 		dateoriginal = ""
+		dateoriginalok = "ok"
 		timeoriginal = ""
+		timeoriginalok = "yes"
 	}
 	// keywords
 	keywords := c.GetStrings("keywords")
