@@ -45,6 +45,10 @@
                     <div class="ui small icon button" id="bee-selector" title="Nombre de sélection">
                         <i class="check icon"></i>
                     </div>
+                    <div class="ui small icon button bee-modal-lot" data-action="/e/lot/{{$beedir.ID}}"
+                        title="Mettre à jour les métadonnées du lot...">
+                        <i class="boxes icon"></i>
+                    </div>
                     <div class="ui small icon button bee-modal-duplicate" data-action="/e/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>
@@ -344,6 +348,107 @@
             </div>
         </div>
     </div>
+    <!-- Modal du traitement par lot des mises à jour des metadonnées exif-->
+    <div id="bee-modal-lot" class="ui small modal">
+        <div class="header bee-modal-title">à venir</div>
+        <div class="scrolling content">
+            <form class="ui form" method="POST" action="a venir">
+                {{ .xsrfdata }}
+                <input type="hidden" name="paths" value="">
+                <div class="field">
+                    <label>Liste des fichiers sélectionnés</label>
+                    <div class="ui message">
+                        <div class="header bee-input-paths">à venir</div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="title">Titre
+                        <i class="copy outline icon bee-clip-copy"></i>
+                        <i class="clipboard outline icon bee-clip-paste"></i>
+                        <input type="checkbox" name="title_ok" value="yes">
+                    </label>
+                    <div class="header">
+                        <input class="bee-onchange" type="text" name="title" id="title" value="">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="description">Légende
+                        <i class="copy outline icon bee-clip-copy"></i>
+                        <i class="clipboard outline icon bee-clip-paste"></i>
+                        <input type="checkbox" name="description_ok" value="yes">
+                    </label>
+                    <div class="header">
+                        <textarea class="bee-onchange" name="description" id="description" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="field" style="width: 80%">
+                        <label for="keywords">Etiquettes
+                            <input type="checkbox" name="keywords_ok" value="yes">
+                        </label>
+                        <select class="ui fluid search three column dropdown bee-onchange-option" name="keywords"
+                            id="keywords" multiple="">
+                            <!-- recup des keywords de l'album si sous-dossier-->
+                            {{ $keywords := $beedir.KeywordsAlbum}}
+                            <option value="">Sélectionner une ou plusieurs étiquettes</option>
+                            {{ range $ikey, $key := $keywords }}
+                            <option value="{{$key}}">
+                                {{$key}}
+                            </option>
+                            {{end}}
+                        </select>
+                    </div>
+                </div>
+                <div class="fields">
+                    <div class="four wide field">
+                        <label for="year">Année
+                            <i class="copy outline icon bee-clip-copy"></i>
+                            <i class="clipboard outline icon bee-clip-paste"></i>
+                            <input type="checkbox" name="year_ok" value="yes">
+                        </label>
+                        <div class="header">
+                            <input class="bee-onchange" type="number" name="year" id="year" value="">
+                        </div>
+                    </div>
+                    <div class="seven wide field">
+                        <label for="dateoriginal">Date de la photo
+                            <i class="copy outline icon bee-clip-copy"></i>
+                            <i class="clipboard outline icon bee-clip-paste"></i>
+                            <input type="checkbox" name="dateoriginal_ok" value="yes">
+                        </label>
+                        <div class="header">
+                            <input class="bee-onchange" type="date" name="dateoriginal" id="dateoriginal" value="">
+                        </div>
+                    </div>
+                    <div class="four wide field">
+                        <label for="timeoriginal">Heure
+                            <i class="copy outline icon bee-clip-copy"></i>
+                            <i class="clipboard outline icon bee-clip-paste"></i>
+                            <input type="checkbox" name="timeoriginal_ok" value="yes">
+                        </label>
+                        <div class="header">
+                            <input class="bee-onchange" type="time" name="timeoriginal" id="timeoriginal" value="">
+                        </div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="urlexterne">Lien vers un site externe
+                        <i class="copy outline icon bee-clip-copy"></i>
+                        <i class="clipboard outline icon bee-clip-paste"></i>
+                        <input type="checkbox" name="url_externe_ok" value="yes">
+                    </label>
+                    <div class="header">
+                        <input class="bee-onchange" type="text" name="urlexterne" id="urlexterne" value="">
+                    </div>
+                </div>
+                <div class="actions">
+                    <div class="ui cancel button">Annuler</div>
+                    <div class="ui approve button">Lancer les mises à jour</div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- CONTEXTE PAGE -->
     <div id="bee-ctx" data-folder="{{.Folder}}">
     </div>

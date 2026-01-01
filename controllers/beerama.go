@@ -305,7 +305,7 @@ func (c *MainController) Meta() {
 			beeFile.UrlExterne = ""
 		}
 
-		// report des meta dans l'image
+		// report des meta dans le fichier
 		err := beeFile.UpdateMeta()
 		if err != nil {
 			logs.Error(err)
@@ -774,6 +774,90 @@ func (c *MainController) Reload() {
 	beego.ReadFromRequest(&c.Controller)
 
 	beeDir.LoadBeeFiles()
+	beeDir.UpdateAlbum()
+
+	// réindexation des beefiles
+	models.Config.IndexAllBeefiles()
+
+	c.Ctx.Redirect(302, c.GetSession("folder").(string))
+
+}
+
+// Lot mise à jour des métadonnées des fichiers sélectionnés
+func (c *MainController) Lot() {
+	// album source
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+
+	flash := beego.ReadFromRequest(&c.Controller)
+
+	// liste des fichiers à dupliquerr séparés par des ,
+	paths := strings.Split(c.GetString("paths"), ",")
+
+	// récupération des champs à mettre à jour
+	// title
+	title := c.GetString("title")
+	titleok := c.GetString("title_ok")
+	// description
+	description := c.GetString("description")
+	descriptionok := c.GetString("description_ok")
+	// Date Time Original
+	dateoriginal := c.GetString("dateoriginal")
+	dateoriginalok := c.GetString("dateoriginal_ok")
+	timeoriginal := c.GetString("timeoriginal")
+	timeoriginalok := c.GetString("timeoriginal_ok")
+	// Year
+	year := c.GetString("year")
+	yearok := c.GetString("year_ok")
+	if year != "" {
+		dateoriginal = ""
+		timeoriginal = ""
+	}
+	// keywords
+	keywords := c.GetStrings("keywords")
+	keywordsok := c.GetString("keywords_ok")
+	// urlexterne
+	urlexterne := c.GetString("urlexterne")
+	urlexterneok := c.GetString("urlexterne_ok")
+	if urlexterne != "" {
+		if strings.Contains(urlexterne, "openstreetmap") {
+			latitude, longitude := models.GetLatitudeLongitude(urlexterne)
+			urlexterne = fmt.Sprintf("https://www.openstreetmap.org/?mlat=%s&mlon=%s#map=15/%s/%s&layers=P", latitude, longitude, latitude, longitude)
+		}
+	}
+
+	// Traitement unitaire des fichiers
+	for _, path := range paths {
+		beeFile := models.GetBeeFilePath(beeDir, path)
+		if titleok == "yes" {
+			beeFile.Title = title
+		}
+		if descriptionok == "yes" {
+			beeFile.Description = description
+		}
+		if dateoriginalok == "yes" {
+			beeFile.DateOriginal = dateoriginal
+		}
+		if timeoriginalok == "yes" {
+			beeFile.TimeOriginal = timeoriginal
+		}
+		if yearok == "yes" {
+			beeFile.Year = year
+		}
+		if keywordsok == "yes" {
+			beeFile.Keywords = keywords
+		}
+		if urlexterneok == "yes" {
+			beeFile.UrlExterne = urlexterne
+		}
+		// report des meta dans le fichier
+		err := beeFile.UpdateMeta()
+		if err != nil {
+			logs.Error(err)
+			flash.Error("Beerama %s", err)
+			flash.Store(&c.Controller)
+			c.Ctx.Redirect(302, c.GetSession("folder").(string))
+		}
+	}
 	beeDir.UpdateAlbum()
 
 	// réindexation des beefiles

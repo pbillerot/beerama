@@ -304,6 +304,33 @@ $(document).ready(function () {
     $('#bee-files-selected').html($html);
   });
 
+  // ACTION METTRE A JOUR LE LOT
+  $('.bee-modal-lot').on('click', function (event) {
+    var $modal = $('#bee-modal-lot')
+    var $form = $modal.find('form');
+    // titre
+    $modal.find('.bee-modal-title').html($(this).attr('title'));
+    // valorisation de paths et bases
+    $selected = getSelectedPathHtml();
+    // Le champ input des fichiers sources
+    $form.find('input[name="paths"]').val($selected.paths)
+    $form.find('.bee-input-paths').html($selected.bases)
+    // l'action à déclencher sur le serveur
+    $form.attr('action', $(this).data('action'));
+    $('#bee-modal-lot')
+      .modal({
+        closable: false,
+        onDeny: function () {
+          return true;
+        },
+        onApprove: function () {
+          $form.submit();
+        }
+      }).modal('show');
+    event.preventDefault();
+  });
+
+
   // ACTION DUPLIQUER
   $('.bee-modal-duplicate').on('click', function (event) {
     var $modal = $('#bee-modal-duplicate')

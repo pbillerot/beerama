@@ -58,23 +58,21 @@
 				<div class="ten wide column">
 					<div class="ui attached small message">
 						{{$clip := printf "/s/document/%s" $beefile.ID}}
-						<div class="ui right floated header bee-open-document" data-clipboard="{{$clip}}">
-							<a class="ui right floated basic label"
-								title="Ouvrir le document... (pour un partage éventuel)">
-								<i class="clipboard outline icon"></i>
+						<div class="ui right floated header">
+							<a class="ui right floated basic label bee-open-document" data-clipboard="{{$clip}}"
+								title="Ouvrir le document... (lien absolu)">
+								<i class="external alternate icon"></i>
 							</a>
 							{{if $beefile.UrlExterne}}
 							{{$title := "Lien vers un site externe..."}}
+							{{$icon := "linkify"}}
 							{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
 							{{$title = "Localiser la prise de vue..."}}
+							{{$icon = "map"}}
 							{{end}}
 							<a class="ui right floated basic label" title="{{$title}}" target="popup"
 								href="{{$beefile.UrlExterne}}">
-								{{if BeeContains $beefile.UrlExterne "openstreetmap"}}
-								<i class="map icon"></i>
-								{{else}}
-								<i class="linkify icon"></i>
-								{{end}}
+								<i class="{{$icon}} icon"></i>
 							</a>
 							{{end}}
 						</div>

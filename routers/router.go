@@ -51,6 +51,7 @@ func init() {
 		web.NSRouter("/rename/:beedirid", &controllers.MainController{}, "post:FolderRename"),
 		web.NSRouter("/reload/:beedirid", &controllers.MainController{}, "get:Reload"),
 		web.NSRouter("/meta/:beedirid/:beefileid", &controllers.MainController{}, "get:Meta;post:Meta"),
+		web.NSRouter("/lot/:beedirid", &controllers.MainController{}, "post:Lot"),
 		web.NSRouter("/tag/:beedirid/:beefileid", &controllers.MainController{}, "post:Tag"),
 		web.NSRouter("/upload/:beedirid", &controllers.MainController{}, "post:Upload"),
 		web.NSRouter("/rm/:beedirid", &controllers.MainController{}, "post:FileRm"),

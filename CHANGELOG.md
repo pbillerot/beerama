@@ -1,14 +1,18 @@
 # CHANGELOG
-> raz localStorage at home
-> traitement par lot de mises à jour
+> bug meta lien map erroné
 
 ### À venir :
+- traitement par lot de mises à jour
 - partage d'un album par un lien en lecture seulement
 - recherche en minuscule sans accent
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.6.0 du 1er janv 2026
+- `added` mises à jour de métadonnées par lot
+- `fixed` correction liens map et document dans meta.html
 
 3.5.0 du 1er janv 2026
 - `added` 2 boutons séparés pour copier coller les meta dans le localStorage
