@@ -1,15 +1,18 @@
 # CHANGELOG
-> gestion des tags en global pour ajouter des tags pour la session seulement
-- saisie année seule ou complete
-- bouton copier / coller 
-> partage d'un album par un lien en lecture seulement
-> recherche en minuscule sans accent
+> raz localStorage at home
+> traitement par lot de mises à jour
+
 ### À venir :
-Plus tard
+- partage d'un album par un lien en lecture seulement
+- recherche en minuscule sans accent
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.5.0 du 1er janv 2026
+- `added` 2 boutons séparés pour copier coller les meta dans le localStorage
+- `added` raz localStorage automatique à l'entrée de Beerama
 
 3.4.0 du 31 déc 2025
 - `added` copier coller dans et du presse-papier

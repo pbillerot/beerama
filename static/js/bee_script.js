@@ -73,7 +73,31 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
-  $('.bee-onchange').on('change', function (event) {
+  $('.bee-onchange').on('input', function (event) {
+    $(".bee-submit-users").removeClass('disabled');
+    $(".bee-submit-meta").removeClass('disabled');
+    $(".bee-submit-meta-retour").removeClass('disabled');
+    var $field = $(this).closest('.field');
+    var $clip = $field.find(".bee-clip-paste");
+    var $id = $(this).attr('id');
+    var $valStorage = localStorage.getItem($id);
+    if ($valStorage == null) {
+      $valStorage = "";
+    }
+    var $value = $(this).val();
+    if ($value == $valStorage) {
+      $clip.removeClass('grey');
+      $clip.removeClass('orange');
+      $clip.addClass('green');
+    } else {
+      $clip.removeClass('grey');
+      $clip.removeClass('green');
+      $clip.addClass('orange');
+    }
+
+    event.preventDefault();
+  });
+  $('.bee-onchange-option').on('change', function (event) {
     $(".bee-submit-users").removeClass('disabled');
     $(".bee-submit-meta").removeClass('disabled');
     $(".bee-submit-meta-retour").removeClass('disabled');
@@ -740,47 +764,65 @@ $(document).ready(function () {
     });
   }
 
-  // clipboard dans chmaps meta dans localStorage
-  $('#bee-meta-clip').on('tap', function (event) {
-    var $form = $('#form_meta_id');
-    localStorage.setItem("urlexterne", urlexterne);
-    var title = $('#title').val();
-    localStorage.setItem("title", title);
-    var description = $('#description').val();
-    localStorage.setItem("description", description);
-    // var keywords = $('#keywords').val();
-    // localStorage.setItem("keywords", keywords);
-    var year = $('#year').val();
-    localStorage.setItem("year", year);
-    var dateoriginal = $('#dateoriginal').val();
-    localStorage.setItem("dateoriginal", dateoriginal);
-    var timeoriginal = $('#timeoriginal').val();
-    localStorage.setItem("timeoriginal", timeoriginal);
-    var urlexterne = $('#urlexterne').val();
-    localStorage.setItem("urlexterne", urlexterne);
-    event.preventDefault();
-  });
-  $('.bee-meta-clip').on('tap', function (event) {
+  // paste localStorage dans une meta données
+  $('.bee-clip-paste').on('tap', function (event) {
     var $field = $(this).closest('.field');
     var $input = $field.find(".bee-onchange");
     var $id = $input.attr('id');
-    var $valLocal = localStorage.getItem($id);
-    $input.val($valLocal);
+    var $valStorage = localStorage.getItem($id);
+    // paste
+    $input.val($valStorage)
+    $(this).removeClass('grey');
+    $(this).removeClass('orange');
+    $(this).addClass('green');
+    $input.trigger('input');
     event.preventDefault();
   });
-  // initilisation des metadata
-  $('.bee-meta-clip').each(function () {
+  // copy d'une meta donnée dans localStorage
+  $('.bee-clip-copy').on('tap', function (event) {
     var $field = $(this).closest('.field');
     var $input = $field.find(".bee-onchange");
     var $id = $input.attr('id');
-    var $valLocal = localStorage.getItem($id);
-    if ($valLocal == "") {
+    var $value = $input.val()
+    // copy dans localStorage
+    localStorage.setItem($id, $value);
+    $(this).removeClass('grey');
+    $(this).removeClass('orange');
+    $(this).addClass('green');
+    // maj clip
+    var $clip = $field.find(".bee-clip-paste");
+    $clip.removeClass('grey');
+    $clip.removeClass('orange');
+    $clip.addClass('green');
+    $(this).attr('title', $value);
+    event.preventDefault();
+  });
+  // initialisation des meta données au démarrage par lecture de localStorage
+  $('.bee-clip-paste').each(function () {
+    var $field = $(this).closest('.field');
+    var $input = $field.find(".bee-onchange");
+    var $id = $input.attr('id');
+    var $valStorage = localStorage.getItem($id);
+    if ($valStorage == null) {
+      $valStorage = "";
+    }
+    if ($valStorage == "") {
       $(this).addClass('grey');
+      $(this).attr('title', "vide");
     } else {
-      $(this).addClass('orange');
-      $(this).attr('title', $valLocal);
+      var $value = $input.val();
+      if ($value == $valStorage) {
+        $(this).addClass('green');
+      } else {
+        $(this).addClass('orange');
+      }
+      $(this).attr('title', $valStorage);
     }
   });
+  // raz localStorage at home
+  if (location.pathname == "/") {
+    localStorage.clear();
+  }
 
 });
 
