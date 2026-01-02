@@ -78,29 +78,29 @@ $(document).ready(function () {
     $(".bee-submit-meta").removeClass('disabled');
     $(".bee-submit-meta-retour").removeClass('disabled');
     var $field = $(this).closest('.field');
-    var $clip = $field.find(".bee-clip-paste");
-    var $id = $(this).attr('id');
-    var $valStorage = localStorage.getItem($id);
+    $field.find(".bee-clip-undo").removeClass('disabled');
+    var $paste = $field.find(".bee-clip-paste");
+    var $valStorage = localStorage.getItem($(this).attr('id'));
     if ($valStorage == null) {
       $valStorage = "";
     }
     var $value = $(this).val();
     if ($value == $valStorage) {
-      $clip.removeClass('grey');
-      $clip.removeClass('orange');
-      $clip.addClass('green');
+      $paste.removeClass('grey');
+      $paste.removeClass('orange');
+      $paste.addClass('green');
     } else {
-      $clip.removeClass('grey');
-      $clip.removeClass('green');
-      $clip.addClass('orange');
+      $paste.removeClass('grey');
+      $paste.removeClass('green');
+      $paste.addClass('orange');
     }
-
     event.preventDefault();
   });
   $('.bee-onchange-option').on('change', function (event) {
     $(".bee-submit-users").removeClass('disabled');
     $(".bee-submit-meta").removeClass('disabled');
     $(".bee-submit-meta-retour").removeClass('disabled');
+    // $(this).closest('.field').find(".bee-clip-undo").removeClass('disabled');
     event.preventDefault();
   });
 
@@ -810,7 +810,7 @@ $(document).ready(function () {
     var $field = $(this).closest('.field');
     var $input = $field.find(".bee-onchange");
     var $id = $input.attr('id');
-    var $value = $input.val()
+    var $value = $input.val();
     // copy dans localStorage
     localStorage.setItem($id, $value);
     $(this).removeClass('grey');
@@ -822,6 +822,22 @@ $(document).ready(function () {
     $clip.removeClass('orange');
     $clip.addClass('green');
     $(this).attr('title', $value);
+    event.preventDefault();
+  });
+  // raz du champ
+  $('.bee-clip-eraser').on('tap', function (event) {
+    var $field = $(this).closest('.field');
+    var $input = $field.find(".bee-onchange");
+    $input.val('');
+    $input.trigger('change');
+    $input.trigger('input');
+    event.preventDefault();
+  });
+  // undo du champ
+  $('.bee-clip-undo').on('tap', function (event) {
+    var $field = $(this).closest('.field');
+    var $input = $field.find(".bee-onchange");
+    $input.val($input.attr('placeholder'));
     event.preventDefault();
   });
   // initialisation des meta données au démarrage par lecture de localStorage

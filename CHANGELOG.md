@@ -1,14 +1,17 @@
 # CHANGELOG
-> bug meta lien map erroné
+> 
 
 ### À venir :
-- traitement par lot de mises à jour
 - partage d'un album par un lien en lecture seulement
 - recherche en minuscule sans accent
 - sur recherche recalculer les compteurs
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.7.0 du 2 janv 2026
+- `added` bouton raz sur meta
+- `added` bouton undo sur meta
 
 3.6.2 du 1er janv 2026
 - `fixed` date et urlexterne non maj par lot
