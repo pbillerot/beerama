@@ -108,7 +108,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 			idx.StopWordCheck = fulltext.FrenchStopWordChecker
 
 			// for each document you want to add, you do something like this:
-			text := strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Title+" "+bfile.ID), "  ", " ")
+			text := toLowerNoAccent(strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Title+" "+bfile.ID), "  ", " "))
 			doc := fulltext.IndexDoc{
 				Id:         []byte(bdir.ID + "_" + bfile.ID), // unique identifier (the path to a webpage works...)
 				StoreValue: []byte(text),                     // bytes you want to be able to retrieve from search results
@@ -852,4 +852,25 @@ func GetLatitudeLongitude(urlExterne string) (latitude, longitude string) {
 		logs.Error("Latitude longitude non trouveés dans %s", urlExterne)
 	}
 	return "48.866669", "2.33333" // mairie de Paris
+}
+
+// removeAccents removes accents from a given string.
+func removeAccents(s string) string {
+	var result []rune
+	for _, r := range s {
+		if unicode.IsLetter(r) {
+			result = append(result, unicode.ToLower(r))
+		} else {
+			result = append(result, r)
+		}
+	}
+	return string(result)
+}
+
+// toLowerNoAccent converts a string to lowercase and removes accents.
+func toLowerNoAccent(s string) string {
+	// First, remove accents
+	s = removeAccents(s)
+	// Then, convert to lowercase
+	return strings.ToLower(s)
 }
