@@ -1,6 +1,6 @@
 # CHANGELOG
-> 
-
+> bug traitement par lot, l'album peut être différent LotMeta FileCopy FileMove
+> pas de duplication copy move si sélection par recherche ou étiquette
 ### À venir :
 - partage d'un album par un lien en lecture seulement
 - recherche en minuscule sans accent
@@ -8,6 +8,9 @@
     et afficher le nombre de diapo trouvée par dossier
 - vidage automatique de la poubelle des fichiers > 30 jours
 - pattern de recherche
+
+3.7.1 du 3 janv 2026
+- `fixed` pas de duplication copy move si sélection par étiquette ou recherche
 
 3.7.0 du 2 janv 2026
 - `added` bouton raz sur meta

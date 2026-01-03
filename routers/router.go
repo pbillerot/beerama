@@ -35,8 +35,8 @@ func init() {
 		// Enchaîne plusieurs filtres : l'utilisateur doit être authentifié ET Editor
 		web.NSBefore(controllers.AuthRequiredProfile, controllers.ReaderRoleProfile),
 		web.NSRouter("/:beedirid", &controllers.MainController{}, "get:Folder"),
-		web.NSRouter("/download/:beedirid", &controllers.MainController{}, "post:FolderDownload"),
-		web.NSRouter("/:beedirid/:htagid", &controllers.MainController{}, "get:FolderHtag"),
+		web.NSRouter("/download/:beedirid", &controllers.MainController{}, "post:Download"),
+		web.NSRouter("/:beedirid/:htagid", &controllers.MainController{}, "get:FolderTag"),
 		web.NSRouter("/search/:beedirid", &controllers.MainController{}, "post:Search"),
 	)
 	nsReader := web.NewNamespace("/search",

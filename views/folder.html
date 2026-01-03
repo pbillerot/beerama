@@ -7,6 +7,7 @@
 {{$parent := .parent}}
 {{$beedir := .beedir}}
 {{$search := .search}}
+{{$htagid := .htagid}}
 {{$is_admin := .is_admin}}
 {{$is_editor := .is_editor}}
 
@@ -49,6 +50,7 @@
                         title="Mettre à jour les métadonnées du lot...">
                         <i class="boxes icon"></i>
                     </div>
+                    {{ if not (or $htagid $search)}}
                     <div class="ui small icon button bee-modal-duplicate" data-action="/e/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>
@@ -61,6 +63,7 @@
                         title="Déplacer dans un autre album...">
                         <i class="arrow right icon"></i>
                     </div>
+                    {{end}}
                     <a class="ui small icon button bee-download" href="/folder/download/{{$beedir.ID}}"
                         title="Télécharger le ou les fichier(s)...">
                         <i class="download icon"></i>

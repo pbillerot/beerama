@@ -643,8 +643,8 @@ func GetFirstBeeDir() *BeeDir {
 }
 
 // GetBeeFilePath retourne la BeeDir qui correspond au path
-func GetBeeFilePath(beeDir *BeeDir, path string) *BeeFile {
-	for _, file := range beeDir.BeeFiles {
+func GetBeeFilePath(path string) *BeeFile {
+	for _, file := range Config.BeeFiles {
 		if path == file.Path {
 			return file
 		}

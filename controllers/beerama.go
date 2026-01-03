@@ -71,7 +71,7 @@ func (c *MainController) Folder() {
 	user_id := c.GetSession("user_id").(string)
 	var beeAlbums []models.BeeDir
 	for _, bdir := range models.Config.BeeDirs {
-		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
+		if bdir.ParentID == "" && bdir.IsUserEditor(user_id) {
 			beeAlbums = append(beeAlbums, *bdir)
 		}
 	}
@@ -113,8 +113,8 @@ func (c *MainController) Folder() {
 	c.TplName = "folder.html"
 }
 
-// FolderDownload Téléchargement des fichiers sélectionnés
-func (c *MainController) FolderDownload() {
+// Download Téléchargement des fichiers sélectionnés
+func (c *MainController) Download() {
 
 	files := c.GetStrings("files[]")
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
@@ -185,7 +185,7 @@ func (c *MainController) FolderDownload() {
 }
 
 // FolderHtag Sélection d'un tag d'un album /folder/:beedirid/htagid
-func (c *MainController) FolderHtag() {
+func (c *MainController) FolderTag() {
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	htagid := c.Ctx.Input.Param(":htagid")
@@ -547,7 +547,7 @@ func (c *MainController) FileRm() {
 
 	// Suppression des fichiers
 	for _, path := range paths {
-		beeFile := models.GetBeeFilePath(beeDir, path)
+		beeFile := models.GetBeeFilePath(path)
 
 		err := beeFile.DeleteImage(beeDir)
 		if err != nil {
@@ -785,8 +785,6 @@ func (c *MainController) Reload() {
 
 // Lot mise à jour des métadonnées des fichiers sélectionnés
 func (c *MainController) Lot() {
-	// album source
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
@@ -828,8 +826,13 @@ func (c *MainController) Lot() {
 	}
 
 	// Traitement unitaire des fichiers
+	// tri des fichiers
+	sort.Slice(paths, func(i, j int) bool {
+		return paths[1] < paths[j]
+	})
+	var dirid = ""
 	for _, path := range paths {
-		beeFile := models.GetBeeFilePath(beeDir, path)
+		beeFile := models.GetBeeFilePath(path)
 		if titleok == "yes" {
 			beeFile.Title = title
 		}
@@ -859,8 +862,15 @@ func (c *MainController) Lot() {
 			flash.Store(&c.Controller)
 			c.Ctx.Redirect(302, c.GetSession("folder").(string))
 		}
+		if dirid == "" {
+			dirid = beeFile.DirID
+		}
+		if dirid != beeFile.DirID {
+			models.GetBeeDir(beeFile.DirID).UpdateAlbum()
+			dirid = beeFile.DirID
+		}
 	}
-	beeDir.UpdateAlbum()
+	models.GetBeeDir(dirid).UpdateAlbum()
 
 	// réindexation des beefiles
 	models.Config.IndexAllBeefiles()
@@ -869,19 +879,19 @@ func (c *MainController) Lot() {
 
 }
 
-// Duplicate Copier de(s) fichier(s) dans un autre album
+// Duplicate Copier de(s) fichier(s) dans l'album répertoire courant
 func (c *MainController) Duplicate() {
 	// album source
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 
-	// liste des fichiers à dupliquerr séparés par des ,
+	// liste des fichiers à dupliquer séparés par des ,
 	paths := strings.Split(c.GetString("paths"), ",")
 
 	flash := beego.ReadFromRequest(&c.Controller)
 	var err error
 	// Traitement unitaire des fichiers
 	for _, path := range paths {
-		beeFile := models.GetBeeFilePath(beeDir, path)
+		beeFile := models.GetBeeFilePath(path)
 		pathDest := beeDir.Path + "/cp_" + beeFile.Base
 		// copy du fichier source dans la destination
 		err = shutil.CopyFile(beeFile.Path, pathDest, false)
@@ -917,8 +927,6 @@ func (c *MainController) Duplicate() {
 
 // FileCopy Copier de(s) fichier(s) dans un autre album
 func (c *MainController) FileCopy() {
-	// album source
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	// album destination
 	beeDirDest := models.Config.BeeDirs[c.GetString("destid")]
 
@@ -929,7 +937,7 @@ func (c *MainController) FileCopy() {
 	var err error
 	// Traitement unitaire des fichiers
 	for _, path := range paths {
-		beeFile := models.GetBeeFilePath(beeDir, path)
+		beeFile := models.GetBeeFilePath(path)
 		pathDest := beeDirDest.Path + "/cp_" + beeFile.Base
 		// copy du fichier source dans la destination
 		err = shutil.CopyFile(beeFile.Path, pathDest, false)
@@ -962,8 +970,6 @@ Erreur:
 
 // FileMove Déplacer le fichier
 func (c *MainController) FileMove() {
-	// uri
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 
 	// liste des fichiers à déplacer séparés avec des ,
 	paths := strings.Split(c.GetString("paths"), ",")
@@ -973,8 +979,13 @@ func (c *MainController) FileMove() {
 	flash := beego.ReadFromRequest(&c.Controller)
 	var err error
 	// Traitement unitaire des fichiers
+	// tri des fichiers
+	sort.Slice(paths, func(i, j int) bool {
+		return paths[1] < paths[j]
+	})
+	var dirid = ""
 	for _, path := range paths {
-		beeFile := models.GetBeeFilePath(beeDir, path)
+		beeFile := models.GetBeeFilePath(path)
 		pathDest := beeDirDest.Path + "/" + beeFile.Base
 		// copy du fichier source dans la destination
 		err = shutil.CopyFile(beeFile.Path, pathDest, false)
@@ -989,12 +1000,19 @@ func (c *MainController) FileMove() {
 		if err != nil {
 			goto Erreur
 		}
-		err = beeFile.DeleteImage(beeDir)
+		err = beeFile.DeleteImage(models.GetBeeDir(beeFile.DirID))
 		if err != nil {
 			goto Erreur
 		}
+		if dirid == "" {
+			dirid = beeFile.DirID
+		}
+		if dirid != beeFile.DirID {
+			models.GetBeeDir(beeFile.DirID).UpdateAlbum()
+			dirid = beeFile.DirID
+		}
 	}
-	beeDir.UpdateAlbum()
+	models.GetBeeDir(dirid).UpdateAlbum()
 	beeDirDest.UpdateAlbum()
 
 	// réindexation des beefiles
