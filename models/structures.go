@@ -34,6 +34,10 @@ type BeeConfig struct {
 	Index       []byte              // index des mots full text
 	Users       map[string]User     // Les utilisateurs
 	BeeFiles    map[string]*BeeFile // index des beefiles
+	// runmode = dev
+	Runmode  string // environnement d'exécution: dev,production
+	UserDev  string
+	GroupDev string
 }
 
 // Bee Context webapp courante dans la session

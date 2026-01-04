@@ -30,7 +30,7 @@ func (c *MainController) Main() {
 	beego.ReadFromRequest(&c.Controller)
 
 	// Sélection des bdirs accessibles par le user_id
-	user_id := c.GetSession("user_id").(string)
+	user_id := c.Ctx.Input.Header("Remote-User")
 	var beeDirs []models.BeeDir
 	for _, bdir := range models.Config.BeeDirs {
 		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
@@ -62,13 +62,14 @@ func (c *MainController) Return() {
 // Folder Sélection d'un folder /folder/:beedirid
 func (c *MainController) Folder() {
 
+	user_id := c.Ctx.Input.Header("Remote-User")
+
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
 
 	// Sélection des bdirs des sous-dossiers du parent courant
 	beeDirs := parent.GetParentBeedirs() // liste des albums autorisés pour un déplacement éventuel
 	// liste des albums du user
-	user_id := c.GetSession("user_id").(string)
 	var beeAlbums []models.BeeDir
 	for _, bdir := range models.Config.BeeDirs {
 		if bdir.ParentID == "" && bdir.IsUserEditor(user_id) {
@@ -103,7 +104,7 @@ func (c *MainController) Folder() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = ""
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	// Mémorisation du dernier appel
 	c.SetSession("folder", c.Ctx.Request.RequestURI)
@@ -186,6 +187,7 @@ func (c *MainController) Download() {
 
 // FolderHtag Sélection d'un tag d'un album /folder/:beedirid/htagid
 func (c *MainController) FolderTag() {
+	user_id := c.Ctx.Input.Header("Remote-User")
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	htagid := c.Ctx.Input.Param(":htagid")
@@ -217,7 +219,7 @@ func (c *MainController) FolderTag() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = htagid
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	c.SetSession("folder", c.Ctx.Request.RequestURI)
 
@@ -228,6 +230,8 @@ func (c *MainController) FolderTag() {
 
 // Modifier un données metadata de l'image
 func (c *MainController) Meta() {
+	user_id := c.Ctx.Input.Header("Remote-User")
+
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
 	parent := beeDir.GetParent()
@@ -325,7 +329,7 @@ func (c *MainController) Meta() {
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["htagid"] = ""
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	// cas des images drawio
 
@@ -369,6 +373,8 @@ func (c *MainController) Meta() {
 
 // Ajout d'un hahtag à l'album courant /e/tag/beedirid/beefileid
 func (c *MainController) Tag() {
+	user_id := c.Ctx.Input.Header("Remote-User")
+
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
 
@@ -387,13 +393,14 @@ func (c *MainController) Tag() {
 	// actualisation
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	c.Ctx.Redirect(302, "/e/meta/"+beeDir.ID+"/"+beeFile.ID)
 }
 
 // Viewer document de type doc quill
 func (c *MainController) Doc() {
+	user_id := c.Ctx.Input.Header("Remote-User")
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
@@ -410,7 +417,7 @@ func (c *MainController) Doc() {
 	c.Data["content"] = &html
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	c.TplName = "doc.html"
 }
@@ -1089,6 +1096,8 @@ func (c *MainController) DragDrop() {
 
 // Search
 func (c *MainController) Search() {
+	user_id := c.Ctx.Input.Header("Remote-User")
+
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
 	// Sélection des sous-dossiers accessibles du bdir courant
@@ -1147,7 +1156,7 @@ func (c *MainController) Search() {
 	c.Data["beefiles"] = &beeFiles
 	c.Data["search"] = search
 	c.Data["htagid"] = ""
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	// Mémorisation du texte recherché dans la session
 	c.SetSession("search", search)
@@ -1187,6 +1196,7 @@ func (c *MainController) Users() {
 
 // Modifier le fichier des .beeaccess.conf d'un album
 func (c *MainController) Access() {
+	user_id := c.Ctx.Input.Header("Remote-User")
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 
@@ -1214,7 +1224,7 @@ func (c *MainController) Access() {
 	// Remplissage du contexte pour le template
 	c.Data["beedir"] = &beeDir
 	c.Data["content"] = &content
-	c.Data["is_editor"] = beeDir.IsUserEditor(c.GetSession("user_id").(string))
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	c.TplName = "access.html"
 }

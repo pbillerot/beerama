@@ -17,7 +17,7 @@ func init() {
 	// Authentification obligatoire pour toutes les routes
 	// filter := auth.NewBasicAuthenticator(controllers.SecretAuth, "Basic Authentification")
 	// web.InsertFilter("*", web.BeforeRouter, filter)
-	web.InsertFilter("*", web.BeforeExec, controllers.BasicAuthFilter)
+	web.InsertFilter("*", web.BeforeExec, controllers.AuthRequiredProfile)
 
 	// Routes sans rôle particulier
 	web.Router("/", &controllers.MainController{}, "get:Main")

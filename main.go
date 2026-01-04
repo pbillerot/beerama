@@ -76,6 +76,23 @@ func init() {
 			logs.SetLevel(logs.LevelInfo)
 		}
 	}
+	// runmode = dev
+	if val, ok := config.String("runmode"); ok == nil {
+		models.Config.Runmode = val
+		logs.Info("Runmode:", val)
+		if val == "dev" {
+			if datasource, ok := config.GetSection("dev"); ok == nil {
+				if value, ok := datasource["user"]; ok {
+					models.Config.UserDev = value
+				}
+				if value, ok := datasource["group"]; ok {
+					models.Config.GroupDev = value
+				}
+			}
+			logs.Info("User:", models.Config.UserDev, "Group:", models.Config.GroupDev)
+		}
+	}
+
 	logs.Critical("1 critical")
 	logs.Error("2 error")
 	logs.Warning("3 warning")

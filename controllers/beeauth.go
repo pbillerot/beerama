@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"net/http"
 	"strings"
 
@@ -11,127 +10,76 @@ import (
 )
 
 // BasicAuthFilter performs the authentication check
-var BasicAuthFilter = func(ctx *context.Context) {
-	// Check if the user is already authenticated via session
-	if ctx.Input.Session("user_id") != nil {
-		return // Already authenticated, skip Basic Auth check
-	}
-
-	authHeader := ctx.Request.Header.Get("Authorization")
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Basic ") {
-		// No or invalid Authorization header, challenge the client
-		ctx.Output.Header("WWW-Authenticate", `Basic realm="Restricted"`)
-		ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-		ctx.WriteString("Unauthorized")
-		return
-	}
-
-	// Decode the base64-encoded username:password
-	encodedCreds := strings.TrimPrefix(authHeader, "Basic ")
-	decoded, err := base64.StdEncoding.DecodeString(encodedCreds)
-	if err != nil {
-		// Malformed base64
-		ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-		ctx.WriteString("Unauthorized")
-		return
-	}
-
-	// Extract username and password
-	creds := strings.SplitN(string(decoded), ":", 2)
-	if len(creds) != 2 {
-		ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-		ctx.WriteString("Unauthorized")
-		return
-	}
-	username, password := creds[0], creds[1]
-
-	// Validate credentials
-	user_id, ok := checkUserCredentials(username, password)
-
-	if !ok {
-		// Invalid credentials, challenge again
-		ctx.Output.Header("WWW-Authenticate", `Basic realm="Restricted"`)
-		ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-		ctx.WriteString("Invalid credentials")
-		return
-	}
-
-	// Authentication **SUCCESS**: Store the user_id in the session
-	// This makes subsequent requests authenticated via session cookie
-	logs.Info("New session", user_id)
-	ctx.Output.Session("user_id", user_id)
-	config := models.Config
-	if config.IsUserAdmin(user_id) {
-		ctx.Output.Session("role", "admin")
-	}
-
-}
-
-// checkUserCredentials : Contrôle existence du user_id et ctrl password
-// dans le fichier défini dans app.conf.users
-func checkUserCredentials(user_id, password string) (string, bool) {
-	return user_id, models.CheckUser(user_id, password)
-}
-
-// EditorRoleProfile : Vérifie si l'utilisateur a le rôle d'éditeur de l'album courant
-var EditorRoleProfile = func(ctx *context.Context) {
-
-	user_id, _, _ := ctx.Request.BasicAuth()
-
-	beeDir := models.Config.BeeDirs[ctx.Input.Param(":beedirid")]
-	if beeDir.ParentID != "" {
-		beeDir = models.Config.BeeDirs[beeDir.ParentID]
-	}
-
-	if ctx.Input.Session("role") != "admin" && !beeDir.IsUserEditor(user_id) {
-		logs.Info("Filter: User is not Editor. Blocking.")
-		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
-		ctx.Output.Body([]byte("403 Forbidden - Editor required"))
-		// panic("Stop")
-	}
-
-	// logs.Info("Filter: User is Editor. Proceeding.")
-}
-
-// AdminRoleProfile : Vérifie si l'utilisateur a le rôle d'administrateur
-var AdminRoleProfile = func(ctx *context.Context) {
-	if ctx.Input.Session("role") != "admin" {
-		logs.Info("Filter: User is not Admin. Blocking.")
-		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
-		ctx.Output.Body([]byte("403 Forbidden - Admin required"))
-		// panic("Stop")
+var DevAuthFilter = func(ctx *context.Context) {
+	if models.Config.Runmode == "dev" {
+		ctx.Request.Header.Add("Remote-User", models.Config.UserDev)
+		ctx.Request.Header.Add("Remote-Groups", models.Config.GroupDev)
 	}
 }
 
 // AuthRequiredProfile : Vérifie si l'utilisateur est authentifié
 var AuthRequiredProfile = func(ctx *context.Context) {
-	user_id, _, ok := ctx.Request.BasicAuth()
-	if !ok {
+	if models.Config.Runmode == "dev" {
+		ctx.Request.Header.Add("Remote-User", models.Config.UserDev)
+		ctx.Request.Header.Add("Remote-Groups", models.Config.GroupDev)
+	}
+	user_id := ctx.Input.Header("Remote-User")
+	if user_id == "" {
 		logs.Error("BasiAuth not retrieve")
 		ctx.Redirect(403, "/")
 		return
 	}
-	if ctx.Input.Session("user_id") == nil {
-		ctx.Output.Session("user_id", user_id)
-		logs.Info("new session", user_id)
-		if models.Config.IsUserAdmin(user_id) {
-			ctx.Output.Session("role", "admin")
-		}
-
-	}
-	// logs.Info("Filter: User authenticated. Proceeding.")
 }
 
-// AuthRequiredProfile : Vérifie si l'utilisateur est authentifié
-var ReaderRoleProfile = func(ctx *context.Context) {
-	user_id, _, _ := ctx.Request.BasicAuth()
+// BasicAuthFilter performs the authentication check
+var BasicAuthFilter = func(ctx *context.Context) {
+	// Check if the user is already authenticated via session
+	if ctx.Input.Header("Remote-User") != "" {
+		return // Already authenticated, skip Basic Auth check
+	}
+	ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
+	ctx.WriteString("Unauthorized")
+}
+
+// EditorRoleProfile : Vérifie si l'utilisateur a le rôle d'éditeur de l'album courant
+var EditorRoleProfile = func(ctx *context.Context) {
+
+	user_id := ctx.Input.Header("Remote-User")
+	groups := ctx.Input.Header("Remote-Groups")
 
 	beeDir := models.Config.BeeDirs[ctx.Input.Param(":beedirid")]
 	if beeDir.ParentID != "" {
 		beeDir = models.Config.BeeDirs[beeDir.ParentID]
 	}
 
-	if ctx.Input.Session("role") != "admin" && !beeDir.IsUserReader(user_id) {
+	if !strings.Contains(groups, "admin") && !beeDir.IsUserEditor(user_id) {
+		logs.Info("Filter: User is not Editor. Blocking.")
+		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		ctx.Output.Body([]byte("403 Forbidden - Editor required"))
+	}
+}
+
+// AdminRoleProfile : Vérifie si l'utilisateur a le rôle d'administrateur
+var AdminRoleProfile = func(ctx *context.Context) {
+	groups := ctx.Input.Header("Remote-Groups")
+	if !strings.Contains(groups, "admin") {
+		logs.Info("Filter: User is not Admin. Blocking.")
+		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
+		ctx.Output.Body([]byte("403 Forbidden - Admin required"))
+	}
+}
+
+// ReaderRoleProfile : Vérifie si l'utilisateur est authentifié
+var ReaderRoleProfile = func(ctx *context.Context) {
+	user_id := ctx.Input.Header("Remote-User")
+	groups := ctx.Input.Header("Remote-Groups")
+
+	beeDir := models.Config.BeeDirs[ctx.Input.Param(":beedirid")]
+	if beeDir.ParentID != "" {
+		beeDir = models.Config.BeeDirs[beeDir.ParentID]
+	}
+
+	if !strings.Contains(groups, "admin") && !beeDir.IsUserReader(user_id) {
 		logs.Info("Filter: User is not Reader. Blocking.")
 		ctx.ResponseWriter.WriteHeader(http.StatusForbidden)
 		ctx.Output.Body([]byte("403 Forbidden - Reader required"))

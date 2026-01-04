@@ -1,7 +1,11 @@
 # CHANGELOG
+>
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+4.0.0 du 4 janv 2026
+- `changed` identification authentification confiées à authélia
 
 3.7.2 du 3 janv 2026
 - `changed` index en minuscules et sans accent

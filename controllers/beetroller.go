@@ -64,17 +64,9 @@ type MainController struct {
 // Prepare implements Prepare method for loggedRouter.
 func (c *MainController) Prepare() {
 
-	// Récupération du user_id contrôlé par beeauth
-	// Retrieve the user_id from the *http.Request
-	// user_id, _, ok := c.Ctx.Request.BasicAuth()
-	// if !ok {
-	// 	logs.Error("BasiAuth not retrieve")
-	// 	return
-	// }
-	user_id := c.GetSession("user_id").(string)
+	user_id := c.Ctx.Input.Header("Remote-User")
 
 	c.Data["user_id"] = user_id
-	c.Data["role"] = c.GetSession("role")
 	c.Data["is_admin"] = models.Config.Users[user_id].IsAdmin
 
 	// Contexte lié à app.conf
