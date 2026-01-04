@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -9,36 +10,19 @@ import (
 	"github.com/pbillerot/beerama/models"
 )
 
-// BasicAuthFilter performs the authentication check
-var DevAuthFilter = func(ctx *context.Context) {
-	if models.Config.Runmode == "dev" {
-		ctx.Request.Header.Add("Remote-User", models.Config.UserDev)
-		ctx.Request.Header.Add("Remote-Groups", models.Config.GroupDev)
-	}
-}
-
 // AuthRequiredProfile : Vérifie si l'utilisateur est authentifié
 var AuthRequiredProfile = func(ctx *context.Context) {
 	if models.Config.Runmode == "dev" {
 		ctx.Request.Header.Add("Remote-User", models.Config.UserDev)
 		ctx.Request.Header.Add("Remote-Groups", models.Config.GroupDev)
 	}
+	logs.Debug("Input:", fmt.Sprintf("%+v\n", ctx.Request.Header))
 	user_id := ctx.Input.Header("Remote-User")
 	if user_id == "" {
 		logs.Error("BasiAuth not retrieve")
 		ctx.Redirect(403, "/")
 		return
 	}
-}
-
-// BasicAuthFilter performs the authentication check
-var BasicAuthFilter = func(ctx *context.Context) {
-	// Check if the user is already authenticated via session
-	if ctx.Input.Header("Remote-User") != "" {
-		return // Already authenticated, skip Basic Auth check
-	}
-	ctx.ResponseWriter.WriteHeader(http.StatusUnauthorized)
-	ctx.WriteString("Unauthorized")
 }
 
 // EditorRoleProfile : Vérifie si l'utilisateur a le rôle d'éditeur de l'album courant
