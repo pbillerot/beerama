@@ -4,6 +4,9 @@
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
 
+4.0.1 du 4 janv 2026
+- `fixed` filtre de lecture de l'authentification pour tous les chemains
+
 4.0.0 du 4 janv 2026
 - `changed` identification authentification confiées à authélia
 
