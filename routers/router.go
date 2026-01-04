@@ -17,16 +17,16 @@ func init() {
 	// Authentification obligatoire pour toutes les routes
 	// filter := auth.NewBasicAuthenticator(controllers.SecretAuth, "Basic Authentification")
 	// web.InsertFilter("*", web.BeforeRouter, filter)
-	web.InsertFilter("*", web.BeforeExec, controllers.AuthRequiredProfile)
+	web.InsertFilter("*/", web.BeforeExec, controllers.AuthRequiredProfile)
 
 	// Routes sans rôle particulier
-	nsHome := web.NewNamespace("",
-		web.NSBefore(controllers.AuthRequiredProfile),
-		web.NSRouter("/", &controllers.MainController{}, "get:Main"),
-		web.NSRouter("return", &controllers.MainController{}, "get:Return"),
-	)
-	// web.Router("/", &controllers.MainController{}, "get:Main")
-	// web.Router("/return", &controllers.MainController{}, "get:Return")
+	// nsHome := web.NewNamespace("/",
+	// 	web.NSBefore(controllers.AuthRequiredProfile),
+	// 	web.NSRouter("", &controllers.MainController{}, "get:Main"),
+	// 	web.NSRouter("return", &controllers.MainController{}, "get:Return"),
+	// )
+	web.Router("/", &controllers.MainController{}, "get:Main")
+	web.Router("/return", &controllers.MainController{}, "get:Return")
 
 	// Routes static pour protéger les photos des albums
 	nsStatic := web.NewNamespace("/s",
@@ -84,7 +84,7 @@ func init() {
 	)
 
 	// Ajouter les Namespaces au routeur Beego
-	web.AddNamespace(nsHome, nsStatic, nsReader, nsReaderFolder, nsEditor, nsAdmin)
+	web.AddNamespace(nsStatic, nsReader, nsReaderFolder, nsEditor, nsAdmin)
 
 	logs.Info("Routes init. Proceeding.")
 }
