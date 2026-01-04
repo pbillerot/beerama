@@ -58,15 +58,6 @@ func UpdateUsers(content []byte) (err error) {
 	return err
 }
 
-func CheckUser(user_id, password string) bool {
-	if Config.Users[user_id].Password == password {
-		return true
-	} else {
-		logs.Error("Tentative Connexion [%s]/[%s]", user_id, password)
-	}
-	return false
-}
-
 func (config *BeeConfig) IsUserAdmin(user_id string) bool {
 
 	if access, ok := config.Users[user_id]; ok {
