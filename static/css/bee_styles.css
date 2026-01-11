@@ -10,6 +10,21 @@ body {
     background-color: whitesmoke;
 }
 
+.texte-overlay {
+    position: absolute;
+    z-index: 10;
+    padding: 3px;
+    top: 10%;         /* Positionne à 50% du haut */
+    left: 85%;        /* Positionne à 50% de la gauche */
+    transform: translate(-50%, -50%); /* Centre parfaitement le texte */
+    color: white;
+    background-color: orange;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7); /* Pour la lisibilité */
+    pointer-events: none; /* Permet de cliquer sur l'image à travers le texte */
+}
+
 #bee-doc-editor {
     font-size: 15px;
 }

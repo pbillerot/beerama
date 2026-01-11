@@ -19,8 +19,14 @@ func init() {
 	web.AddFuncMap("BeeReplace", BeeReplace)
 	web.AddFuncMap("BeeSplit", BeeSplit)
 	web.AddFuncMap("BeeToString", BeeToString)
+	web.AddFuncMap("BeeLower", BeeLower)
 	web.AddFuncMap("BeeContains", BeeContains)
 	logs.Info("Template.init. Proceeding.")
+}
+
+// beeLower
+func BeeLower(s string) (out string) {
+	return strings.ToLower(s)
 }
 
 // beeSubstr

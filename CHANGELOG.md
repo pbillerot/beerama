@@ -4,6 +4,10 @@
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
 
+4.0.2 du 4 janv 2026
+- `changed` 5 1er caractères du nom de fichier en sur-impression des diapos
+- `added` recheche sur ces 5 premiers caractères
+
 4.0.1 du 4 janv 2026
 - `fixed` filtre de lecture de l'authentification pour tous les chemains
 

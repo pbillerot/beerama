@@ -48,6 +48,7 @@
             <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press{{end}}"
                 data-path="{{$beefile.Path}}" data-fsrc="{{$beefile.ID}}"
                 data-base="{{$beefile.Base}}" style="padding: 0.5em;">
+                <div class="texte-overlay">{{ BeeLower (slice $beefile.Base 0 5)}}</div>
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
                 {{if or $htagid $search}}

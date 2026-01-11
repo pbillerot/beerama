@@ -108,7 +108,7 @@ func (config *BeeConfig) IndexAllBeefiles() error {
 			idx.StopWordCheck = fulltext.FrenchStopWordChecker
 
 			// for each document you want to add, you do something like this:
-			text := toLowerNoAccent(strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Title+" "+bfile.ID), "  ", " "))
+			text := toLowerNoAccent(strings.ReplaceAll(strings.TrimSpace(bfile.Description+" "+strings.Join(bfile.Keywords, " ")+" "+bfile.Make+" "+bfile.Model+" "+bfile.Title+" "+bfile.ID+" "+bfile.Base[:5]), "  ", " "))
 			doc := fulltext.IndexDoc{
 				Id:         []byte(bdir.ID + "_" + bfile.ID), // unique identifier (the path to a webpage works...)
 				StoreValue: []byte(text),                     // bytes you want to be able to retrieve from search results
