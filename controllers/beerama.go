@@ -30,7 +30,7 @@ func (c *MainController) Main() {
 	beego.ReadFromRequest(&c.Controller)
 
 	// Sélection des bdirs accessibles par le user_id
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 	var beeDirs []models.BeeDir
 	for _, bdir := range models.Config.BeeDirs {
 		if bdir.ParentID == "" && bdir.IsUserReader(user_id) {
@@ -68,7 +68,7 @@ func (c *MainController) Folder() {
 		c.Ctx.Redirect(302, "/search/"+beeDir.ID)
 	}
 
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	parent := beeDir.GetParent()
 
@@ -192,7 +192,7 @@ func (c *MainController) Download() {
 
 // FolderHtag Sélection d'un tag d'un album /folder/:beedirid/htagid
 func (c *MainController) FolderTag() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	htagid := c.Ctx.Input.Param(":htagid")
@@ -235,7 +235,7 @@ func (c *MainController) FolderTag() {
 
 // Modifier un données metadata de l'image
 func (c *MainController) Meta() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
@@ -378,7 +378,7 @@ func (c *MainController) Meta() {
 
 // Ajout d'un hahtag à l'album courant /e/tag/beedirid/beefileid
 func (c *MainController) Tag() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	beeFile := beeDir.BeeFiles[c.Ctx.Input.Param(":beefileid")]
@@ -405,7 +405,7 @@ func (c *MainController) Tag() {
 
 // Viewer document de type doc quill
 func (c *MainController) Doc() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
@@ -1101,7 +1101,7 @@ func (c *MainController) DragDrop() {
 
 // Search
 func (c *MainController) Search() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
@@ -1206,7 +1206,7 @@ func (c *MainController) Users() {
 
 // Modifier le fichier des .beeaccess.conf d'un album
 func (c *MainController) Access() {
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
 
 	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 

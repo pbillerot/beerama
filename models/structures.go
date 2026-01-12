@@ -5,8 +5,9 @@ import (
 )
 
 type User struct {
-	IsAdmin  bool `toml:"is_admin"`
-	IsEditor bool `toml:"is_editor"`
+	Password string `toml:"password"`
+	IsAdmin  bool   `toml:"is_admin"`
+	IsEditor bool   `toml:"is_editor"`
 }
 
 // BeeConfig structure du fichier de configuration de l'application app.conf

@@ -8,6 +8,15 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 )
 
+func CheckUser(user_id, password string) bool {
+	if Config.Users[user_id].Password == password {
+		return true
+	} else {
+		logs.Error("Tentative Connexion [%s]/[%s]", user_id, password)
+	}
+	return false
+}
+
 // Lecture du fichier beeusers.conf et chargement dans la structure
 func LoadUsers() (err error) {
 

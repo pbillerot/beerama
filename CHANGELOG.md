@@ -1,9 +1,13 @@
 # CHANGELOG
 > nom de fichier en minuscule
-> si le dossier de l'album est vide affichage des dossiers
+> album avec image favorite
+> penser à modifier la config dans caddy et custom
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+4.1.0 du 12 janv 2026
+- `changed` retour à l'identification Basic
 
 4.0.2 du 12 janv 2026
 - `fixed` après une recherche et suite à l'édition d'une diapo, on reviendra toujours sur la page de recherche

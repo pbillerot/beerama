@@ -64,7 +64,10 @@ type MainController struct {
 // Prepare implements Prepare method for loggedRouter.
 func (c *MainController) Prepare() {
 
-	user_id := c.Ctx.Input.Header("Remote-User")
+	user_id := c.GetSession("user_id").(string)
+
+	c.Data["user_id"] = user_id
+	c.Data["role"] = c.GetSession("role")
 
 	c.Data["user_id"] = user_id
 	c.Data["is_admin"] = models.Config.Users[user_id].IsAdmin
