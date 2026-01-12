@@ -62,9 +62,14 @@ func (c *MainController) Return() {
 // Folder Sélection d'un folder /folder/:beedirid
 func (c *MainController) Folder() {
 
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+
+	if len(c.Data["search"].(string)) > 0 {
+		c.Ctx.Redirect(302, "/search/"+beeDir.ID)
+	}
+
 	user_id := c.Ctx.Input.Header("Remote-User")
 
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
 	parent := beeDir.GetParent()
 
 	// Sélection des bdirs des sous-dossiers du parent courant
@@ -1103,7 +1108,15 @@ func (c *MainController) Search() {
 	// Sélection des sous-dossiers accessibles du bdir courant
 	beeDirs := parent.GetParentBeedirs()
 
-	search := c.GetString("search")
+	var search string
+
+	if c.Ctx.Input.Method() == "POST" {
+		search = c.GetString("search")
+		// Mémorisation du texte recherché dans la session
+		c.SetSession("search", search)
+	} else {
+		search = c.Data["search"].(string)
+	}
 
 	flash := beego.ReadFromRequest(&c.Controller)
 
@@ -1157,9 +1170,6 @@ func (c *MainController) Search() {
 	c.Data["search"] = search
 	c.Data["htagid"] = ""
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
-
-	// Mémorisation du texte recherché dans la session
-	c.SetSession("search", search)
 
 	c.TplName = "folder.html"
 }

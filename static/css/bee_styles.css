@@ -14,8 +14,8 @@ body {
     position: absolute;
     z-index: 10;
     padding: 3px;
-    top: 10%;         /* Positionne à 50% du haut */
-    left: 85%;        /* Positionne à 50% de la gauche */
+    top: 25px;
+    left: 87%;
     transform: translate(-50%, -50%); /* Centre parfaitement le texte */
     color: white;
     background-color: orange;

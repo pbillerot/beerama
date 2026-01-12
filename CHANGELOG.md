@@ -1,10 +1,14 @@
 # CHANGELOG
->
+> nom de fichier en minuscule
+> si le dossier de l'album est vide affichage des dossiers
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
 
-4.0.2 du 4 janv 2026
+4.0.2 du 12 janv 2026
+- `fixed` après une recherche et suite à l'édition d'une diapo, on reviendra toujours sur la page de recherche
+
+4.0.2 du 11 janv 2026
 - `changed` 5 1er caractères du nom de fichier en sur-impression des diapos
 - `added` recheche sur ces 5 premiers caractères
 

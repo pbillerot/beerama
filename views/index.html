@@ -7,29 +7,14 @@
 {{$beedirs := .beedirs}}
 {{$user_id := .user_id}}
 {{$is_admin := .is_admin}}
+
 <body>
     <!-- MENU HORIZONTAL FIXED -->
-    <div class="ui grey inverted top fixed borderless large menu navbar">
-        <div class="ui scrolling dropdown item">
-            <div class="ui mini image">
+    <div class="ui grey inverted top fixed borderless large menu">
+        <div class="header item">
+            <a class="ui mini image" href="/">
                 <img src="{{.config.Icon}}">
-            </div>
-            <div class="menu bee-mobile-show">
-                <!-- menu des albums -->
-                <div class="active item">
-                    <div class="content">
-                        <div class="header">
-                            Les albums de "{{$user_id}}"
-                        </div>
-                    </div>
-                </div>
-                {{ range $beedir := $beedirs }}
-                <a class="item" href="/folder/{{$beedir.ID}}">
-                    <i class="photo video symbol icon"></i> {{$beedir.Name}} <span
-                        class="ui small text">({{$beedir.CountAlbum}})</span>
-                </a>
-                {{end}}
-            </div>
+            </a>
         </div>
         <a href="/" class="ui header item" title="">
             <span class="ui large text orange bee-press-hidden-mobile">{{$config.Title}}<span>
@@ -49,29 +34,28 @@
                     <a class="ui icon item" href="/a/users">
                         <i class="user icon"></i>Modifier le fichier des utilisateurs...
                     </a>
+                    <div class="ui item">
+                        <div class="ui brown label">
+                            <i class="user icon"></i>
+                            {{.user_id}}
+                            <div class="detail">
+                                {{.role}} connecté
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ui item">
+                        <a class="ui orange label" href="{{.config.Github}}" target="_blank"
+                            title="Voir les sources de l'application">
+                            <i class="github icon"></i>
+                            {{.config.AppName}}
+                            <div class="detail">{{.config.Version}}</div>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
         {{end}}
         <!-- end RIGHT MENU -->
-    </div>
-    <div id="menu" class="ui left fixed vertical menu xbee-mobile-hide">
-        <!-- menu des albums -->
-        <div class="active item">
-            <div class="content">
-                <div class="header">
-                    Les albums de "{{$user_id}}"
-                </div>
-            </div>
-        </div>
-        {{ range $beedir := $beedirs }}
-        {{if eq $beedir.ParentID ""}}
-        <a class="item" href="/folder/{{$beedir.ID}}">
-            <i class="photo video symbol icon"></i> {{$beedir.Name}} <span
-                class="ui small text">({{$beedir.CountAlbum}})</span>
-        </a>
-        {{end}}
-        {{end}}
     </div>
     <!-- MAIN -->
     <main>
@@ -80,33 +64,28 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
-        <div class="bee-container">
+        <div class="">
             <div class1="ui segment" style="margin: 2em">
                 {{template "_flash.html" .}}
                 <div class="ui cards">
-                    <div class="ui centered card bee-width-xxl">
-                        <div class="image" href="#"
-                            title='{{.user_id}}, Bienvenue dans {{.config.Title}} "{{.config.Description}}"'>
-                            <img src="/static/img/beerama2.png"></img>
+                    {{ range $beedir := $beedirs }}
+                    {{if eq $beedir.ParentID ""}}
+                    <a class="ui horizontal card bee-width-s" href="/folder/{{$beedir.ID}}">
+                        <div class="image">
+                            <img src="/static/img/beerama2.png">
                         </div>
                         <div class="content">
+                            <div class="header">{{$beedir.Name}}</div>
                             <div class="meta">
-                                <div class="ui brown left floated label">
-                                    <i class="user icon"></i>
-                                    {{.user_id}}
-                                    <div class="detail">
-                                        {{.role}}
-                                    </div>
-                                </div>
-                                <a class="ui orange right floated label" href="{{.config.Github}}" target="_blank"
-                                    title="Voir les sources de l'application">
-                                    <i class="github icon"></i>
-                                    {{.config.AppName}}
-                                    <div class="detail">{{.config.Version}}</div>
-                                </a>
+                                <span class="category">{{$beedir.CountAlbum}} diapos</span>
                             </div>
+                            <!-- <div class="description">
+                                <p></p>
+                            </div> -->
                         </div>
-                    </div>
+                    </a>
+                    {{end}}
+                    {{end}}
                 </div>
             </div>
         </div>

@@ -9,10 +9,10 @@
 {{$is_editor := .is_editor}}
 {{$composter := .composter}}
 <input type="hidden" id="bee_view" value="folder">
-<div style="margin: 1em">
+<div class1="ui segment" style="margin: 1em">
     {{template "_flash.html" .}}
     <!-- liste des étiquettes hashtags -->
-    <div class="ui labels" style="margin-left: 0.5em;">
+    <div class="ui labels" style="padding: 1em">
         {{if $beedir.WithChildren}}
         <!-- album-->
         {{range $i, $keyword := $parent.KeywordsAlbum }}
@@ -45,9 +45,9 @@
         {{range $ibeefile, $beefile := $beefiles }}
         {{$beedirid := $beefile.DirID}}
         <div class="grey grid-item" style="margin: 0.5em">
-            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card {{if $is_editor}}bee-press{{end}}"
-                data-path="{{$beefile.Path}}" data-fsrc="{{$beefile.ID}}"
-                data-base="{{$beefile.Base}}" style="padding: 0.5em;">
+            <div id="{{$beedirid}}_{{$beefile.ID}}" class="ui card bee-width-s {{if $is_editor}}bee-press{{end}}"
+                data-path="{{$beefile.Path}}" data-fsrc="{{$beefile.ID}}" data-base="{{$beefile.Base}}"
+                style="padding: 0.5em;">
                 <div class="texte-overlay">{{ BeeLower (slice $beefile.Base 0 5)}}</div>
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
@@ -101,9 +101,9 @@
                 </div>
                 {{end}} <!-- /if image-->
                 <!-- METADATA -->
-                <a class="content {{if $is_editor}}draggable bee-meta{{end}} bee-meta-edit"
-                    data-dsrc="{{$beedirid}}" data-fsrc="{{$beefile.ID}}" 
-                    title="Clic pour modifier légende et étiquettes" data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
+                <a class="content {{if $is_editor}}draggable bee-meta{{end}} bee-meta-edit" data-dsrc="{{$beedirid}}"
+                    data-fsrc="{{$beefile.ID}}" title="Clic pour modifier légende et étiquettes"
+                    data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <!-- title -->
                     {{if $beefile.Title}}
                     <div class="ui center aligned sub header"
@@ -120,7 +120,8 @@
                         <!-- date originale de l'image -->
                         <span class="ui text right floated">
                             {{if ne (len $beefile.DateOriginal) 0 }}
-                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}&nbsp;
+                            {{BeeSubstr $beefile.DateOriginal 8 10}}/{{BeeSubstr $beefile.DateOriginal 5 7}}/{{BeeSubstr
+                            $beefile.DateOriginal 0 4}} {{$beefile.TimeOriginal}}&nbsp;
                             {{else}}
                             {{$beefile.Year}}
                             {{end}}
