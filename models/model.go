@@ -323,7 +323,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
 		if err == nil {
 			// titre en particulier
-			beeFile.UpdateMeta()
+			beeFile.WriteMeta()
 		}
 	}
 
@@ -331,6 +331,12 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 	// et si <> pdf doc
 	if !beeFile.existeThumbnail() {
 		beeFile.createThumbnail(Config.Width, Config.Height)
+	}
+
+	// couverture de l'album
+	if beeFile.Source != "" {
+		parent := beeDir.GetParent()
+		parent.Couverture = beeFile.ID
 	}
 
 	// ajout dans BeeFiles

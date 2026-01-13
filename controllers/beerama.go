@@ -291,6 +291,23 @@ func (c *MainController) Meta() {
 			beeFile.DateOriginal = ""
 			beeFile.TimeOriginal = ""
 		}
+		// image de couverture
+		if c.GetString("couverture") == "yes" {
+			beeFile.Source = "yes"
+			// si déjà couverture valorisée -> maf du beefile concerné
+			if parent.Couverture == "" {
+				// pas de couverture actuellement
+				parent.Couverture = beeFile.ID
+			} else {
+				// maj de l'ancienne couverture
+				if parent.Couverture != beeFile.ID {
+					bfile := models.GetBeeFile(parent.Couverture)
+					bfile.Source = ""
+					bfile.WriteMeta()
+				}
+				parent.Couverture = beeFile.ID
+			}
+		}
 		// keywords
 		keywords := c.GetStrings("keywords")
 		beeFile.Keywords = keywords
@@ -315,7 +332,7 @@ func (c *MainController) Meta() {
 		}
 
 		// report des meta dans le fichier
-		err := beeFile.UpdateMeta()
+		err := beeFile.WriteMeta()
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama %s", err)
@@ -641,7 +658,7 @@ func (c *MainController) NewDoc() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.Title = title
-	beeFile.UpdateMeta()
+	beeFile.WriteMeta()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -677,7 +694,7 @@ func (c *MainController) NewDraw() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.Title = title
-	beeFile.UpdateMeta()
+	beeFile.WriteMeta()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -713,7 +730,7 @@ func (c *MainController) NewUrl() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.UrlImage = url
-	beeFile.UpdateMeta()
+	beeFile.WriteMeta()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -867,7 +884,7 @@ func (c *MainController) Lot() {
 			beeFile.UrlExterne = urlexterne
 		}
 		// report des meta dans le fichier
-		err := beeFile.UpdateMeta()
+		err := beeFile.WriteMeta()
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama %s", err)

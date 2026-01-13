@@ -203,6 +203,9 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	if value, err := metadata.GetString("Credit"); err == nil {
 		beeFile.Year = value
 	}
+	if value, err := metadata.GetString("Source"); err == nil {
+		beeFile.Source = value
+	}
 	if value, err := metadata.GetString("DateTimeOriginal"); err == nil {
 		if len(value) > 9 {
 			beeFile.DateOriginal = strings.Replace(value, ":", "-", 2)[:10]
@@ -229,7 +232,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 }
 
 // updateMeta
-func (beeFile *BeeFile) UpdateMeta() (err error) {
+func (beeFile *BeeFile) WriteMeta() (err error) {
 	logs.Trace("UpdateMeta", beeFile.Path)
 	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		// attention certains types ne sont pas modifiables
@@ -268,6 +271,12 @@ func (beeFile *BeeFile) UpdateMeta() (err error) {
 	// Year
 	if metadata.Err == nil {
 		metadata.SetString("Credit", beeFile.Year)
+	} else {
+		logs.Error(metadata.Err)
+	}
+	// Source
+	if metadata.Err == nil {
+		metadata.SetString("Source", beeFile.Source)
 	} else {
 		logs.Error(metadata.Err)
 	}
@@ -390,7 +399,7 @@ func (beeFile *BeeFile) BackupImage() error {
 	return err
 }
 
-// updateImage et backup dans dossier des orginals (une seule fois)
+// updateImage et backup dans dossier des originals (une seule fois)
 func (beeFile *BeeFile) UpdateImage(simage string) (err error) {
 
 	err = beeFile.BackupImage()
@@ -448,7 +457,7 @@ func (beeFile *BeeFile) existeThumbnail() bool {
 }
 
 func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
-	if beeFile.IsPdf || beeFile.IsDoc {
+	if beeFile.IsPdf {
 		return nil
 	}
 	// 0. calcul et création des répertoires parents de la vignette

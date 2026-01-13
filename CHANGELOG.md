@@ -1,10 +1,13 @@
 # CHANGELOG
-> nom de fichier en minuscule
 > album avec image favorite
-> penser à modifier la config dans caddy et custom
+> yes non enregistré dans Source
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+4.2.0 du 13 janv 2026
+- `added` script de purge de la corbeille
+- `added` image et légende de couverture de l'album enregistré dans exif.Source
 
 4.1.0 du 12 janv 2026
 - `changed` retour à l'identification Basic

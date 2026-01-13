@@ -11,7 +11,6 @@ services:
     #   - "8080:8080"
     volumes:
     - /volshare:/volshare
-    # personnalisation de la configuration
     - ./custom.conf:/github/pbillerot/beerama/conf/custom.conf
     networks:
     - docker_web
