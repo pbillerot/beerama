@@ -1,9 +1,11 @@
 # CHANGELOG
-> album avec image favorite
-> yes non enregistré dans Source
+>
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+4.2.1 du 14 janv 2026
+- `changed` sur recherche texte ou hrag repositionnement sur le dossier de l'album
 
 4.2.0 du 13 janv 2026
 - `added` script de purge de la corbeille

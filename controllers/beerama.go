@@ -219,9 +219,9 @@ func (c *MainController) FolderTag() {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
 
-	c.Data["parent"] = parent
+	c.Data["parent"] = &parent
 	c.Data["beedirs"] = &beeDirs
-	c.Data["beedir"] = &beeDir
+	c.Data["beedir"] = &parent
 	c.Data["beefiles"] = &beeFiles
 	c.Data["htagid"] = htagid
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
@@ -1180,9 +1180,9 @@ func (c *MainController) Search() {
 		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
 	})
 
-	c.Data["parent"] = parent
+	c.Data["parent"] = &parent
 	c.Data["beedirs"] = &beeDirs
-	c.Data["beedir"] = &beeDir
+	c.Data["beedir"] = &parent
 	c.Data["beefiles"] = &beeFiles
 	c.Data["search"] = search
 	c.Data["htagid"] = ""

@@ -59,8 +59,7 @@
                         <div class="image">
                             {{if $bfileid}}
                             {{$bfile := index $config.BeeFiles $bfileid}}
-                            <img src="{{$bfile.UrlThumb}}"
-                                style="width:100%;height:100%;object-fit: cover;object-position: center;">
+                            <img src="{{$bfile.UrlThumb}}" class="bee-image-fit">
                             {{else}}
                             <img src="/static/img/beerama2.png" style="object-fit: cover;object-position: center;">
                             {{end}}

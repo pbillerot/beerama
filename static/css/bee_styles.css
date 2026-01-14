@@ -10,6 +10,13 @@ body {
     background-color: whitesmoke;
 }
 
+.ui.card.horizontal > .image > img, .bee-image-fit {
+    width:100%;
+    height:150px;
+    object-fit: cover;
+    object-position: center;
+}
+
 .texte-overlay {
     position: absolute;
     z-index: 10;
