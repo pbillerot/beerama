@@ -7,6 +7,7 @@
 {{$parent := .parent}}
 {{$beedir := .beedir}}
 {{$search := .search}}
+{{$search := .search}}
 {{$htagid := .htagid}}
 {{$is_admin := .is_admin}}
 {{$is_editor := .is_editor}}
@@ -156,7 +157,7 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
-        <div class="bee-container">
+        <div id="bee-container" class="bee-container">
             {{template "_folder.html" .}}
         </div>
     </main>

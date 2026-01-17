@@ -789,6 +789,27 @@ $(document).ready(function () {
     });
   }
 
+  // Contexte ergonomique dans localStorage
+  $('.bee-menu').on('click', function (event) {
+    var $valStorage = localStorage.getItem("menu");
+    if ($valStorage == null || $valStorage == "") {
+      localStorage.setItem('menu', 'nomenu')
+    } else {
+      localStorage.setItem('menu', '')
+    }
+    window.location.reload();
+    event.preventDefault();
+  });
+$('.bee-menu').each(function (index) {
+    var $valStorage = localStorage.getItem("menu");
+    if ($valStorage == null || $valStorage == "") {
+      $('#menu').show();
+      $('#bee-container').addClass('bee-container');
+    } else {
+      $('#menu').hide();
+      $('#bee-container').removeClass('bee-container');
+    }
+  });
   // paste localStorage dans une meta données
   $('.bee-clip-paste').on('tap', function (event) {
     var $field = $(this).closest('.field');

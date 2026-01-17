@@ -13,6 +13,9 @@
     {{template "_flash.html" .}}
     <!-- liste des étiquettes hashtags -->
     <div class="ui labels" style="padding: 1em">
+        <div class="ui label bee-menu" title="Ouvrir/fermer le menu des dossiers">
+            <i class="bars icon"></i>
+        </div>
         {{if $beedir.WithChildren}}
         <!-- album-->
         {{range $i, $keyword := $parent.KeywordsAlbum }}

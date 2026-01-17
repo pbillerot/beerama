@@ -1,19 +1,26 @@
-{{ $user_id := .user_id}}
-{{ $parent := .parent}}
-{{ $beedirs := .beedirs}}
-{{ $beedir := .beedir}}
+{{$config := .config}}
+{{$user_id := .user_id}}
+{{$parent := .parent}}
+{{$beedirs := .beedirs}}
+{{$beedir := .beedir}}
 {{$is_admin := .is_admin}}
 <!-- retour home au menu des albums -->
-<a href="/" class="item">
-    <div class="content">
-        <div class="header">
-            <i class="arrow left icon"></i>
-            Retour aux albums
+<div class="item">
+    <a href="/" class="card" title="retour à la liste des albums">
+        <div class="image" style="height: 150px">
+            {{ $bfileid := $parent.Couverture}}
+            {{if $bfileid}}
+            {{$bfile := index $config.BeeFiles $bfileid}}
+            <img src="{{$bfile.UrlThumb}}" class="bee-image-fit">
+            {{else}}
+            <img src="/static/img/beerama2.png" class="bee-image-fit">
+            {{end}}
         </div>
-    </div>
-</a>
+    </a>
+</div>
 <!-- aff du dossier parent -->
-<a href="/folder/{{$parent.ID}}" class="{{if ne $beedir.ID $parent.ID}}droppable{{end}} item" data-bdir="{{$parent.ID}}">
+<a href="/folder/{{$parent.ID}}" class="{{if ne $beedir.ID $parent.ID}}droppable{{end}} item"
+    data-bdir="{{$parent.ID}}">
     {{if eq $beedir.ID $parent.ID }}
     <i class="photo video symbol orange icon"></i>
     {{else}}

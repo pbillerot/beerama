@@ -47,6 +47,7 @@
             <div>Veuillez patienter</div>
             <i class="close icon"></i>
         </div>
+        <!-- liste des albums -->
         <div class="">
             <div class1="ui segment" style="margin: 2em">
                 {{template "_flash.html" .}}
@@ -54,7 +55,8 @@
                     {{ range $beedir := $beedirs }}
                     {{if eq $beedir.ParentID ""}}
                     {{ $bfileid := $beedir.Couverture}}
-                    {{if $bfileid}}{{$bfile := index $config.BeeFiles $bfileid}}{{end}}
+                    {{if $bfileid}}{{$bfile := index $config.BeeFiles $bfileid}}
+                    {{end}}
                     <a class="ui horizontal card bee-width-s" href="/folder/{{$beedir.ID}}">
                         <div class="image">
                             {{if $bfileid}}

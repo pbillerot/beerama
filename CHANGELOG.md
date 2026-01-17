@@ -1,11 +1,16 @@
 # CHANGELOG
->
+> si sans sous-dossier -> pas de menu
+> menu qui se rétracte sur clic de l'icone
+> recherche étiquette  indiquez le nbre de diapos trouvés par dossier
+> puis sur clic d'un dossier n'afficher que les diapos concernées
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
 
-4.2.1 du 14 janv 2026
-- `changed` sur recherche texte ou hrag repositionnement sur le dossier de l'album
+4.3.0 du 17 janv 2026
+- `changed` menu avec la couverture
+- `added` menu rétractable via une icône
+
 
 4.2.0 du 13 janv 2026
 - `added` script de purge de la corbeille
