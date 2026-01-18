@@ -3,10 +3,12 @@
 {{$parent := .parent}}
 {{$beedirs := .beedirs}}
 {{$beedir := .beedir}}
+{{$founded := .founded}}
+{{$total := .total}}
 {{$is_admin := .is_admin}}
 <!-- retour home au menu des albums -->
 <div class="item">
-    <a href="/" class="card" title="retour à la liste des albums">
+    <a href="/folder/{{$parent.ID}}" class="card">
         <div class="image" style="height: 150px">
             {{ $bfileid := $parent.Couverture}}
             {{if $bfileid}}
@@ -19,22 +21,62 @@
     </a>
 </div>
 <!-- aff du dossier parent -->
+{{if $founded}}
+{{if ne (index $founded $parent.ID) 0}}
+<a href="/folder/{{$parent.ID}}" class="{{if ne $beedir.ID $parent.ID}}droppable{{end}} item bee-founded"
+    data-bdir="{{$parent.ID}}">
+    <i class="photo video symbol {{if eq $beedir.ID $parent.ID }}orange{{end}} icon"></i>
+    <b>{{$parent.Name}}</b> <span class="ui small text">({{index $founded $parent.ID}}/{{$total}})</span>
+</a>
+{{else}}
 <a href="/folder/{{$parent.ID}}" class="{{if ne $beedir.ID $parent.ID}}droppable{{end}} item"
     data-bdir="{{$parent.ID}}">
-    {{if eq $beedir.ID $parent.ID }}
-    <i class="photo video symbol orange icon"></i>
-    {{else}}
-    <i class="photo video symbol icon"></i>
-    {{end}}
-    {{$parent.Name}} <span class="ui small text">({{$parent.Count}}/{{$parent.CountAlbum}})</span>
+    <i class="photo video symbol {{if eq $beedir.ID $parent.ID }}orange{{end}} icon"></i>
+    <b>{{$parent.Name}}</b> <span cass="ui small text">({{index $founded $parent.ID}}/{{$total}})</span>
 </a>
+{{end}} <!-- /founded 0-->
+{{else}}
+<a href="/folder/{{$parent.ID}}" class="{{if ne $beedir.ID $parent.ID}}droppable{{else}}bee-menu-selected{{end}} item"
+    data-bdir="{{$parent.ID}}">
+    <i class="photo video symbol {{if eq $beedir.ID $parent.ID }}orange{{end}} icon"></i>
+    {{if eq $beedir.ID $parent.ID}}
+    <b>{{$parent.Name}}</b>
+    {{else}}
+    {{$parent.Name}}
+    {{end}}
+    <span class="ui small text">({{$parent.Count}}/{{$total}})</span>
+</a>
+{{end}} <!-- /founded -->
+
 <!-- sous-dossiers enfants -->
 {{ range $i, $bdir := $beedirs}}
 {{ if eq $bdir.ParentID $parent.ID}}
 <!-- enfant de beedir -->
-<a href="/folder/{{$bdir.ID}}" class="{{if ne $bdir.ID $beedir.ID}}droppable{{end}} item" data-bdir="{{$bdir.ID}}">
-    <i class="folder {{if eq $bdir.ID $beedir.ID}}open orange{{end}} outline icon"></i>{{$bdir.Name}} <span
-        class="ui small text">({{$bdir.Count}})</span>
+{{if $founded}}
+{{if ne (index $founded $bdir.ID) 0}}
+<a href="/folder/{{$bdir.ID}}" class="{{if ne $bdir.ID $beedir.ID}}droppable{{end}} item bee-founded"
+    data-bdir="{{$bdir.ID}}">
+    <i class="folder {{if eq $bdir.ID $beedir.ID}}open orange{{end}} outline icon"></i>
+    <b>{{$bdir.Name}}</b> <span class="ui small text">({{index $founded $bdir.ID}})</span>
+</a>
+{{else}}
+<a href="/folder/{{$bdir.ID}}" class="{{if ne $bdir.ID $beedir.ID}}droppable{{end}} item"
+    data-bdir="{{$bdir.ID}}">
+    <i class="folder {{if eq $bdir.ID $beedir.ID}}open orange{{end}} outline icon"></i>
+    <span class="ui grey text">{{$bdir.Name}}</span> <span class="ui small text">({{index $founded $bdir.ID}})</span>
 </a>
 {{end}}
+{{else}} <!-- not founded-->
+<a href="/folder/{{$bdir.ID}}" class="{{if ne $bdir.ID $beedir.ID}}droppable{{else}}bee-menu-selected{{end}} item" 
+    data-bdir="{{$bdir.ID}}">
+    <i class="folder {{if eq $bdir.ID $beedir.ID}}open orange{{end}} outline icon"></i>
+    {{if eq $bdir.ID $beedir.ID}}
+    <b>{{$bdir.Name}}</b>
+    {{else}}
+    {{$bdir.Name}}
+    {{end}}
+    <span class="ui small text">({{$bdir.Count}})</span>
+</a>
+{{end}} <!-- end founded -->
+{{end}} <!-- end child -->
 {{end}} <!-- end range-->

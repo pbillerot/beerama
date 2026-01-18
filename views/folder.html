@@ -8,7 +8,7 @@
 {{$beedir := .beedir}}
 {{$search := .search}}
 {{$search := .search}}
-{{$htagid := .htagid}}
+{{$htag := .htag}}
 {{$is_admin := .is_admin}}
 {{$is_editor := .is_editor}}
 
@@ -51,7 +51,7 @@
                         title="Mettre à jour les métadonnées du lot...">
                         <i class="boxes icon"></i>
                     </div>
-                    {{ if not (or $htagid $search)}}
+                    {{ if not (or $htag $search)}}
                     <div class="ui small icon button bee-modal-duplicate" data-action="/e/duplicate/{{$beedir.ID}}"
                         title="Dupliquer la diapo dans cet album...">
                         <i class="clone outline icon"></i>

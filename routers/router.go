@@ -20,11 +20,6 @@ func init() {
 	web.InsertFilter("*", web.BeforeExec, controllers.BasicAuthFilter)
 
 	// Routes sans rôle particulier
-	// nsHome := web.NewNamespace("/",
-	// 	web.NSBefore(controllers.AuthRequiredProfile),
-	// 	web.NSRouter("", &controllers.MainController{}, "get:Main"),
-	// 	web.NSRouter("return", &controllers.MainController{}, "get:Return"),
-	// )
 	web.Router("/", &controllers.MainController{}, "get:Main")
 	web.Router("/return", &controllers.MainController{}, "get:Return")
 
@@ -41,7 +36,7 @@ func init() {
 		web.NSBefore(controllers.AuthRequiredProfile, controllers.ReaderRoleProfile),
 		web.NSRouter("/:beedirid", &controllers.MainController{}, "get:Folder"),
 		web.NSRouter("/download/:beedirid", &controllers.MainController{}, "post:Download"),
-		web.NSRouter("/:beedirid/:htagid", &controllers.MainController{}, "get:FolderTag"),
+		web.NSRouter("/:beedirid/:htag", &controllers.MainController{}, "get:HTag"),
 	)
 	nsReader := web.NewNamespace("/search",
 		// Enchaîne plusieurs filtres : l'utilisateur doit être authentifié ET Editor

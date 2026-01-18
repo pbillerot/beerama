@@ -797,7 +797,7 @@ $(document).ready(function () {
     } else {
       localStorage.setItem('menu', '')
     }
-    window.location.reload();
+    window.open("/return");
     event.preventDefault();
   });
 $('.bee-menu').each(function (index) {

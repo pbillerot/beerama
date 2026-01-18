@@ -2,8 +2,7 @@
 {{$beedirs := .beedirs}}
 {{$beedir := .beedir}}
 {{$beefiles := .beefiles}}
-{{$htagid := .htagid}}
-{{$founds := .founds}}
+{{$htag := .htag}}
 {{$search := .search}}
 {{$is_admin := .is_admin}}
 {{$is_editor := .is_editor}}
@@ -19,8 +18,8 @@
         {{if $beedir.WithChildren}}
         <!-- album-->
         {{range $i, $keyword := $parent.KeywordsAlbum }}
-        {{if eq $htagid $keyword }}
-        <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">
+        {{if eq $htag $keyword }}
+        <a href="/folder/{{$beedir.ID}}/none" class="ui tag small orange label">
             #{{$keyword}}
         </a>
         {{else}}
@@ -28,11 +27,11 @@
             #{{$keyword}}
         </a>
         {{end}}
-        {{end}}
+        {{end}} <!--/range-->
         {{else}} <!-- dossier -->
         {{range $i, $keyword := $beedir.Keywords }}
-        {{if eq $htagid $keyword }}
-        <a href="/folder/{{$beedir.ID}}" class="ui tag small orange label">
+        {{if eq $htag $keyword }}
+        <a href="/folder/{{$beedir.ID}}/none" class="ui tag small orange label">
             #{{$keyword}}
         </a>
         {{else}}
@@ -54,7 +53,7 @@
                 <div class="texte-overlay">{{ BeeLower (slice $beefile.Base 0 5)}}</div>
                 <!-- HEADER -->
                 <!-- recherche du nom de dossier si htag ou search -->
-                {{if or $htagid $search}}
+                {{if or $htag $search}}
                 {{range $i, $bdir := $beedirs}}
                 {{if eq $bdir.ID $beedirid}}
                 <div class="grey content" style="padding: 0.3em 0 0.3em 0;">
@@ -64,7 +63,7 @@
                 </div>
                 {{end}} <!--/eq $bdir-->
                 {{end}} <!--/range-->
-                {{end}} <!--/$htagid-->
+                {{end}} <!--/$htag-->
                 <!-- THUMBNAIL -->
                 {{if $beefile.IsPdf}}
                 <div class="ui centered image" title="{{$beefile.Base}}">

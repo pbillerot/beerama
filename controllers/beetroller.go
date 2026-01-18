@@ -87,6 +87,12 @@ func (c *MainController) Prepare() {
 	} else {
 		c.Data["search"] = ""
 	}
+	// htag en cours
+	if param, ok := c.GetSession("htag").(string); ok {
+		c.Data["htag"] = param
+	} else {
+		c.Data["htag"] = ""
+	}
 
 	// mémorisation de l'adresse IP
 	// clientIP := c.Ctx.Input.IP()

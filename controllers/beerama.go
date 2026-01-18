@@ -67,6 +67,9 @@ func (c *MainController) Folder() {
 	if len(c.Data["search"].(string)) > 0 {
 		c.Ctx.Redirect(302, "/search/"+beeDir.ID)
 	}
+	if len(c.Data["htag"].(string)) > 0 {
+		c.Ctx.Redirect(302, "/folder/"+beeDir.ID+"/"+c.Data["htag"].(string))
+	}
 
 	user_id := c.GetSession("user_id").(string)
 
@@ -108,7 +111,9 @@ func (c *MainController) Folder() {
 	c.Data["beedirs"] = &beeDirs
 	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
-	c.Data["htagid"] = ""
+	c.Data["total"] = parent.CountAlbum
+	c.Data["htag"] = ""
+	c.Data["search"] = ""
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	// Mémorisation du dernier appel
@@ -188,49 +193,6 @@ func (c *MainController) Download() {
 	// The zip stream is sent directly to the client as the files are added.
 	// No need to load the entire archive into memory.
 
-}
-
-// FolderHtag Sélection d'un tag d'un album /folder/:beedirid/htagid
-func (c *MainController) FolderTag() {
-	user_id := c.GetSession("user_id").(string)
-
-	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
-	htagid := c.Ctx.Input.Param(":htagid")
-
-	parent := beeDir.GetParent()
-
-	// Sélection des sous-dossiers accessibles du bdir courant
-	beeDirs := parent.GetParentBeedirs()
-
-	// Construction de la liste des beefiles
-	// album et sous-dossiers concernés par le htag
-	beeFiles := []models.BeeFile{}
-	for _, bdir := range *beeDirs {
-		if bdir.ParentID == beeDir.ID || bdir.ID == beeDir.ID {
-			for _, bfile := range bdir.BeeFiles {
-				if slices.Contains(bfile.Keywords, htagid) {
-					beeFiles = append(beeFiles, *bfile)
-				}
-			}
-		}
-	}
-	// tri des beefiles
-	sort.Slice(beeFiles, func(i, j int) bool {
-		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
-	})
-
-	c.Data["parent"] = &parent
-	c.Data["beedirs"] = &beeDirs
-	c.Data["beedir"] = &parent
-	c.Data["beefiles"] = &beeFiles
-	c.Data["htagid"] = htagid
-	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
-
-	c.SetSession("folder", c.Ctx.Request.RequestURI)
-
-	beego.ReadFromRequest(&c.Controller)
-
-	c.TplName = "folder.html"
 }
 
 // Modifier un données metadata de l'image
@@ -350,7 +312,7 @@ func (c *MainController) Meta() {
 	c.Data["parent"] = parent
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
-	c.Data["htagid"] = ""
+	c.Data["htag"] = ""
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	// cas des images drawio
@@ -1116,6 +1078,77 @@ func (c *MainController) DragDrop() {
 	c.Ctx.Redirect(302, c.GetSession("folder").(string))
 }
 
+// Htag Sélection d'un tag d'un album /folder/:beedirid/htag
+func (c *MainController) HTag() {
+	user_id := c.GetSession("user_id").(string)
+
+	beeDir := models.Config.BeeDirs[c.Ctx.Input.Param(":beedirid")]
+	htag := c.Ctx.Input.Param(":htag")
+
+	if htag == "none" {
+		c.SetSession("htag", "")
+		c.Ctx.Redirect(302, "/folder/"+beeDir.ID)
+	} else {
+		c.SetSession("htag", htag)
+	}
+	c.SetSession("search", "")
+
+	parent := beeDir.GetParent()
+
+	// Sélection des sous-dossiers accessibles du bdir courant
+	beeDirs := parent.GetParentBeedirs()
+
+	// mémorisation dans founded du nbre de diopos trouvées par beedir
+	founded := make(map[string]int)
+	// initialisation à 0 des bdirs de l'album
+	for _, bdir := range *beeDirs {
+		founded[bdir.ID] = 0
+	}
+
+	// Construction de la liste des beefiles
+	// album et sous-dossiers concernés par le htag
+	beeFiles := []models.BeeFile{}
+	total := 0
+	for _, bdir := range *beeDirs {
+		if bdir.ID == parent.ID || bdir.ParentID == parent.ID {
+			for _, bfile := range bdir.BeeFiles {
+				if slices.Contains(bfile.Keywords, htag) {
+					if beeDir.ID == parent.ID {
+						beeFiles = append(beeFiles, *bfile)
+					} else {
+						if bdir.ID == beeDir.ID {
+							beeFiles = append(beeFiles, *bfile)
+						}
+					}
+					// comptage par dossiers
+					founded[bfile.DirID] = founded[bfile.DirID] + 1
+					total++
+				}
+			}
+		}
+	}
+	// tri des beefiles
+	sort.Slice(beeFiles, func(i, j int) bool {
+		return beeFiles[i].DateOriginal < beeFiles[j].DateOriginal
+	})
+
+	c.Data["parent"] = &parent
+	c.Data["beedirs"] = &beeDirs
+	c.Data["beedir"] = &beeDir
+	c.Data["beefiles"] = &beeFiles
+	c.Data["founded"] = &founded
+	c.Data["total"] = total
+	c.Data["htag"] = htag
+	c.Data["search"] = ""
+	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
+
+	c.SetSession("folder", c.Ctx.Request.RequestURI)
+
+	beego.ReadFromRequest(&c.Controller)
+
+	c.TplName = "folder.html"
+}
+
 // Search
 func (c *MainController) Search() {
 	user_id := c.GetSession("user_id").(string)
@@ -1161,15 +1194,40 @@ func (c *MainController) Search() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 
+	// mémorisation dans founded du nbre de diopos trouvées par beedir
+	founded := make(map[string]int)
+	// initialisation à 0 des bdirs de l'album
+	for _, bdir := range *beeDirs {
+		founded[bdir.ID] = 0
+	}
+
 	beeFiles := []models.BeeFile{}
+	total := 0
 	for _, item := range sr.Items {
 		dirid, fileid, found := strings.Cut(string(item.Id), "_")
 		if found {
 			// on ne prend que les bdirs de l'album parent
 			for _, bdir := range *beeDirs {
-				if bdir.ID == dirid {
-					beeFile := models.Config.BeeDirs[dirid].BeeFiles[fileid]
-					beeFiles = append(beeFiles, *beeFile)
+				if dirid == bdir.ID {
+					// diapo trouvée parmi tous les albums
+					if bdir.ID == parent.ID || bdir.ParentID == parent.ID {
+						// diapo de l'album
+						if beeDir.ID == parent.ID {
+							// le dossier courant est le dossier parent de l'album
+							// on affichera toutes les diapos trouvées dans l'album
+							beeFile := models.Config.BeeDirs[dirid].BeeFiles[fileid]
+							beeFiles = append(beeFiles, *beeFile)
+						} else {
+							// on affichera que les diapos trouvées dans le dossier courant
+							if dirid == beeDir.ID {
+								beeFile := models.Config.BeeDirs[dirid].BeeFiles[fileid]
+								beeFiles = append(beeFiles, *beeFile)
+							}
+						}
+						// comptage par dossiers
+						founded[dirid] = founded[dirid] + 1
+						total++
+					}
 				}
 			}
 		}
@@ -1182,10 +1240,12 @@ func (c *MainController) Search() {
 
 	c.Data["parent"] = &parent
 	c.Data["beedirs"] = &beeDirs
-	c.Data["beedir"] = &parent
+	c.Data["beedir"] = &beeDir
 	c.Data["beefiles"] = &beeFiles
 	c.Data["search"] = search
-	c.Data["htagid"] = ""
+	c.Data["founded"] = &founded
+	c.Data["total"] = total
+	c.Data["htag"] = ""
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
 
 	c.TplName = "folder.html"

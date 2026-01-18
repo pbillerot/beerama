@@ -227,3 +227,12 @@ bee-press,
     margin-left: 210px;
     z-index: -1;
 }
+
+.bee-founded {
+    transform: scale(1.05);
+    transform-origin: top left;
+}
+.bee-menu-selected {
+    transform: scale(1.05);
+    /* transform-origin: top left; */
+}
