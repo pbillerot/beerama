@@ -269,6 +269,11 @@ func (c *MainController) Meta() {
 				}
 				parent.Couverture = beeFile.ID
 			}
+		} else {
+			beeFile.Source = ""
+			if parent.Couverture == beeFile.ID {
+				parent.Couverture = ""
+			}
 		}
 		// keywords
 		keywords := c.GetStrings("keywords")

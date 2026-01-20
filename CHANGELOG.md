@@ -1,15 +1,16 @@
 # CHANGELOG
-> recherche étiquette  indiquez le nbre de diapos trouvés par dossier
-> puis sur clic d'un dossier n'afficher que les diapos concernées
+> bug impossible enlever couverture
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+4.3.2 du 17 janv 2026
+- `fixed` correction impossible enlever couverture
 
 4.3.1 du 17 janv 2026
 - `changed` menu avec la couverture
 - `added` menu rétractable via une icône
 - `changed` suite recherche texte ou par htag le nombre de diapos trouvées est affiché
-
 
 4.2.0 du 13 janv 2026
 - `added` script de purge de la corbeille
