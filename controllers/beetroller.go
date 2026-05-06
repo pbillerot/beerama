@@ -12,7 +12,7 @@ import (
 	"github.com/beego/beego/v2/core/logs"
 	beego "github.com/beego/beego/v2/server/web"
 	context "github.com/beego/beego/v2/server/web/context"
-	"github.com/pbillerot/beerama/models"
+	"beerama/models"
 )
 
 // logAccessFilter is the core logging function registered at FinishRouter

@@ -27,17 +27,17 @@ ou pour maj
 - go get -u github.com/beego/bee/v2
 
 ### Environnement de développement
-- go mod init github.com/pbillerot/beemage
+- go mod init beerama
 - go mod tidy
 - go build
-- ./beemage
+- ./beerama
 - ou lancer le Debug dans vscodium
 - ou bee run
 
 ### Mise en production
 - maj changelog.md app.conf
 - git push...
-- sur vps cd /volshare/docker/beemage ./build.sh
+- sur vps cd /volshare/docker/beerama ./build.sh
 
 ### markdown
 https://github.com/gomarkdown/markdown
@@ -51,7 +51,7 @@ Pour traduire l'expression
 - https://github.com/bradymholt/cRonstrue
 
 ### Mémo de commandes (pour le débutant que je suis)
-- go mod init github.com/pbillerot/beemage
+- go mod init beerama
 - go mod tidy pour mettre à jour go.mod
 - go get ./...
 - go get -u

@@ -4,11 +4,11 @@ import (
 	"github.com/beego/beego/v2/core/config"
 	"github.com/beego/beego/v2/core/logs"
 	"github.com/beego/beego/v2/server/web"
-	"github.com/pbillerot/beerama/models"
+	"beerama/models"
 
 	// pour charger les init() des packages suivants
-	_ "github.com/pbillerot/beerama/controllers"
-	_ "github.com/pbillerot/beerama/routers"
+	_ "beerama/controllers"
+	_ "beerama/routers"
 )
 
 func main() {

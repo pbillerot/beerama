@@ -7,7 +7,7 @@ import (
 
 	"github.com/beego/beego/v2/core/logs"
 	context "github.com/beego/beego/v2/server/web/context"
-	"github.com/pbillerot/beerama/models"
+	"beerama/models"
 )
 
 // BasicAuthFilter performs the authentication check

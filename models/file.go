@@ -15,7 +15,7 @@ import (
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs" // External package for chunk manipulation
 	"github.com/disintegration/imaging"
-	"github.com/pbillerot/beerama/shutil"
+	"beerama/shutil"
 )
 
 // Exiftool

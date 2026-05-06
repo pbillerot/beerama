@@ -13,8 +13,8 @@ import (
 
 	"github.com/BurntSushi/toml"
 	"github.com/beego/beego/v2/core/logs"
-	"github.com/pbillerot/beerama/fulltext"
-	"github.com/pbillerot/beerama/shutil"
+	"beerama/fulltext"
+	"beerama/shutil"
 )
 
 // Config de config.yaml lu dans main.init()
