@@ -12,10 +12,11 @@ import (
 	"regexp"
 	"strings"
 
+	"beerama/shutil"
+
 	"github.com/barasher/go-exiftool"
 	"github.com/beego/beego/v2/core/logs" // External package for chunk manipulation
 	"github.com/disintegration/imaging"
-	"beerama/shutil"
 )
 
 // Exiftool
@@ -288,11 +289,12 @@ func (beeFile *BeeFile) WriteMeta() (err error) {
 	}
 	// keywords
 	if metadata.Err == nil {
+		keywords := cleanJoin(beeFile.Keywords, ",")
 		if beeFile.IsPdf {
-			metadata.SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+			metadata.SetString("Keywords", keywords)
 		} else {
 			// originals[0].SetStrings("Keywords", beeFile.Keywords)
-			metadata.SetString("Keywords", strings.Join(beeFile.Keywords, ","))
+			metadata.SetString("Keywords", keywords)
 		}
 	} else {
 		logs.Error(metadata.Err)
@@ -546,7 +548,7 @@ func decodeAndSavePNG(base64Str string, filename string) error {
 		err = fmt.Errorf("failed to save image: %s %v", filename, err)
 		return err
 	}
-	StampOnImageRight(filename, "./static/img/doc.png")
+	StampOnImage(filename, "./static/img/doc.png")
 
 	// fmt.Printf("Successfully decoded and saved PNG to: %s\n", filename)
 	return nil
@@ -710,4 +712,15 @@ func StampOnImageRight(pathImage, pathIcon string) (err error) {
 
 	return err
 
+}
+
+func cleanJoin(elements []string, sep string) string {
+	var result []string
+	for _, str := range elements {
+		// On vérifie que la chaîne n'est pas vide après avoir retiré les espaces
+		if trimmed := strings.TrimSpace(str); trimmed != "" {
+			result = append(result, trimmed)
+		}
+	}
+	return strings.Join(result, sep)
 }

@@ -2,7 +2,13 @@
 > bug impossible enlever couverture
 
 ### À venir :
+- upload par glisser déposer
+- intégrer excalidraw
 - vidage automatique de la poubelle des fichiers > 30 jours
+
+2026.5.1
+- `fixed` correction étiquettes vides ,,
+- `changed` icône document et vidéo désormais à gauche car la référence était placé um même endroit
 
 4.3.2 du 17 janv 2026
 - `fixed` correction impossible enlever couverture

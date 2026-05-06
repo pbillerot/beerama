@@ -17,8 +17,6 @@ vendor
 cpu*
 mem*
 *.tmp
-beerama
-sandbox/
 drawio-old/
-conf/users.yaml
 *.log
+conf/custom.conf
