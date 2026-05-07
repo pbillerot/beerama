@@ -18,10 +18,11 @@ import (
 
 	"github.com/beego/beego/v2/core/logs"
 
-	beego "github.com/beego/beego/v2/server/web"
 	"beerama/fulltext"
 	"beerama/models"
 	"beerama/shutil"
+
+	beego "github.com/beego/beego/v2/server/web"
 )
 
 // Main as get and Post /
@@ -277,6 +278,9 @@ func (c *MainController) Meta() {
 		}
 		// keywords
 		keywords := c.GetStrings("keywords")
+		// TODO: trace
+		logs.Info("keywords:", keywords)
+
 		beeFile.Keywords = keywords
 		// raz de la date
 		razdate := c.GetString("razdate")
@@ -374,8 +378,10 @@ func (c *MainController) Tag() {
 		keyword := strings.ToLower(c.GetString("keyword"))
 		// maj
 		parent := beeDir.GetParent()
-		parent.KeywordsAlbum = append(parent.Keywords, keyword)
-		beeDir.Keywords = append(beeDir.Keywords, keyword)
+		if parent.ID != beeDir.ID {
+			parent.KeywordsAlbum = append(parent.Keywords, keyword)
+		}
+		// beeDir.Keywords = append(beeDir.Keywords, keyword)
 		beeDir.KeywordsAlbum = append(beeDir.KeywordsAlbum, keyword)
 	}
 

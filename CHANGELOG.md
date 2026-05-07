@@ -4,6 +4,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+2026.5.3
+- `fixed` tag en double suite ajout
+
 2026.5.2
 - `changed` upload champ sur fond vert pour "dropper" les fichiers
 
