@@ -499,7 +499,7 @@ func (beeFile *BeeFile) createThumbnail(width, _ int) (err error) {
 			return err
 		}
 		if beeFile.IsDoc {
-			StampOnImage(beeFile.Thumb, "./static/img/doc.png")
+			StampOnImageRightBottom(beeFile.Thumb, "./static/img/doc.png")
 		}
 	}
 
@@ -548,7 +548,7 @@ func decodeAndSavePNG(base64Str string, filename string) error {
 		err = fmt.Errorf("failed to save image: %s %v", filename, err)
 		return err
 	}
-	StampOnImage(filename, "./static/img/doc.png")
+	StampOnImageRightBottom(filename, "./static/img/doc.png")
 
 	// fmt.Printf("Successfully decoded and saved PNG to: %s\n", filename)
 	return nil
@@ -639,8 +639,8 @@ func StampOnImage(pathImage, pathIcon string) (err error) {
 
 }
 
-// StampOnImageLeft en position 10 à droite
-func StampOnImageRight(pathImage, pathIcon string) (err error) {
+// StampOnImageLeft en position 10 à droite et en bas
+func StampOnImageRightBottom(pathImage, pathIcon string) (err error) {
 	// 1. Charger l'image de base
 	baseImageFile, err := os.Open(pathImage)
 	if err != nil {
@@ -686,13 +686,21 @@ func StampOnImageRight(pathImage, pathIcon string) (err error) {
 	iconY := 10 // Décalage Y depuis le coin supérieur gauche de l'image de base
 
 	// Calculer le rectangle de destination pour l'icône sur la nouvelle image
+	// en bas à droite
 	iconBounds := iconImage.Bounds()
 	iconDestRect := image.Rect(
 		bounds.Dx()-iconBounds.Dx()-iconX,
-		iconY,
+		bounds.Dy()-iconY,
 		bounds.Dx()-iconX,
-		iconY+iconBounds.Dy(),
+		bounds.Dy()-iconBounds.Dy()-iconY,
 	)
+	// en haut à droire
+	// iconDestRect := image.Rect(
+	// 	bounds.Dx()-iconBounds.Dx()-iconX,
+	// 	iconY,
+	// 	bounds.Dx()-iconX,
+	// 	iconY+iconBounds.Dy(),
+	// )
 
 	// Dessiner l'icône. draw.Over est généralement utilisé pour superposer avec transparence.
 	// Si l'icône n'a pas de transparence, draw.Src fonctionnera aussi.

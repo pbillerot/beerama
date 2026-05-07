@@ -8,7 +8,7 @@
 {{$is_admin := .is_admin}}
 <!-- retour home au menu des albums -->
 <div class="item">
-    <a href="/folder/{{$parent.ID}}" class="card">
+    <a href="/folder/{{$parent.ID}}/none" class="card" title="clic pour réinitialiser recherche et étiquette">
         <div class="image" style="height: 150px">
             {{ $bfileid := $parent.Couverture}}
             {{if $bfileid}}

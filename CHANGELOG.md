@@ -1,10 +1,13 @@
 # CHANGELOG
-> bug impossible enlever couverture
 
 ### À venir :
-- upload par glisser déposer
-- intégrer excalidraw
 - vidage automatique de la poubelle des fichiers > 30 jours
+x intégrer excalidraw (pas forcément utile car drawio)
+
+2026.5.2
+- `fixed` bug sélection d'une étiquette qui n'existe plus - clic sur couverture /none
+- `fixed` url avec new pour les drawio
+- `changed` icône document en bas à droite
 
 2026.5.1
 - `fixed` correction étiquettes vides ,,

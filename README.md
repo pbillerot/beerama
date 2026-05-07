@@ -6,6 +6,8 @@ Explorateur et éditeur de contenu d'albums photos pour réaliser un diaporama
 ## Outils utilisés
 - langage GOLANG
 - Framework WEB MVC https://beego.me/
+- ## packages système
+- sudo apt install exiftool ffmpeg
 - ## libraire GO
 - go-exiftool - Exiftool sera installer sur le serveur
 - ## Librairies javascript css

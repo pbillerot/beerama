@@ -98,3 +98,8 @@ git push -f origin master  # Force push master branch to github
 ### Debug
 - go install github.com/go-delve/delve/cmd/dlv@latest
 - avant de tester ouvrir la session SSH IONOS
+
+## Exiftool
+```bash
+exiftool -overwrite_original -Subject= <fihier>
+```
