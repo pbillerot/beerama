@@ -276,11 +276,14 @@ func (c *MainController) Meta() {
 				parent.Couverture = ""
 			}
 		}
-		// keywords
-		keywords := c.GetStrings("keywords")
-		// TODO: trace
-		logs.Info("keywords:", keywords)
-
+		// kk
+		kk := c.GetStrings("keywords")
+		var keywords []string
+		for _, s := range kk {
+			if s != "" {
+				keywords = append(keywords, s)
+			}
+		}
 		beeFile.Keywords = keywords
 		// raz de la date
 		razdate := c.GetString("razdate")
