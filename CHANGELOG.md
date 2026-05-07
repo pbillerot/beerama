@@ -5,6 +5,9 @@
 x intégrer excalidraw (pas forcément utile car drawio)
 
 2026.5.2
+- `changed` upload champ sur fond vert pour "dropper" les fichiers
+
+2026.5.2
 - `fixed` bug sélection d'une étiquette qui n'existe plus - clic sur couverture /none
 - `fixed` url avec new pour les drawio
 - `changed` icône document en bas à droite

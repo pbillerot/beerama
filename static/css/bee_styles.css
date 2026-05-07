@@ -153,6 +153,10 @@ bee-press,
     display: none !important;
 }
 
+#bee-upload-file {
+    background-color: #EBF7E3;
+    min-height: 80px;
+}
 
 #bee-selected .selected {
     background-color: lightgrey;
