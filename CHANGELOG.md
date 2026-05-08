@@ -4,6 +4,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+2026.5.9
+- `changed` upload zone orange pour déposer les fichiers
+
 2026.5.8
 - `fixed` bouton maj actif si tag ajouté
 
