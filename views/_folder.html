@@ -103,8 +103,8 @@
                 </div>
                 {{end}} <!-- /if image-->
                 <!-- METADATA -->
-                <a class="content {{if $is_editor}}draggable bee-meta{{end}} bee-meta-edit" data-dsrc="{{$beedirid}}"
-                    data-fsrc="{{$beefile.ID}}" title="Clic pour modifier légende et étiquettes"
+                <a class="content {{if $is_editor}}draggable bee-meta{{else}}bee-meta-readonly{{end}}" data-dsrc="{{$beedirid}}"
+                    data-fsrc="{{$beefile.ID}}" title="{{if $is_editor}}Clic pour modifier légende et étiquettes{{end}}"
                     data-url="/e/meta/{{$beedirid}}/{{$beefile.ID}}">
                     <!-- title -->
                     {{if $beefile.Title}}

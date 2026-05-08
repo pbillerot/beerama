@@ -234,7 +234,7 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 
 // updateMeta
 func (beeFile *BeeFile) WriteMeta() (err error) {
-	logs.Trace("UpdateMeta", beeFile.Path)
+	// logs.Trace("UpdateMeta", beeFile.Path)
 	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		// attention certains types ne sont pas modifiables
 		// https://exiftool.org/exiftool_pod.html

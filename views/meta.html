@@ -165,9 +165,7 @@
 									{{ $keywords := $beedir.KeywordsAlbum}}
 									<option value="">Sélectionner une ou plusieurs étiquettes</option>
 									{{ range $ikey, $key := $keywords }}
-									<option {{if BeeIN $beefile.Keywords $key}}selected{{end}} value="{{$key}}">
-										{{$key}}
-									</option>
+									<option {{if BeeIN $beefile.Keywords $key}}selected{{end}} value="{{$key}}">{{$key}}</option>
 									{{end}}
 								</select>
 							</div>

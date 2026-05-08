@@ -35,19 +35,22 @@ body {
 #bee-doc-editor {
     font-size: 15px;
 }
-.ui.card>.bee-meta-edit:hover {
+.ui.card>.bee-meta:hover {
     cursor: pointer;
-    background: rgba(0, 0, 0, .06);
+    background: orange;
     color: rgba(0, 0, 0, .95);
 }
 
-.ui.card>.bee-meta-edit {
+.ui.card>.bee-meta {
     background-color: white;
     padding: 0.3em;
     min-height: 1.5em;
 }
-.ui.card > .bee-meta-edit > .header + .description {
+.ui.card > .bee-meta > .header + .description {
     margin-top: 0;
+}
+.ui.card >.bee-meta-readonly {
+    padding: 0.3em;
 }
 
 .ui.menu.item.active {

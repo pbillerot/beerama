@@ -12,7 +12,7 @@ $(document).ready(function () {
   }); // glisser
   $(".droppable").droppable({
     classes: {
-      "ui-droppable-active": "teal",
+      "ui-droppable-active": "orange",
       "ui-droppable-hover": "active"
     },
     drop: function (event, ui) {
