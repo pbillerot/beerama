@@ -4,6 +4,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+2026.5.8
+- `fixed` bouton maj actif si tag ajouté
+
 2026.5.7
 - `fixed` tag en double suite maj meta
 - `fixed` pas de title en fond orange sur le titre de la diapo si reandonly

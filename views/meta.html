@@ -6,6 +6,7 @@
 {{$beedir := .beedir}}
 {{$beefile := .beefile}}
 {{$composter := .composter}}
+{{$metamodified := .metamodified}}
 
 <body>
 	<!-- MENU HORIZONTAL FIXED -->
@@ -22,7 +23,7 @@
 				<a class="item">
 					<div class="ui buttons">
 						<div id="button_validate" data-return="/return"
-							class="ui icon red small button bee-submit-meta-retour disabled">
+							class="ui icon red small button bee-submit-meta-retour {{if not $metamodified}}disabled{{end}}">
 							<i class="save icon"></i> Enregistrer et Retour
 						</div>
 					</div>
@@ -30,7 +31,7 @@
 				<a class="item">
 					<div class="ui buttons">
 						<div id="button_validate" data-return="/e/meta/{{$beedir.ID}}/{{$beefile.ID}}"
-							class="ui icon red small button bee-submit-meta disabled">
+							class="ui icon red small button bee-submit-meta {{if not $metamodified}}disabled{{end}}">
 							<i class="save icon"></i> Enregistrer
 						</div>
 					</div>

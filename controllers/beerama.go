@@ -356,7 +356,10 @@ func (c *MainController) Meta() {
 	if strings.Contains(c.Ctx.Request.RequestURI, "/folder/") {
 		c.SetSession("folder", c.Ctx.Request.RequestURI)
 	}
-
+	if metamodified, ok := flash.Data["metamodified"]; ok {
+		// Utiliser le message
+		c.Data["metamodified"] = metamodified
+	}
 	c.TplName = "meta.html"
 }
 
@@ -369,6 +372,8 @@ func (c *MainController) Tag() {
 
 	beego.ReadFromRequest(&c.Controller)
 
+	flash := beego.ReadFromRequest(&c.Controller)
+
 	if c.Ctx.Input.Method() == "POST" {
 		// AJOUT DU TAG
 		keyword := strings.ToLower(c.GetString("keyword"))
@@ -377,8 +382,10 @@ func (c *MainController) Tag() {
 		if parent.ID != beeDir.ID {
 			parent.KeywordsAlbum = append(parent.Keywords, keyword)
 		}
-		// beeDir.Keywords = append(beeDir.Keywords, keyword)
 		beeDir.KeywordsAlbum = append(beeDir.KeywordsAlbum, keyword)
+		beeFile.Keywords = append(beeFile.Keywords, keyword)
+		flash.Set("metamodified", "true")
+		flash.Store(&c.Controller)
 	}
 
 	// actualisation
