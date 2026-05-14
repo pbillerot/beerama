@@ -330,7 +330,6 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
-
   // ACTION DUPLIQUER
   $('.bee-modal-duplicate').on('click', function (event) {
     var $modal = $('#bee-modal-duplicate')
@@ -411,38 +410,6 @@ $(document).ready(function () {
           $('form', document).submit();
         }
       }).modal('show');
-    event.preventDefault();
-  });
-
-  // META EDITOR
-  function captureElement(selector) {
-    return new Promise(function (resolve, reject) {
-      html2canvas(document.querySelector(selector)).then(function (canvas) {
-        resolve(canvas);
-      }).catch(function (error) {
-        reject(error);
-      });
-    });
-  }
-  $('.bee-submit-meta, .bee-submit-meta-retour').on('tap', function (event) {
-    var $return = $(this).data('return');
-    var $form = $('#form_meta_id');
-    $form.find("input[name='return']").val($return)
-    if (quillModified) {
-      var $comment = quill.root.innerHTML;
-      $form.find("input[name='doc']").val($comment);
-      captureElement('.ql-editor')
-        .then(function (canvas) {
-          var dataUrl = canvas.toDataURL('image/png');
-          $form.find("input[name='canvas']").val(dataUrl);
-          $form.submit();
-        })
-        .catch(function (error) {
-          console.error('Error capturing element:', error);
-        });
-    } else {
-      $form.submit();
-    }
     event.preventDefault();
   });
 
@@ -737,11 +704,50 @@ $(document).ready(function () {
     event.preventDefault();
   });
 
+  // META EDITOR
+  function captureElement(selector) {
+    return new Promise(function (resolve, reject) {
+      html2canvas(document.querySelector(selector)).then(function (canvas) {
+        resolve(canvas);
+      }).catch(function (error) {
+        reject(error);
+      });
+    });
+  }
+  $('.bee-submit-meta, .bee-submit-meta-retour').on('tap', function (event) {
+    var $return = $(this).data('return');
+    var $form = $('#form_meta_id');
+    $form.find("input[name='return']").val($return)
+    if (quillModified) {
+      // Clone le contenu pour ne pas modifier l'éditeur en direct
+      const tempContainer = document.createElement('div');
+      tempContainer.innerHTML = quill.root.innerHTML;
+      // Supprime les sélecteurs de langue injectés par Quill
+      const languageSelects = tempContainer.querySelectorAll('.ql-ui');
+      languageSelects.forEach(el => el.remove());
+      const cleanHTML = tempContainer.innerHTML;
+      $form.find("input[name='doc']").val(cleanHTML);
+      captureElement('.ql-editor')
+        .then(function (canvas) {
+          var dataUrl = canvas.toDataURL('image/png');
+          $form.find("input[name='canvas']").val(dataUrl);
+          $form.submit();
+        })
+        .catch(function (error) {
+          console.error('Error capturing element:', error);
+        });
+    } else {
+      $form.submit();
+    }
+    event.preventDefault();
+  });
+
   // VIEWER QUILL
   if ($("#bee-doc-viewer").length) {
     const options = {
       readOnly: true,
       modules: {
+        syntax: true,
         toolbar: null
       },
       theme: 'snow'
@@ -757,6 +763,7 @@ $(document).ready(function () {
     quillInitilized = true
     quill = new Quill('#bee-doc-editor', {
       modules: {
+        syntax: true,
         toolbar: [
           [{ 'header': 1 }, { 'header': 2 }],               // custom button values
           ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -770,12 +777,11 @@ $(document).ready(function () {
           // [{ 'font': [] }],
           // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
           // [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-
           ['clean']                                         // remove formatting button
         ],
       },
-      placeholder: 'Rédige le document...',
       theme: 'snow', // or 'bubble'
+      placeholder: 'Rédige le document...'
     });
     quill.on('text-change', (delta, oldDelta, source) => {
       if (source == 'api') {
@@ -800,7 +806,7 @@ $(document).ready(function () {
     window.open("/return");
     event.preventDefault();
   });
-$('.bee-menu').each(function (index) {
+  $('.bee-menu').each(function (index) {
     var $valStorage = localStorage.getItem("menu");
     if ($valStorage == null || $valStorage == "") {
       $('#menu').show();

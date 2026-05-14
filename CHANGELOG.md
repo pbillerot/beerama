@@ -1,8 +1,14 @@
 # CHANGELOG
+- coloriage syntaxique :
+- https://korben.info/quill-lediteur-wysiwyg-nouvelle-generation.html
+- https://quilljs.com/docs/modules/syntax#syntax-highlighter-module
 
 ### À venir :
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
+
+2026.5.10
+- `added` coloriage syntaxique dans le code des documents
 
 2026.5.9
 - `changed` upload zone orange pour déposer les fichiers
