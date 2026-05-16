@@ -11,10 +11,11 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/BurntSushi/toml"
-	"github.com/beego/beego/v2/core/logs"
 	"beerama/fulltext"
 	"beerama/shutil"
+
+	"github.com/BurntSushi/toml"
+	"github.com/beego/beego/v2/core/logs"
 )
 
 // Config de config.yaml lu dans main.init()
@@ -276,14 +277,6 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		beeFile.IsVideo = true
 	} else if Contains([]string{".pdf"}, strings.ToLower(beeFile.Ext)) {
 		beeFile.IsPdf = true
-	} else if Contains([]string{".conf"}, beeFile.Ext) {
-		var content []byte
-		content, err := os.ReadFile(beeFile.Path)
-		if err != nil {
-			logs.Error(err)
-		}
-		beeFile.Content = content
-		beeFile.IsConf = true
 	} else {
 		err := fmt.Errorf("Extension fichier inconnue: %s", beeFile.Path)
 		logs.Error(err)

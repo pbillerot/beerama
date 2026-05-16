@@ -7,6 +7,16 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+- `added` migration des doc : metadata.CaptionWriter en json dans metadata.UserComment 
+- `removed` suppression des metada.CaptionWriter si IsDoc
+- `added` "beerama <version>" enregistré dans metadata.CreatorTool
+
+2026.5.11
+- `added` Quill enregistre désormais dans UserComment en json (format natif de Quill) pour conserver le formatage des code-block
+- `added` Coloriage syntaxique limitée à certains langages : 'plaintext', 'bash', 'css', 'javascript', 'json', 'python', 'sql', 'yaml', 'xml'
+- `removed` suppression des isConf
+
+
 2026.5.10
 - `added` coloriage syntaxique dans le code des documents
 

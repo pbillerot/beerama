@@ -66,12 +66,10 @@ type BeeFile struct {
 	Ext        string // extension du fichier
 	Path       string // path de l'image calculé
 	Categories string
-	Content    []byte
 	Date       string
 	Dir        string
 	// type
 	IsAudio     bool
-	IsConf      bool
 	IsDir       bool
 	IsDrawio    bool
 	IsDoc       bool
@@ -110,6 +108,7 @@ type BeeFile struct {
 	Longitude    string
 	LensModel    string
 	Source       string // =id pour inquer que l'image est la couverture de l'album
+	Version      string // version de beerama dernière mise à jour
 }
 
 // BeePathInfo as

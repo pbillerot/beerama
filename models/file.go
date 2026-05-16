@@ -560,7 +560,7 @@ func (beeFile *BeeFile) CreateDocThumbnail(width int, html, capture string) (err
 	if err := decodeAndSavePNG(capture, beeFile.Path); err != nil {
 		return err
 	}
-	// enregistrement des données html dans les metadata
+	// enregistrement des données json dans les metadata
 	err = SetMetaData(beeFile.Path, "CaptionWriter", html)
 	return err
 }

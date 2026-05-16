@@ -31,6 +31,7 @@
 # [CaptionsDateTimeStamps] 2025-09-01T15:19:20
 # [Caption] Sous les pins accentués
 # [Caption-Abstract] Juste avant la naissance de Romain accentués
+# [CreatorTool] digiKam-8.5.0
 [YResolution] 180
 [YCbCrSubSampling] YCbCr4:4:0 (1 2)
 [YCbCrPositioning] Co-sited
@@ -139,7 +140,6 @@
 [DarkFocusEnvironment] No
 [CustomRendered] Custom
 [CurrentIPTCDigest] 24fc5206bd8f42237ab19741a4aa6a1f
-[CreatorTool] digiKam-8.5.0
 [Country] 
 [ConversionLens] Off
 [ContrastMode] +1

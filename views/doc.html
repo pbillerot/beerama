@@ -41,7 +41,8 @@
             {{template "_flash.html" .}}
             <div class="ui card" style="width: 99%;">
                 <div class="content">
-                    <div id="bee-doc-viewer">{{str2html .content}}</div>
+                    <input type="hidden" id="bee-doc-content" name="doc" value="{{.content}}">
+                    <div id="bee-doc-viewer">Atchoum!!</div>
                 </div>
             </div>
         </div>

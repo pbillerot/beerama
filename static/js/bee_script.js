@@ -719,14 +719,15 @@ $(document).ready(function () {
     var $form = $('#form_meta_id');
     $form.find("input[name='return']").val($return)
     if (quillModified) {
-      // Clone le contenu pour ne pas modifier l'éditeur en direct
-      const tempContainer = document.createElement('div');
-      tempContainer.innerHTML = quill.root.innerHTML;
-      // Supprime les sélecteurs de langue injectés par Quill
-      const languageSelects = tempContainer.querySelectorAll('.ql-ui');
-      languageSelects.forEach(el => el.remove());
-      const cleanHTML = tempContainer.innerHTML;
-      $form.find("input[name='doc']").val(cleanHTML);
+      // // Clone le contenu pour ne pas modifier l'éditeur en direct
+      // const tempContainer = document.createElement('div');
+      // tempContainer.innerHTML = quill.root.innerHTML;
+      // // Supprime les sélecteurs de langue injectés par Quill
+      // const languageSelects = tempContainer.querySelectorAll('.ql-ui');
+      // languageSelects.forEach(el => el.remove());
+      // const cleanHTML = tempContainer.innerHTML;
+      // const tt = quill.root.innerHTML;
+      // $form.find("input[name='doc']").val(tt);
       captureElement('.ql-editor')
         .then(function (canvas) {
           var dataUrl = canvas.toDataURL('image/png');
@@ -759,8 +760,12 @@ $(document).ready(function () {
   var quill;
   var quillInitilized = false;
   var quillModified = false;
-  if ($("input[name='doc']").length) {
+  if ($("#bee-doc-quill").length) {
     quillInitilized = true
+    const supportedLangs = ['plaintext', 'bash', 'css', 'javascript', 'json', 'python', 'sql', 'yaml', 'xml']
+    Object.defineProperty(Quill.imports["modules/syntax"].DEFAULTS, 'languages', {
+      value: supportedLangs.map((l) => ({ key: l, label: l }))
+    })
     quill = new Quill('#bee-doc-editor', {
       modules: {
         syntax: true,
@@ -771,8 +776,9 @@ $(document).ready(function () {
           [{ 'align': [] }],
           [{ 'list': 'ordered' }, { 'list': 'bullet' }, { 'list': 'check' }],
           // [{ 'script': 'sub' }, { 'script': 'super' }],     // superscript/subscript
-          [{ 'indent': '-1' }, { 'indent': '+1' }],         // outdent/indent
-          ['blockquote', 'code-block'],
+          [{ 'indent': '-1' }, { 'indent': '+1' }, 'blockquote'],         // outdent/indent
+          // plaintext bash css javascript json python sql yaml xml
+          ['code-block'],
           ['link', 'image', 'video'], // formula
           // [{ 'font': [] }],
           // [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown
@@ -783,16 +789,40 @@ $(document).ready(function () {
       theme: 'snow', // or 'bubble'
       placeholder: 'Rédige le document...'
     });
+    const delta = JSON.parse($("#bee-doc-quill").val());
+    quill.setContents(delta);
     quill.on('text-change', (delta, oldDelta, source) => {
       if (source == 'api') {
         console.log('An API call triggered this change.');
       } else if (source == 'user') {
         quillModified = true;
+        const delta = quill.getContents();
+        const jsonString = JSON.stringify(delta);
+        $('#bee-doc-quill').val(jsonString);
         $(".bee-submit-meta").removeClass('disabled');
         $(".bee-submit-meta-retour").removeClass('disabled');
         // console.log('A user action triggered this change.');
       }
     });
+  }
+  // viewer doc quill
+  if ($("#bee-doc-content").length) {
+    const supportedLangs = ['plaintext', 'bash', 'css', 'javascript', 'json', 'python', 'sql', 'yaml', 'xml']
+    Object.defineProperty(Quill.imports["modules/syntax"].DEFAULTS, 'languages', {
+      value: supportedLangs.map((l) => ({ key: l, label: l }))
+    })
+    const viewer = new Quill('#bee-doc-viewer', {
+      theme: 'snow',
+      readOnly: true, // Désactive l'édition
+      modules: {
+        syntax: true,
+        toolbar: false // Cache la barre d'outils
+      }
+    });
+    // Charger le contenu
+    viewer.setContents(JSON.parse($("#bee-doc-content").val()));
+    // cacher la liste des langage
+    $('.ql-ui').hide();
   }
 
   // Contexte ergonomique dans localStorage
