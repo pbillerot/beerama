@@ -7,6 +7,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+2026.5.13
+- `changed` suppression script de migration car traité en production
+
 2026.5.12
 - `added` "beerama <version>" enregistré dans metadata.CreatorTool
 - `added` "migration 2026.5.12" des doc : metadata.CaptionWriter en json dans metadata.UserComment 

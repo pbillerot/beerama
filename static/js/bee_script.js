@@ -790,18 +790,7 @@ $(document).ready(function () {
       placeholder: 'Rédige le document...'
     });
     // chargement initial
-    // migration 2026.5.12
-    // quill.setContents($("#bee-doc-content").val());
-    const htmlorjson = $("#bee-doc-quill").val();
-    if (htmlorjson.length == 0) {
-      quill.setContents("{}");
-    } else {
-      if (htmlorjson.charAt(0) == '{') {
-        quill.setContents(JSON.parse(htmlorjson));
-      } else {
-        quill.clipboard.dangerouslyPasteHTML(htmlorjson, "api")
-      }
-    }
+    quill.setContents($("#bee-doc-quill").val());
     // le texte est modifié
     quill.on('text-change', (delta, oldDelta, source) => {
       if (source == 'api') {
@@ -832,18 +821,7 @@ $(document).ready(function () {
       }
     });
     // Charger le contenu
-    // migration 2026.5.12
-    // viewer.setContents($("#bee-doc-content").val());
-    const htmlorjson = $("#bee-doc-content").val();
-    if (htmlorjson.length == 0) {
-      viewer.setContents("{}");
-    } else {
-      if (htmlorjson.charAt(0) == '{') {
-        viewer.setContents(JSON.parse(htmlorjson));
-      } else {
-        viewer.clipboard.dangerouslyPasteHTML(htmlorjson, "api")
-      }
-    }
+    viewer.setContents($("#bee-doc-content").val());
     // cacher la liste des langage
     $('.ql-ui').hide();
   }

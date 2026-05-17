@@ -232,25 +232,6 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 		beeFile.Keywords = beeFile.Keywords[:0]
 		beeFile.Keywords = append(beeFile.Keywords, strings.Split(value, ",")...)
 	}
-	// migration 2026.5.12
-	// CaptionWriter dans UserComment
-	if beeFile.IsDoc && beeFile.Version < "beerama 2026.5.13" {
-		if userComment, err := metadata.GetString("UserComment"); err != nil {
-			if len(userComment) != 0 && userComment[0] == '{' {
-				// UserComment est dans le bon format
-			} else {
-				if captionWriter, err := metadata.GetString("CaptionWriter"); err == nil {
-					if len(captionWriter) != 0 {
-						// enregistrement des données json dans les metadata
-						err := SetMetaData(beeFile.Path, "UserComment", captionWriter)
-						if err == nil {
-							SetMetaData(beeFile.Path, "CaptionWriter", "")
-						}
-					}
-				}
-			}
-		}
-	}
 
 	return err
 }
