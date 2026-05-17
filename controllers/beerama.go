@@ -196,7 +196,7 @@ func (c *MainController) Download() {
 
 }
 
-// Modifier un données metadata de l'image
+// Modifier les données metadata de l'image
 func (c *MainController) Meta() {
 	user_id := c.GetSession("user_id").(string)
 
@@ -266,7 +266,7 @@ func (c *MainController) Meta() {
 				if parent.Couverture != beeFile.ID {
 					bfile := models.GetBeeFile(parent.Couverture)
 					bfile.Source = ""
-					bfile.WriteMeta()
+					bfile.WriteMetadata()
 				}
 				parent.Couverture = beeFile.ID
 			}
@@ -298,8 +298,10 @@ func (c *MainController) Meta() {
 			beeFile.UrlExterne = ""
 		}
 
+		// version dans CreatorTool
+
 		// report des meta dans le fichier
-		err := beeFile.WriteMeta()
+		err := beeFile.WriteMetadata()
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama %s", err)
@@ -344,11 +346,11 @@ func (c *MainController) Meta() {
 		// template.URL("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVQYV2NgYAAAAAMAAWgmWQ0AAAAASUVORK5CYII=")
 	}
 	if beeFile.IsDoc {
-		html, err := models.GetMetaData(beeFile.Path, "CaptionWriter")
+		json, err := models.GetMetaData(beeFile.Path, "UserComment")
 		if err != nil {
 			c.Data["content"] = ""
 		} else {
-			c.Data["content"] = html
+			c.Data["content"] = json
 		}
 	}
 
@@ -405,14 +407,14 @@ func (c *MainController) Doc() {
 	beeFile := models.GetBeeFile(c.Ctx.Input.Param(":beefileid"))
 	beeDir := models.GetBeeDir(beeFile.DirID)
 
-	html, err := models.GetMetaData(beeFile.Path, "CaptionWriter")
+	json, err := models.GetMetaData(beeFile.Path, "UserComment")
 	if err != nil {
 		flash.Error("%v", err)
 		flash.Store(&c.Controller)
 	}
 
 	// Remplissage du contexte pour le template
-	c.Data["content"] = &html
+	c.Data["content"] = &json
 	c.Data["beedir"] = &beeDir
 	c.Data["beefile"] = &beeFile
 	c.Data["is_editor"] = beeDir.IsUserEditor(user_id)
@@ -428,9 +430,9 @@ func (c *MainController) Document() {
 
 	w := c.Ctx.ResponseWriter
 	if beeFile.IsDoc {
-		if html, err := models.GetMetaData(beeFile.Path, "CaptionWriter"); err == nil {
-			w.Header().Set("Content-Length", strconv.Itoa(len(html)))
-			_, err = c.Ctx.ResponseWriter.Write([]byte(html))
+		if json, err := models.GetMetaData(beeFile.Path, "UserComment"); err == nil {
+			w.Header().Set("Content-Length", strconv.Itoa(len(json)))
+			_, err = c.Ctx.ResponseWriter.Write([]byte(json))
 			if err != nil {
 				logs.Error("Erreur lors de l'écriture de la réponse:", err)
 			}
@@ -634,7 +636,7 @@ func (c *MainController) NewDoc() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.Title = title
-	beeFile.WriteMeta()
+	beeFile.WriteMetadata()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -670,7 +672,7 @@ func (c *MainController) NewDraw() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.Title = title
-	beeFile.WriteMeta()
+	beeFile.WriteMetadata()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -706,7 +708,7 @@ func (c *MainController) NewUrl() {
 		c.Ctx.Redirect(302, c.GetSession("folder").(string))
 	}
 	beeFile.UrlImage = url
-	beeFile.WriteMeta()
+	beeFile.WriteMetadata()
 
 	// Rechargement de l'album
 	beeDir.UpdateAlbum()
@@ -860,7 +862,7 @@ func (c *MainController) Lot() {
 			beeFile.UrlExterne = urlexterne
 		}
 		// report des meta dans le fichier
-		err := beeFile.WriteMeta()
+		err := beeFile.WriteMetadata()
 		if err != nil {
 			logs.Error(err)
 			flash.Error("Beerama %s", err)

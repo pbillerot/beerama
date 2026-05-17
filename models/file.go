@@ -182,6 +182,10 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 	if value, err := metadata.GetString("Description"); err == nil {
 		beeFile.Description = value
 	}
+	// version CreatorTool
+	if value, err := metadata.GetString("CreatorTool"); err == nil {
+		beeFile.Version = value
+	}
 	// image
 	if value, err := metadata.GetString("LensModel"); err == nil {
 		beeFile.LensModel = value
@@ -228,12 +232,31 @@ func (beeFile *BeeFile) GetMetadata() (err error) {
 		beeFile.Keywords = beeFile.Keywords[:0]
 		beeFile.Keywords = append(beeFile.Keywords, strings.Split(value, ",")...)
 	}
+	// migration 2026.5.12
+	// CaptionWriter dans UserComment
+	if beeFile.IsDoc && beeFile.Version < "beerama 2026.5.13" {
+		if userComment, err := metadata.GetString("UserComment"); err != nil {
+			if len(userComment) != 0 && userComment[0] == '{' {
+				// UserComment est dans le bon format
+			} else {
+				if captionWriter, err := metadata.GetString("CaptionWriter"); err == nil {
+					if len(captionWriter) != 0 {
+						// enregistrement des données json dans les metadata
+						err := SetMetaData(beeFile.Path, "UserComment", captionWriter)
+						if err == nil {
+							SetMetaData(beeFile.Path, "CaptionWriter", "")
+						}
+					}
+				}
+			}
+		}
+	}
 
 	return err
 }
 
 // updateMeta
-func (beeFile *BeeFile) WriteMeta() (err error) {
+func (beeFile *BeeFile) WriteMetadata() (err error) {
 	// logs.Trace("UpdateMeta", beeFile.Path)
 	if Contains([]string{".avi", ".mkv", ".m4v", ".ogv", ".webm"}, strings.ToLower(beeFile.Ext)) {
 		// attention certains types ne sont pas modifiables
@@ -258,6 +281,12 @@ func (beeFile *BeeFile) WriteMeta() (err error) {
 	// description
 	if metadata.Err == nil {
 		metadata.SetString("Description", strings.ReplaceAll(beeFile.Description, "\n", "¤"))
+	} else {
+		logs.Error(metadata.Err)
+	}
+	// version
+	if metadata.Err == nil {
+		metadata.SetString("CreatorTool", fmt.Sprintf("beerama %s", Config.Version))
 	} else {
 		logs.Error(metadata.Err)
 	}
@@ -554,14 +583,14 @@ func decodeAndSavePNG(base64Str string, filename string) error {
 	return nil
 }
 
-// createDocThumbnail création d'une nouvelle image, vignette et html dans exif.CaptionWriter
-func (beeFile *BeeFile) CreateDocThumbnail(width int, html, capture string) (err error) {
+// createDocThumbnail création d'une nouvelle image, vignette et quill.json dans exif.UserComment
+func (beeFile *BeeFile) CreateDocThumbnail(width int, json, capture string) (err error) {
 	// remplacement de l'image par la capture
 	if err := decodeAndSavePNG(capture, beeFile.Path); err != nil {
 		return err
 	}
 	// enregistrement des données json dans les metadata
-	err = SetMetaData(beeFile.Path, "CaptionWriter", html)
+	err = SetMetaData(beeFile.Path, "UserComment", json)
 	return err
 }
 

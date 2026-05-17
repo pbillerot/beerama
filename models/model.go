@@ -316,7 +316,7 @@ func (beeDir *BeeDir) CreateBeeFile(path string, isNew bool) (*BeeFile, error) {
 		err := beeFile.Rename(beeFile.ID + beeFile.Ext)
 		if err == nil {
 			// titre en particulier
-			beeFile.WriteMeta()
+			beeFile.WriteMetadata()
 		}
 	}
 

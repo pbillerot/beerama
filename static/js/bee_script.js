@@ -789,8 +789,20 @@ $(document).ready(function () {
       theme: 'snow', // or 'bubble'
       placeholder: 'Rédige le document...'
     });
-    const delta = JSON.parse($("#bee-doc-quill").val());
-    quill.setContents(delta);
+    // chargement initial
+    // migration 2026.5.12
+    // quill.setContents($("#bee-doc-content").val());
+    const htmlorjson = $("#bee-doc-quill").val();
+    if (htmlorjson.length == 0) {
+      quill.setContents("{}");
+    } else {
+      if (htmlorjson.charAt(0) == '{') {
+        quill.setContents(JSON.parse(htmlorjson));
+      } else {
+        quill.clipboard.dangerouslyPasteHTML(htmlorjson, "api")
+      }
+    }
+    // le texte est modifié
     quill.on('text-change', (delta, oldDelta, source) => {
       if (source == 'api') {
         console.log('An API call triggered this change.');
@@ -820,7 +832,18 @@ $(document).ready(function () {
       }
     });
     // Charger le contenu
-    viewer.setContents(JSON.parse($("#bee-doc-content").val()));
+    // migration 2026.5.12
+    // viewer.setContents($("#bee-doc-content").val());
+    const htmlorjson = $("#bee-doc-content").val();
+    if (htmlorjson.length == 0) {
+      viewer.setContents("{}");
+    } else {
+      if (htmlorjson.charAt(0) == '{') {
+        viewer.setContents(JSON.parse(htmlorjson));
+      } else {
+        viewer.clipboard.dangerouslyPasteHTML(htmlorjson, "api")
+      }
+    }
     // cacher la liste des langage
     $('.ql-ui').hide();
   }
