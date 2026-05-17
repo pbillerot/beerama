@@ -7,6 +7,9 @@
 - vidage automatique de la poubelle des fichiers > 30 jours
 x intégrer excalidraw (pas forcément utile car drawio)
 
+2026.5.14
+- `fixed` traitement des cas avec UserComment encore en html
+
 2026.5.13
 - `changed` suppression script de migration car traité en production
 

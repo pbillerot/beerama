@@ -790,7 +790,19 @@ $(document).ready(function () {
       placeholder: 'Rédige le document...'
     });
     // chargement initial
-    quill.setContents($("#bee-doc-quill").val());
+    // const delta = JSON.parse($("#bee-doc-quill").val());
+    // quill.setContents(delta);
+    // au cas ou le UserComment est encore en html on le convertit en delta
+    const htmlorjson = $("#bee-doc-quill").val();
+    if (htmlorjson.length == 0) {
+      quill.setContents("{}");
+    } else {
+      if (htmlorjson.charAt(0) == '{') {
+        quill.setContents(JSON.parse(htmlorjson));
+      } else {
+        quill.clipboard.dangerouslyPasteHTML(htmlorjson, "api")
+      }
+    }
     // le texte est modifié
     quill.on('text-change', (delta, oldDelta, source) => {
       if (source == 'api') {
@@ -821,7 +833,7 @@ $(document).ready(function () {
       }
     });
     // Charger le contenu
-    viewer.setContents($("#bee-doc-content").val());
+    viewer.setContents(JSON.parse($("#bee-doc-content").val()));
     // cacher la liste des langage
     $('.ql-ui').hide();
   }
